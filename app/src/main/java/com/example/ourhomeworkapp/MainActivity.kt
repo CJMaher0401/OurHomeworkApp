@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
             confirmText.visibility = TextView.VISIBLE
             clearTextFields()
         }
-
+        //added changes
         fun onReqPermResult(requestCode: Int, permissions: Array<out String>, permGrantResult: IntArray)
         {
             super.onRequestPermissionsResult(requestCode, permissions, permGrantResult)
