@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/addHWlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EED8C7"
+    android:background="#ECD6C5"
     android:orientation="vertical">
 
     <LinearLayout
@@ -13,7 +12,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/cancelButton"
+            android:id="@+id/coursecancelButton"
             android:layout_width="136dp"
             android:layout_height="50dp"
             android:background="#EDD7C6"
@@ -26,7 +25,7 @@
             android:layout_weight="1" />
 
         <Button
-            android:id="@+id/saveButton"
+            android:id="@+id/coursesaveButton"
             android:layout_width="136dp"
             android:layout_height="wrap_content"
             android:background="#EDD7C6"
@@ -34,42 +33,27 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/addHomeworkText"
+        android:id="@+id/createCourseText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingBottom="20dp"
-        android:text="Add Homework"
+        android:text="Create Your Course"
         android:textColor="#000000"
-        android:textSize="34sp" />
+        android:textSize="24sp" />
 
     <EditText
-        android:id="@+id/editAssignmentDescText"
+        android:id="@+id/nameOfCourseText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="What is your HW assignment"
+        android:hint="Enter the course name"
         android:paddingBottom="15dp" />
 
-    <EditText
-        android:id="@+id/editClassDescText"
+    <Button
+        android:id="@+id/pickYourColorButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Select a course for this HW assignment"
-        android:paddingBottom="15dp" />
-
-    <EditText
-        android:id="@+id/editDueDateText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter the due date"
-        android:paddingBottom="15dp" />
-
-    <EditText
-        android:id="@+id/editReminderText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Set a reminder for your HW"
-        android:paddingBottom="15dp" />
-
+        android:background="#EBD5C4"
+        android:text="Pick the color of your course" />
 
 </LinearLayout>
