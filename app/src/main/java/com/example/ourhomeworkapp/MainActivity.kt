@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat
 
 
 class MainActivity : ComponentActivity() {
-
+    //created my own personal branch
     private lateinit var phoneNumberText: EditText
     private lateinit var messageText: EditText
     private lateinit var confirmText: TextView
@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
             confirmText.visibility = TextView.VISIBLE
             clearTextFields()
         }
-
+        //added changes
         fun onReqPermResult(requestCode: Int, permissions: Array<out String>, permGrantResult: IntArray)
         {
             super.onRequestPermissionsResult(requestCode, permissions, permGrantResult)
