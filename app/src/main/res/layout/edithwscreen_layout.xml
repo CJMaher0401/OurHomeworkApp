@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/addHWlayout"
+    android:id="@+id/editHWlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EED8C7"
@@ -13,7 +13,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/cancelButton"
+            android:id="@+id/editcancelButton"
             android:layout_width="136dp"
             android:layout_height="50dp"
             android:background="#EDD7C6"
@@ -26,7 +26,7 @@
             android:layout_weight="1" />
 
         <Button
-            android:id="@+id/saveButton"
+            android:id="@+id/editsaveButton"
             android:layout_width="136dp"
             android:layout_height="wrap_content"
             android:background="#EDD7C6"
@@ -34,38 +34,38 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/addHomeworkText"
+        android:id="@+id/editHomeworkText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingBottom="20dp"
-        android:text="Add Homework"
+        android:text="Edit Homework"
         android:textColor="#000000"
         android:textSize="34sp" />
 
     <EditText
-        android:id="@+id/editAssignmentDescText"
+        android:id="@+id/edit_editAssignmentDescText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="What is your HW assignment"
         android:paddingBottom="15dp" />
 
     <EditText
-        android:id="@+id/editClassDescText"
+        android:id="@+id/edit_editClassDescText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Select a course for this HW assignment"
         android:paddingBottom="15dp" />
 
     <EditText
-        android:id="@+id/editDueDateText"
+        android:id="@+id/edit_editDueDateText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter the due date"
         android:paddingBottom="15dp" />
 
     <EditText
-        android:id="@+id/editReminderText"
+        android:id="@+id/edit_editReminderText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Set a reminder for your HW"
