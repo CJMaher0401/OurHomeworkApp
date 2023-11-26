@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat
 
 
 class MainActivity : ComponentActivity() {
-
+    //created my own personal branch
     private lateinit var phoneNumberText: EditText
     private lateinit var messageText: EditText
     private lateinit var confirmText: TextView
