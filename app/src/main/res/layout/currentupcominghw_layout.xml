@@ -1,6 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#ECD6C5"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/curHWcancelButton"
+            android:layout_width="112dp"
+            android:layout_height="50dp"
+            android:background="#EDD7C6"
+            android:text="Cancel"
+            android:textAlignment="center" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+
+        <ImageButton
+            android:id="@+id/curHWaddHWbutton"
+            android:layout_width="96dp"
+            android:layout_height="50dp"
+            android:layout_gravity="right|top"
+            android:background="#EDD7C6"
+            android:contentDescription="this is how you can quick add a homework assignment"
+            android:src="@android:drawable/ic_menu_add"
+            android:tint="#F36259" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/curHWButton"
+            android:layout_width="205dp"
+            android:layout_height="match_parent"
+            android:background="#EDD7C6"
+            android:text="Current Homework"
+            android:textAlignment="center" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/compHWButton"
+            android:layout_width="205dp"
+            android:layout_height="70dp"
+            android:background="#EDD7C6"
+            android:text="Completed Homework" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/curHWscrollview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 
 </LinearLayout>
