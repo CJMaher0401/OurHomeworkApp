@@ -19,9 +19,13 @@ class MainActivity : ComponentActivity() {
     private lateinit var messageText: EditText
     private lateinit var confirmText: TextView
 
+    private lateinit var profileButton: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.smstest_layout)
+        setContentView(R.layout.homescreen_layout)
+
+
 
         fun hasSMSperm(): Boolean
         {
@@ -69,20 +73,22 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        phoneNumberText = findViewById(R.id.editTextPhoneNumber)
-        messageText = findViewById(R.id.editTextMessage)
-        confirmText = findViewById(R.id.textViewConfirmation)
+        //phoneNumberText = findViewById(R.id.editTextPhoneNumber)
+        //messageText = findViewById(R.id.editTextMessage)
+        //confirmText = findViewById(R.id.textViewConfirmation)
 
-        val sendSMSButton: Button = findViewById(R.id.buttonSend)
-        sendSMSButton.setOnClickListener{
-            if(hasSMSperm())
+        //val sendSMSButton: Button = findViewById(R.id.buttonSend)
+        //sendSMSButton.setOnClickListener{
+       //    if(hasSMSperm())
             {
                 sendSMSmessage()
             }
-            else
+       //     else
             {
                 requestSMSperm()
             }
-        }
+        //}
     }
 }
+
+
