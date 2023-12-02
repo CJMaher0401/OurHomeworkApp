@@ -52,7 +52,7 @@
     <ScrollView
         android:id="@+id/upcomingHWview"
         android:layout_width="match_parent"
-        android:layout_height="245dp">
+        android:layout_height="216dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,31 +63,32 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:layout_gravity="center"
+        android:layout_gravity="bottom|center"
+        android:gravity="bottom|center"
         android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/homeButton"
+        <Button
+            android:id="@+id/homeScreenButton"
             android:layout_width="135dp"
             android:layout_height="55dp"
             android:background="#EDD7C6"
-            android:tint="#F36259"
+            android:text="Home"
             app:srcCompat="@android:drawable/ic_menu_revert" />
 
-        <ImageButton
-            android:id="@+id/myListButton"
+        <Button
+            android:id="@+id/homeScreenMyHWButton"
             android:layout_width="140dp"
             android:layout_height="55dp"
             android:background="#EDD7C6"
-            android:tint="#F36259"
+            android:text="Your HW"
             app:srcCompat="@android:drawable/ic_menu_sort_by_size" />
 
-        <ImageButton
-            android:id="@+id/myProfileButton"
-            android:layout_width="135dp"
+        <Button
+            android:id="@+id/homeScreenMyProfileButton"
+            android:layout_width="133dp"
             android:layout_height="55dp"
             android:background="#EDD7C6"
-            android:tint="#F36259"
+            android:text="Your Profile"
             app:srcCompat="@android:drawable/ic_menu_my_calendar" />
     </LinearLayout>
 

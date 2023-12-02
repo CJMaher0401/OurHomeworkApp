@@ -13,7 +13,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/cancelButton"
+            android:id="@+id/addHWcancelButton"
             android:layout_width="136dp"
             android:layout_height="50dp"
             android:background="#EDD7C6"
@@ -26,7 +26,7 @@
             android:layout_weight="1" />
 
         <Button
-            android:id="@+id/saveButton"
+            android:id="@+id/addHWsaveButton"
             android:layout_width="136dp"
             android:layout_height="wrap_content"
             android:background="#EDD7C6"
