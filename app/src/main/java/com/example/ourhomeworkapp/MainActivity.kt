@@ -1,11 +1,16 @@
 package com.example.ourhomeworkapp
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import androidx.activity.ComponentActivity
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import java.util.Stack
 
 
@@ -80,11 +85,13 @@ class MainActivity : ComponentActivity() {
                 findViewById<EditText>(R.id.editClassDescText).setOnClickListener{
                     inflateLayout(R.layout.yourcoursesscreen_layout)
                 }
-                findViewById<EditText>(R.id.editDueDateText).setOnClickListener{
-                    inflateLayout(R.layout.duedateselectionscreen_layout)
+                val editDueDateText = findViewById<EditText>(R.id.editDueDateText)
+                editDueDateText.setOnClickListener{
+                    showDatePicker(editDueDateText)
                 }
-                findViewById<EditText>(R.id.editReminderText).setOnClickListener{
-                    inflateLayout(R.layout.reminderdateselectionscreen_layout)
+                val editReminderText = findViewById<EditText>(R.id.editReminderText)
+                editReminderText.setOnClickListener{
+                    showDateAndTimePicker(editReminderText)
                 }
             }
             R.layout.yourcoursesscreen_layout -> {
@@ -104,13 +111,26 @@ class MainActivity : ComponentActivity() {
                 }
             }
             R.layout.duedateselectionscreen_layout -> {
-
+                findViewById<Button>(R.id.dueDateCancelButton).setOnClickListener{
+                    inflateLayout(R.layout.addhomeworkscreen_layout)
+                }
+                findViewById<Button>(R.id.dueDateSaveButton).setOnClickListener{
+                    inflateLayout(R.layout.addhomeworkscreen_layout)
+                }
+            }
+            R.layout.reminderdateselectionscreen_layout -> {
+                findViewById<Button>(R.id.reminderCancelButton).setOnClickListener{
+                    inflateLayout(R.layout.addhomeworkscreen_layout)
+                }
+                findViewById<Button>(R.id.reminderSaveButton).setOnClickListener{
+                    inflateLayout(R.layout.addhomeworkscreen_layout)
+                }
             }
             R.layout.currentupcominghw_layout -> {
                 findViewById<Button>(R.id.curHWcancelButton).setOnClickListener{
                     inflateLayout(R.layout.homescreen_layout)
                 }
-                findViewById<Button>(R.id.curHWaddHWbutton).setOnClickListener{
+                findViewById<ImageButton>(R.id.curHWaddHWbutton).setOnClickListener{
                     inflateLayout(R.layout.addhomeworkscreen_layout)
                 }
                 findViewById<Button>(R.id.curHWButton).setOnClickListener{
@@ -124,7 +144,7 @@ class MainActivity : ComponentActivity() {
                 findViewById<Button>(R.id.compHWcancelButton).setOnClickListener{
                     inflateLayout(R.layout.homescreen_layout)
                 }
-                findViewById<Button>(R.id.compHWaddHWbutton).setOnClickListener{
+                findViewById<ImageButton>(R.id.compHWaddHWbutton).setOnClickListener{
                     inflateLayout(R.layout.addhomeworkscreen_layout)
                 }
                 findViewById<Button>(R.id.compCurHWButton).setOnClickListener{
@@ -135,5 +155,59 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun showDatePicker(editText: EditText) {
+        val currentDate = Calendar.getInstance()
+        val year = currentDate.get(Calendar.YEAR)
+        val month = currentDate.get(Calendar.MONTH)
+        val day = currentDate.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(this,
+            { _, selectedYear, selectedMonth, selectedDay ->
+                val selectedDate = Calendar.getInstance()
+                selectedDate.set(selectedYear, selectedMonth, selectedDay)
+
+                val dateFormat = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
+                editText.setText(dateFormat.format(selectedDate.time))
+            },
+            year,
+            month,
+            day
+        )
+        datePickerDialog.show()
+    }
+
+    private fun showDateAndTimePicker(editText: EditText) {
+        val currentDateTime = Calendar.getInstance()
+        val year = currentDateTime.get(Calendar.YEAR)
+        val month = currentDateTime.get(Calendar.MONTH)
+        val day = currentDateTime.get(Calendar.DAY_OF_MONTH)
+        val hour = currentDateTime.get(Calendar.HOUR_OF_DAY)
+        val minute = currentDateTime.get(Calendar.MINUTE)
+
+        val datePickerDialog = DatePickerDialog(
+            this,
+            { _, selectedYear, selectedMonth, selectedDay ->
+                val timePickerDialog = TimePickerDialog(this,
+                    { _, selectedHour, selectedMinute ->
+                        val selectedDateTime = Calendar.getInstance()
+                        selectedDateTime.set(selectedYear, selectedMonth, selectedDay, selectedHour, selectedMinute)
+
+                        val dateFormat = SimpleDateFormat("MMMM dd, yyyy 'at' h:mm a", Locale.getDefault())
+                        editText.setText(dateFormat.format(selectedDateTime.time))
+                    },
+                    hour,
+                    minute,
+                    false
+                )
+
+                timePickerDialog.show()
+            },
+            year,
+            month,
+            day
+        )
+        datePickerDialog.show()
     }
 }

@@ -61,13 +61,19 @@
         android:id="@+id/editDueDateText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter the due date"
+        android:hint="Select your due date"
+        android:inputType="none"
+        android:focusable="false"
+        android:clickable="true"
         android:paddingBottom="15dp" />
 
     <EditText
         android:id="@+id/editReminderText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="none"
+        android:focusable="false"
+        android:clickable="true"
         android:hint="Set a reminder for your HW"
         android:paddingBottom="15dp" />
 
