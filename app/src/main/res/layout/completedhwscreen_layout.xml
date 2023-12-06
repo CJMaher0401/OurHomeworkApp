@@ -60,7 +60,8 @@
             android:layout_width="205dp"
             android:layout_height="70dp"
             android:background="#EDD7C6"
-            android:text="Completed Homework" />
+            android:text="Completed Homework"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <ScrollView

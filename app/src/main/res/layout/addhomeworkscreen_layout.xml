@@ -43,38 +43,69 @@
         android:textColor="#000000"
         android:textSize="34sp" />
 
+    <TextView
+        android:id="@+id/addHWText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="    Assignment Name:"
+        android:textColor="#000000" />
+
     <EditText
         android:id="@+id/editAssignmentDescText"
-        android:layout_width="match_parent"
+        android:layout_width="385dp"
         android:layout_height="wrap_content"
         android:hint="What is your HW assignment"
         android:paddingBottom="15dp" />
 
-    <EditText
-        android:id="@+id/editClassDescText"
+    <TextView
+        android:id="@+id/courseNameText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="    Your Course:"
+        android:textColor="#000000" />
+
+    <EditText
+        android:id="@+id/editClassDescText"
+        android:layout_width="385dp"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="false"
         android:hint="Select a course for this HW assignment"
+        android:inputType="none"
         android:paddingBottom="15dp" />
+
+    <TextView
+        android:id="@+id/dueDateText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="    Due Date:"
+        android:textColor="#000000" />
 
     <EditText
         android:id="@+id/editDueDateText"
-        android:layout_width="match_parent"
+        android:layout_width="385dp"
         android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="false"
         android:hint="Select your due date"
         android:inputType="none"
-        android:focusable="false"
-        android:clickable="true"
         android:paddingBottom="15dp" />
+
+    <TextView
+        android:id="@+id/remindText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="    Reminder:"
+        android:textColor="#000000" />
 
     <EditText
         android:id="@+id/editReminderText"
-        android:layout_width="match_parent"
+        android:layout_width="385dp"
         android:layout_height="wrap_content"
-        android:inputType="none"
-        android:focusable="false"
         android:clickable="true"
+        android:focusable="false"
         android:hint="Set a reminder for your HW"
+        android:inputType="none"
         android:paddingBottom="15dp" />
 
 

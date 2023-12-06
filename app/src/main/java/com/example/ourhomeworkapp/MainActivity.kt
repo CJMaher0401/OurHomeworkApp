@@ -2,31 +2,39 @@ package com.example.ourhomeworkapp
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.activity.ComponentActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import java.util.Stack
-
 
 
 class MainActivity : ComponentActivity() {
 
-    private val layoutStack: Stack<Int> = Stack()
     private lateinit var colorPickerView: ColorPickerView
     private lateinit var colorEditText: EditText
     private lateinit var colorPickerButton: Button
-    private var selectedColor: Int = Color.BLACK
+
+    data class Course(val name: String, val color: Int)
+    private val courseList: MutableList<Course> = mutableListOf()
+
+    private lateinit var auth: FirebaseAuth
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.homescreen_layout)
@@ -112,12 +120,27 @@ class MainActivity : ComponentActivity() {
                 findViewById<ImageButton>(R.id.addNewClassButton).setOnClickListener{
                     inflateLayout(R.layout.coursecreationscreen_layout)
                 }
+                val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewCourses)
+                if (recyclerView != null) {
+                    updateCourseRecyclerView()
+                }
             }
             R.layout.coursecreationscreen_layout -> {
-                findViewById<Button>(R.id.coursecancelButton).setOnClickListener{
+                val cancelButton = findViewById<Button>(R.id.coursecancelButton)
+                val saveButton = findViewById<Button>(R.id.coursesaveButton)
+
+                cancelButton.setOnClickListener {
                     inflateLayout(R.layout.yourcoursesscreen_layout)
                 }
-                findViewById<Button>(R.id.coursesaveButton).setOnClickListener{
+
+                saveButton.setOnClickListener {
+                    val courseName = findViewById<EditText>(R.id.nameOfCourseText).text.toString()
+                    val courseColor = findViewById<EditText>(R.id.nameOfCourseText).currentTextColor
+
+                    saveCourse(courseName, courseColor)
+
+                    updateCourseRecyclerView()
+
                     inflateLayout(R.layout.yourcoursesscreen_layout)
                 }
                 findViewById<Button>(R.id.pickYourColorButton).setOnClickListener {
@@ -217,16 +240,37 @@ class MainActivity : ComponentActivity() {
         {
             colorEditText = findViewById(R.id.nameOfCourseText)
         }
+        else if(::colorEditText.isInitialized)
+        {
+            colorEditText = findViewById(R.id.nameOfCourseText)
+        }
 
         if (!::colorPickerView.isInitialized)
+        {
+            colorPickerView = findViewById(R.id.colorPickerView)
+        }
+        else if(::colorPickerView.isInitialized)
         {
             colorPickerView = findViewById(R.id.colorPickerView)
         }
 
         colorPickerView.visibility = View.VISIBLE
 
-        ColorPickerDialog.Builder(this).setTitle("Pick a color for your course!").setPreferenceName("MyColorPickerDialog")
-            .setPositiveButton("Save", ColorEnvelopeListener { envelope, _ -> colorEditText.setTextColor(envelope.color)
+        ColorPickerDialog.Builder(this)
+            .setTitle("Pick a color for your course!")
+            .setPreferenceName("MyColorPickerDialog")
+            .setPositiveButton("Save", ColorEnvelopeListener { envelope, _ ->
+                colorEditText.setTextColor(envelope.color)
+
+                // Save course details
+                val courseName = findViewById<EditText>(R.id.nameOfCourseText).text.toString()
+                val courseColor = envelope.color
+                val course = Course(courseName, courseColor)
+                courseList.add(course)
+
+                // Update the RecyclerView
+                updateCourseRecyclerView()
+
                 colorPickerView.visibility = View.GONE
             })
             .setNegativeButton("Cancel") { _, _ ->
@@ -235,5 +279,76 @@ class MainActivity : ComponentActivity() {
             .attachAlphaSlideBar(true)
             .attachBrightnessSlideBar(true)
             .show()
+    }
+
+    private fun saveCourse(courseName: String, courseColor: Int) {
+
+        if (courseName.isNotEmpty()) {
+            val course = Course(courseName, courseColor)
+            courseList.add(course)
+            updateCourseRecyclerView()
+        }
+    }
+
+    private fun onItemClick(course: Course) {
+        inflateLayout(R.layout.addhomeworkscreen_layout)
+
+        val editClassDescText = findViewById<EditText>(R.id.editClassDescText)
+        editClassDescText.setText(course.name)
+    }
+
+    private fun updateCourseRecyclerView() {
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewCourses)
+        if (recyclerView != null)
+        {
+            val adapter = CourseAdapter(courseList.toMutableList())
+            recyclerView.adapter = adapter
+            recyclerView.layoutManager = LinearLayoutManager(this)
+            adapter.notifyDataSetChanged()
+        } else
+        {
+            Log.w("MainActivity", "RecyclerView is null")
+        }
+    }
+
+    class CourseAdapter(private var courseList: List<Course>) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>()
+    {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseViewHolder
+        {
+            val itemView =
+                LayoutInflater.from(parent.context).inflate(R.layout.courseitems, parent, false)
+            return CourseViewHolder(itemView)
+        }
+
+        override fun onBindViewHolder(holder: CourseViewHolder, position: Int)
+        {
+            val currentCourse = courseList[position]
+            holder.bind(currentCourse)
+
+            holder.itemView.setOnClickListener {
+                // Example: onItemClick(currentCourse)
+            }
+        }
+
+        override fun getItemCount(): Int
+        {
+            return courseList.size
+        }
+
+        inner class CourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+        {
+            private val courseNameTextView: TextView = itemView.findViewById(R.id.courseNameTextView)
+            private val courseColorView: View = itemView.findViewById(R.id.courseColorView)
+            fun bind(course: Course) {
+                courseNameTextView.text = course.name
+                courseNameTextView.setTextColor(course.color)
+
+                courseColorView.visibility = View.GONE
+            }
+        }
+        fun updateData(newCourseList: List<Course>) {
+            courseList = newCourseList
+            notifyDataSetChanged()
+        }
     }
 }
