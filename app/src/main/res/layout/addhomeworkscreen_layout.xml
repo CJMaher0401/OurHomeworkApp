@@ -16,9 +16,10 @@
             android:id="@+id/addHWcancelButton"
             android:layout_width="136dp"
             android:layout_height="50dp"
-            android:background="#EDD7C6"
+            android:background="#EED8C7"
             android:text="Cancel"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            style="?android:attr/borderlessButtonStyle"/>
 
         <View
             android:layout_width="0dp"
@@ -29,8 +30,9 @@
             android:id="@+id/addHWsaveButton"
             android:layout_width="136dp"
             android:layout_height="wrap_content"
-            android:background="#EDD7C6"
-            android:text="Save" />
+            android:background="#EED8C7"
+            android:text="Save"
+            style="?android:attr/borderlessButtonStyle"/>
     </LinearLayout>
 
     <TextView

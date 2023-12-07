@@ -9,6 +9,7 @@
         android:id="@+id/courseColorView"
         android:layout_width="24dp"
         android:layout_height="24dp"
+        android:visibility="gone"
         android:background="?attr/colorPrimary" />
 
     <TextView
@@ -16,8 +17,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Course Name"
-        android:clickable="true"
-        android:focusable="true"
         android:textSize="29sp" />
 
 </LinearLayout>

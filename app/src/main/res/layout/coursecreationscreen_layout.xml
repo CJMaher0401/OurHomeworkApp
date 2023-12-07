@@ -18,7 +18,8 @@
         android:layout_height="50dp"
         android:background="#EDD7C6"
         android:text="Cancel"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        style="?android:attr/borderlessButtonStyle"/>
 
     <View
         android:layout_width="0dp"
@@ -30,7 +31,8 @@
         android:layout_width="136dp"
         android:layout_height="wrap_content"
         android:background="#EDD7C6"
-        android:text="Save" />
+        android:text="Save"
+        style="?android:attr/borderlessButtonStyle"/>
 </LinearLayout>
 
 <TextView
@@ -65,7 +67,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#EBD5C4"
-    android:text="Pick the color of your course" />
+    android:text="Pick the color of your course"
+    />
 
 
 

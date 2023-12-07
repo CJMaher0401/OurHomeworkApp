@@ -17,7 +17,8 @@
             android:layout_height="50dp"
             android:background="#EDD7C6"
             android:text="Cancel"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            style="?android:attr/borderlessButtonStyle"/>
 
         <View
             android:layout_width="0dp"
@@ -48,7 +49,8 @@
             android:layout_height="match_parent"
             android:background="#EDD7C6"
             android:text="Current Homework"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            style="?android:attr/borderlessButtonStyle"/>
 
         <View
             android:layout_width="0dp"
@@ -61,7 +63,8 @@
             android:layout_height="70dp"
             android:background="#EDD7C6"
             android:text="Completed Homework"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            style="?android:attr/borderlessButtonStyle"/>
     </LinearLayout>
 
     <ScrollView
