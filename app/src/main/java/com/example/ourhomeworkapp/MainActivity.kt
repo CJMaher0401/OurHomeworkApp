@@ -136,25 +136,6 @@ class MainActivity : ComponentActivity() {
                     showColorWheel()
                 }
             }
-
-            R.layout.duedateselectionscreen_layout -> {
-                findViewById<Button>(R.id.dueDateCancelButton).setOnClickListener {
-                    inflateLayout(R.layout.addhomeworkscreen_layout)
-                }
-                findViewById<Button>(R.id.dueDateSaveButton).setOnClickListener {
-                    inflateLayout(R.layout.addhomeworkscreen_layout)
-                }
-            }
-
-            R.layout.reminderdateselectionscreen_layout -> {
-                findViewById<Button>(R.id.reminderCancelButton).setOnClickListener {
-                    inflateLayout(R.layout.addhomeworkscreen_layout)
-                }
-                findViewById<Button>(R.id.reminderSaveButton).setOnClickListener {
-                    inflateLayout(R.layout.addhomeworkscreen_layout)
-                }
-            }
-
             R.layout.currentupcominghw_layout -> {
                 findViewById<Button>(R.id.curHWcancelButton).setOnClickListener {
                     inflateLayout(R.layout.homescreen_layout)
