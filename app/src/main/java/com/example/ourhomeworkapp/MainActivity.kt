@@ -3,7 +3,6 @@ package com.example.ourhomeworkapp
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,20 +53,25 @@ class MainActivity : ComponentActivity() {
 
         afterInflate?.invoke()
 
-        when (layoutResID) {
+        when (layoutResID)
+        {
             R.layout.homescreen_layout -> {
                 findViewById<Button>(R.id.profileButton).setOnClickListener {
                     inflateLayout(R.layout.profilescreen_layout)
                 }
+
                 findViewById<ImageButton>(R.id.addHWbutton).setOnClickListener {
                     inflateLayout(R.layout.addhomeworkscreen_layout)
                 }
+
                 findViewById<Button>(R.id.homeScreenButton).setOnClickListener {
                     inflateLayout(R.layout.homescreen_layout)
                 }
+
                 findViewById<Button>(R.id.homeScreenMyHWButton).setOnClickListener {
                     inflateLayout(R.layout.currentupcominghw_layout)
                 }
+
                 findViewById<Button>(R.id.homeScreenMyProfileButton).setOnClickListener {
                     inflateLayout(R.layout.profilescreen_layout)
                 }
@@ -77,9 +81,11 @@ class MainActivity : ComponentActivity() {
                 findViewById<Button>(R.id.profileHomeButton).setOnClickListener {
                     inflateLayout(R.layout.homescreen_layout)
                 }
+
                 findViewById<Button>(R.id.profileMyHWButton).setOnClickListener {
                     inflateLayout(R.layout.currentupcominghw_layout)
                 }
+
                 findViewById<Button>(R.id.profileMyProfileButton).setOnClickListener {
                     inflateLayout(R.layout.profilescreen_layout)
                 }
@@ -89,20 +95,25 @@ class MainActivity : ComponentActivity() {
                 findViewById<Button>(R.id.addHWcancelButton).setOnClickListener {
                     inflateLayout(R.layout.homescreen_layout)
                 }
+
                 findViewById<Button>(R.id.addHWsaveButton).setOnClickListener {
                     inflateLayout(R.layout.currentupcominghw_layout)
                 }
+
                 findViewById<EditText>(R.id.editCourseDescText).setOnClickListener {
                     inflateLayout(R.layout.yourcoursesscreen_layout)
                 }
+
                 val editDueDateText = findViewById<EditText>(R.id.editDueDateText)
                 editDueDateText.setOnClickListener {
                     showDatePicker(editDueDateText)
                 }
+
                 val editReminderText = findViewById<EditText>(R.id.editReminderText)
                 editReminderText.setOnClickListener {
                     showDateAndTimePicker(editReminderText)
                 }
+
                 editClassDescText = addHomeworkLayout.findViewById(R.id.editCourseDescText)
             }
 
@@ -110,9 +121,11 @@ class MainActivity : ComponentActivity() {
                 findViewById<ImageButton>(R.id.returnToAddHWButton).setOnClickListener {
                     inflateLayout(R.layout.addhomeworkscreen_layout)
                 }
+
                 findViewById<ImageButton>(R.id.addNewClassButton).setOnClickListener {
                     inflateLayout(R.layout.coursecreationscreen_layout)
                 }
+
                 val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
                 if (recyclerView != null)
                 {
@@ -124,6 +137,7 @@ class MainActivity : ComponentActivity() {
                 findViewById<Button>(R.id.coursecancelButton).setOnClickListener {
                     inflateLayout(R.layout.yourcoursesscreen_layout)
                 }
+
                 findViewById<Button>(R.id.coursesaveButton).setOnClickListener {
                     val courseName = findViewById<EditText>(R.id.nameOfCourseText).text.toString()
                     val courseColor = findViewById<EditText>(R.id.nameOfCourseText).currentTextColor
@@ -137,20 +151,25 @@ class MainActivity : ComponentActivity() {
                     }
                     inflateLayout(R.layout.yourcoursesscreen_layout)
                 }
+
                 findViewById<Button>(R.id.pickYourColorButton).setOnClickListener {
                     showColorWheel()
                 }
             }
+
             R.layout.currentupcominghw_layout -> {
                 findViewById<Button>(R.id.curHWcancelButton).setOnClickListener {
                     inflateLayout(R.layout.homescreen_layout)
                 }
+
                 findViewById<ImageButton>(R.id.curHWaddHWbutton).setOnClickListener {
                     inflateLayout(R.layout.addhomeworkscreen_layout)
                 }
+
                 findViewById<Button>(R.id.curHWButton).setOnClickListener {
                     inflateLayout(R.layout.currentupcominghw_layout)
                 }
+
                 findViewById<Button>(R.id.compHWButton).setOnClickListener {
                     inflateLayout(R.layout.completedhwscreen_layout)
                 }
@@ -160,12 +179,15 @@ class MainActivity : ComponentActivity() {
                 findViewById<Button>(R.id.compHWcancelButton).setOnClickListener {
                     inflateLayout(R.layout.homescreen_layout)
                 }
+
                 findViewById<ImageButton>(R.id.compHWaddHWbutton).setOnClickListener {
                     inflateLayout(R.layout.addhomeworkscreen_layout)
                 }
+
                 findViewById<Button>(R.id.compCurHWButton).setOnClickListener {
                     inflateLayout(R.layout.currentupcominghw_layout)
                 }
+
                 findViewById<Button>(R.id.compCompHWButton).setOnClickListener {
                     inflateLayout(R.layout.completedhwscreen_layout)
                 }
@@ -173,7 +195,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun showDatePicker(editText: EditText) {
+    private fun showDatePicker(editText: EditText)
+    {
         val currentDate = Calendar.getInstance()
         val year = currentDate.get(Calendar.YEAR)
         val month = currentDate.get(Calendar.MONTH)
@@ -191,7 +214,8 @@ class MainActivity : ComponentActivity() {
         datePickerDialog.show()
     }
 
-    private fun showDateAndTimePicker(editText: EditText) {
+    private fun showDateAndTimePicker(editText: EditText)
+    {
         val currentDateAndTime = Calendar.getInstance()
         val year = currentDateAndTime.get(Calendar.YEAR)
         val month = currentDateAndTime.get(Calendar.MONTH)
@@ -278,12 +302,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun populateAndNavigateBack(courseName: String, courseColor: Int) {
-        this.editClassDescText.setText(courseName)
-        this.editClassDescText.setTextColor(courseColor)
-        inflateLayout(R.layout.addhomeworkscreen_layout)
-    }
-
     class CourseAdapter(private val courseList: List<Course>, private val mainActivity: MainActivity, private val editClassDescText: EditText)
         : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>()
     {
@@ -297,7 +315,6 @@ class MainActivity : ComponentActivity() {
             holder.bind(currentCourse)
 
             holder.itemView.setOnClickListener {
-                Log.d("CourseAdapter", "Button clicked for course: ${currentCourse.courseName}")
                 editClassDescText.setText(currentCourse.courseName)
                 mainActivity.inflateLayout(R.layout.addhomeworkscreen_layout)
             }
@@ -312,9 +329,9 @@ class MainActivity : ComponentActivity() {
             init {
                 courseNameButtonView.setOnClickListener {
                     val course = courseList[adapterPosition]
-                    mainActivity.inflateLayout(R.layout.addhomeworkscreen_layout) {
-                        val editClassDescText =
-                            mainActivity.findViewById<EditText>(R.id.editCourseDescText)
+                    mainActivity.inflateLayout(R.layout.addhomeworkscreen_layout)
+                    {
+                        val editClassDescText = mainActivity.findViewById<EditText>(R.id.editCourseDescText)
                         editClassDescText?.apply {
                             setText(course.courseName)
                             setTextColor(course.courseColor)
