@@ -3,13 +3,13 @@ package com.example.ourhomeworkapp
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,6 +29,8 @@ class MainActivity : ComponentActivity() {
 
     data class Course(val courseName: String, val courseColor: Int)
     private lateinit var courses: MutableList<Course>
+    private lateinit var addHomeworkLayout: View
+    private lateinit var editClassDescText: EditText
 
     private lateinit var auth: FirebaseAuth
 
@@ -36,19 +38,21 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         courses = mutableListOf()
+        addHomeworkLayout = layoutInflater.inflate(R.layout.addhomeworkscreen_layout, null)
+        editClassDescText = addHomeworkLayout.findViewById(R.id.editCourseDescText)
 
         inflateLayout(R.layout.homescreen_layout)
-
-        val editClassDescText = findViewById<EditText>(R.id.editCourseDescText)
-
     }
 
-    private fun inflateLayout(layoutResID: Int) {
+
+    private fun inflateLayout(layoutResID: Int, afterInflate: (() -> Unit)? = null) {
 
         val inflater = LayoutInflater.from(this)
         val layout = inflater.inflate(layoutResID, null)
 
         setContentView(layout)
+
+        afterInflate?.invoke()
 
         when (layoutResID) {
             R.layout.homescreen_layout -> {
@@ -99,6 +103,7 @@ class MainActivity : ComponentActivity() {
                 editReminderText.setOnClickListener {
                     showDateAndTimePicker(editReminderText)
                 }
+                editClassDescText = addHomeworkLayout.findViewById(R.id.editCourseDescText)
             }
 
             R.layout.yourcoursesscreen_layout -> {
@@ -267,17 +272,23 @@ class MainActivity : ComponentActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         if (recyclerView != null)
         {
-            val adapter = CourseAdapter(courses)
+            val adapter = CourseAdapter(courses, this, editClassDescText)
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(this)
         }
     }
 
-    class CourseAdapter(private val courseList: List<Course>) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>()
+    fun populateAndNavigateBack(courseName: String, courseColor: Int) {
+        this.editClassDescText.setText(courseName)
+        this.editClassDescText.setTextColor(courseColor)
+        inflateLayout(R.layout.addhomeworkscreen_layout)
+    }
+
+    class CourseAdapter(private val courseList: List<Course>, private val mainActivity: MainActivity, private val editClassDescText: EditText)
+        : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>()
     {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseViewHolder {
-            val itemView =
-                LayoutInflater.from(parent.context).inflate(R.layout.courseitems, parent, false)
+            val itemView = LayoutInflater.from(parent.context).inflate(R.layout.courseitems, parent, false)
             return CourseViewHolder(itemView)
         }
         override fun onBindViewHolder(holder: CourseViewHolder, position: Int)
@@ -286,6 +297,9 @@ class MainActivity : ComponentActivity() {
             holder.bind(currentCourse)
 
             holder.itemView.setOnClickListener {
+                Log.d("CourseAdapter", "Button clicked for course: ${currentCourse.courseName}")
+                editClassDescText.setText(currentCourse.courseName)
+                mainActivity.inflateLayout(R.layout.addhomeworkscreen_layout)
             }
         }
         override fun getItemCount(): Int
@@ -294,15 +308,24 @@ class MainActivity : ComponentActivity() {
         }
         inner class CourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         {
-            private val courseNameTextView: TextView = itemView.findViewById(R.id.courseNameTextView)
-            private val courseColorView: View = itemView.findViewById(R.id.courseColorView)
-
+            private val courseNameButtonView: Button = itemView.findViewById(R.id.courseNameButtonView)
+            init {
+                courseNameButtonView.setOnClickListener {
+                    val course = courseList[adapterPosition]
+                    mainActivity.inflateLayout(R.layout.addhomeworkscreen_layout) {
+                        val editClassDescText =
+                            mainActivity.findViewById<EditText>(R.id.editCourseDescText)
+                        editClassDescText?.apply {
+                            setText(course.courseName)
+                            setTextColor(course.courseColor)
+                        }
+                    }
+                }
+            }
             fun bind(course: Course)
             {
-                courseNameTextView.text = course.courseName
-                courseNameTextView.setTextColor(course.courseColor)
-
-                courseColorView.visibility = View.GONE
+                courseNameButtonView.text = course.courseName
+                courseNameButtonView.setTextColor(course.courseColor)
             }
         }
     }

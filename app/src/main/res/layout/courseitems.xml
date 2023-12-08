@@ -5,18 +5,18 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <Button
+        android:id="@+id/courseNameButtonView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal|left|center_vertical"
+        android:textSize="24sp" />
+
     <View
         android:id="@+id/courseColorView"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:visibility="gone"
         android:background="?attr/colorPrimary" />
-
-    <TextView
-        android:id="@+id/courseNameTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Course Name"
-        android:textSize="29sp" />
 
 </LinearLayout>
