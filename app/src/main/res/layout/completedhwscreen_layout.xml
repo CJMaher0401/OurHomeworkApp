@@ -12,12 +12,13 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/curHWcancelButton"
+            android:id="@+id/compHWcancelButton"
             android:layout_width="112dp"
             android:layout_height="50dp"
             android:background="#EDD7C6"
             android:text="Cancel"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            style="?android:attr/borderlessButtonStyle"/>
 
         <View
             android:layout_width="0dp"
@@ -26,7 +27,7 @@
 
 
         <ImageButton
-            android:id="@+id/curHWaddHWbutton"
+            android:id="@+id/compHWaddHWbutton"
             android:layout_width="96dp"
             android:layout_height="50dp"
             android:layout_gravity="right|top"
@@ -43,12 +44,13 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/curHWButton"
+            android:id="@+id/compCurHWButton"
             android:layout_width="205dp"
             android:layout_height="match_parent"
             android:background="#EDD7C6"
             android:text="Current Homework"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            style="?android:attr/borderlessButtonStyle"/>
 
         <View
             android:layout_width="0dp"
@@ -56,11 +58,13 @@
             android:layout_weight="1" />
 
         <Button
-            android:id="@+id/compHWButton"
+            android:id="@+id/compCompHWButton"
             android:layout_width="205dp"
             android:layout_height="70dp"
             android:background="#EDD7C6"
-            android:text="Completed Homework" />
+            android:text="Completed Homework"
+            android:textStyle="bold"
+            style="?android:attr/borderlessButtonStyle"/>
     </LinearLayout>
 
     <ScrollView

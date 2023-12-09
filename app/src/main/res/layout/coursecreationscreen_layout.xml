@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:background="#ECD6C5"
-android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#ECD6C5"
+    android:orientation="vertical">
 
 <LinearLayout
     android:layout_width="match_parent"
@@ -17,7 +18,8 @@ android:orientation="vertical">
         android:layout_height="50dp"
         android:background="#EDD7C6"
         android:text="Cancel"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        style="?android:attr/borderlessButtonStyle"/>
 
     <View
         android:layout_width="0dp"
@@ -29,7 +31,8 @@ android:orientation="vertical">
         android:layout_width="136dp"
         android:layout_height="wrap_content"
         android:background="#EDD7C6"
-        android:text="Save" />
+        android:text="Save"
+        style="?android:attr/borderlessButtonStyle"/>
 </LinearLayout>
 
 <TextView
@@ -49,11 +52,24 @@ android:orientation="vertical">
     android:hint="Enter the course name"
     android:paddingBottom="15dp" />
 
+    <com.skydoves.colorpickerview.ColorPickerView
+        android:id="@+id/colorPickerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/pickYourColorButton"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:padding="8dp"
+        android:visibility="gone"/>
+
 <Button
     android:id="@+id/pickYourColorButton"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#EBD5C4"
-    android:text="Pick the color of your course" />
+    android:text="Pick the color of your course"
+    />
+
+
 
 </LinearLayout>
