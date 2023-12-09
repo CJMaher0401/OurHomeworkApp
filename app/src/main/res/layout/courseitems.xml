@@ -10,7 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal|left|center_vertical"
-        android:textSize="24sp" />
+        android:background="#EED8C7"
+        android:textSize="24sp"
+        style="?android:attr/borderlessButtonStyle"/>
 
     <View
         android:id="@+id/courseColorView"
