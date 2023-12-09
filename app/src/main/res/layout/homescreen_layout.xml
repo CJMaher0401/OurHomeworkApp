@@ -50,16 +50,14 @@
         android:selectedWeekBackgroundColor="#F26259"
         />
 
-    <ScrollView
-        android:id="@+id/upcomingHWview"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/homeScreenRecycler"
         android:layout_width="match_parent"
-        android:layout_height="216dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
+        android:layout_height="231dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/homeworkitems"/>
 
     <LinearLayout
         android:layout_width="match_parent"

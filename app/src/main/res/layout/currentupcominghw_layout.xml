@@ -2,6 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="#ECD6C5"
     android:orientation="vertical">
 
@@ -67,15 +69,13 @@
             style="?android:attr/borderlessButtonStyle"/>
     </LinearLayout>
 
-    <ScrollView
-        android:id="@+id/curHWscrollview"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/curHWRecycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/homeworkitems"/>
 
 </LinearLayout>
