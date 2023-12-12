@@ -77,7 +77,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<Button>(R.id.homeScreenMyHWButton).setOnClickListener {
-                    switchingToCurHWLayoutAndNeedToUpdateRecycler()
+                    inflateLayout(R.layout.currentupcominghw_layout)
                 }
 
                 findViewById<Button>(R.id.homeScreenMyProfileButton).setOnClickListener {
@@ -114,7 +114,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<Button>(R.id.profileMyHWButton).setOnClickListener {
-                    switchingToCurHWLayoutAndNeedToUpdateRecycler()
+                    inflateLayout(R.layout.currentupcominghw_layout)
                 }
 
                 findViewById<Button>(R.id.profileMyProfileButton).setOnClickListener {
@@ -141,7 +141,7 @@ class MainActivity : ComponentActivity() {
 
                     updateHomeworkRecyclerViews()
 
-                    switchingToCurHWLayoutAndNeedToUpdateRecycler()
+                    inflateLayout(R.layout.currentupcominghw_layout)
                 }
 
                 findViewById<EditText>(R.id.editCourseDescText).setOnClickListener {
@@ -211,7 +211,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<Button>(R.id.curHWButton).setOnClickListener {
-                    switchingToCurHWLayoutAndNeedToUpdateRecycler()
+                    inflateLayout(R.layout.currentupcominghw_layout)
                 }
 
                 findViewById<Button>(R.id.compHWButton).setOnClickListener {
@@ -233,7 +233,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<Button>(R.id.compCurHWButton).setOnClickListener {
-                    switchingToCurHWLayoutAndNeedToUpdateRecycler()
+                    inflateLayout(R.layout.currentupcominghw_layout)
                 }
 
                 findViewById<Button>(R.id.compCompHWButton).setOnClickListener {
@@ -411,12 +411,6 @@ class MainActivity : ComponentActivity() {
             currentRecyclerView.layoutManager = LinearLayoutManager(this)
         }
     }
-
-    private fun switchingToCurHWLayoutAndNeedToUpdateRecycler() {
-        inflateLayout(R.layout.currentupcominghw_layout)
-        updateHomeworkRecyclerViews()
-    }
-
     class HomeworkAdapter(private val homeworkList: List<Homework>) : RecyclerView.Adapter<HomeworkAdapter.HomeworkViewHolder>()
     {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeworkViewHolder
