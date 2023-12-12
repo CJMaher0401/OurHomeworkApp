@@ -19,12 +19,12 @@
 
         <Button
             android:id="@+id/profileButton"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="200dp"
             android:layout_height="50dp"
             android:background="#EDD7C6"
             android:text="Test Profile"
-            android:textAlignment="center"
-            style="?android:attr/borderlessButtonStyle"/>
+            android:textAlignment="center" />
 
         <View
             android:layout_width="0dp"
@@ -47,17 +47,25 @@
         android:id="@+id/hwCalendarView"
         android:layout_width="match_parent"
         android:layout_height="360dp"
-        android:selectedWeekBackgroundColor="#F26259"
-        />
+        android:selectedWeekBackgroundColor="#F26259" />
+
+    <TextView
+        android:id="@+id/courseNameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center|center_horizontal|center_vertical"
+        android:text="Your Upcoming Homework Assignments:"
+        android:textColor="#000000"
+        android:textSize="20dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/homeScreenRecycler"
         android:layout_width="match_parent"
-        android:layout_height="231dp"
+        android:layout_height="204dp"
         android:clickable="true"
         android:focusable="true"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/homeworkitems"/>
+        tools:listitem="@layout/homeworkitems" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -68,30 +76,30 @@
 
         <Button
             android:id="@+id/homeScreenButton"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="135dp"
             android:layout_height="55dp"
             android:background="#EDD7C6"
             android:text="Home"
-            app:srcCompat="@android:drawable/ic_menu_revert"
-            style="?android:attr/borderlessButtonStyle"/>
+            app:srcCompat="@android:drawable/ic_menu_revert" />
 
         <Button
             android:id="@+id/homeScreenMyHWButton"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="140dp"
             android:layout_height="55dp"
             android:background="#EDD7C6"
             android:text="Your HW"
-            app:srcCompat="@android:drawable/ic_menu_sort_by_size"
-            style="?android:attr/borderlessButtonStyle"/>
+            app:srcCompat="@android:drawable/ic_menu_sort_by_size" />
 
         <Button
             android:id="@+id/homeScreenMyProfileButton"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="133dp"
             android:layout_height="55dp"
             android:background="#EDD7C6"
             android:text="Your Profile"
-            app:srcCompat="@android:drawable/ic_menu_my_calendar"
-            style="?android:attr/borderlessButtonStyle"/>
+            app:srcCompat="@android:drawable/ic_menu_my_calendar" />
     </LinearLayout>
 
 </LinearLayout>
