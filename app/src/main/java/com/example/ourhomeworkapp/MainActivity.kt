@@ -258,12 +258,15 @@ class MainActivity : ComponentActivity() {
                 findViewById<Button>(R.id.editsaveButton).setOnClickListener {
                     inflateLayout(R.layout.currentupcominghw_layout)
                 }
+
                 findViewById<EditText>(R.id.edit_editClassDescText).setOnClickListener {
                     inflateLayout(R.layout.edithwcoursescreen_layout)
                 }
+
                 findViewById<EditText>(R.id.edit_editAssignmentDescText).setOnClickListener {
 
                 }
+
                 val editDueDateText = findViewById<EditText>(R.id.edit_editDueDateText)
                 editDueDateText.setOnClickListener {
                     showDatePicker(editDueDateText)
@@ -279,6 +282,7 @@ class MainActivity : ComponentActivity() {
                 findViewById<Button>(R.id.edit_returnToAddHWButton).setOnClickListener {
                     inflateLayout(R.layout.edithwscreen_layout)
                 }
+
                 val editRecyclerView = findViewById<RecyclerView>(R.id.editHWRecyclerView)
                 if (editRecyclerView != null)
                 {
@@ -374,8 +378,7 @@ class MainActivity : ComponentActivity() {
             .setNegativeButton("Cancel")
             { _, _ ->
                 colorPickerView.visibility = View.GONE
-            }
-            .attachAlphaSlideBar(true)
+            }.attachAlphaSlideBar(true)
             .attachBrightnessSlideBar(true)
             .show()
     }
@@ -405,10 +408,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    class CourseAdapter(private val courseList: List<Course>, private val mainActivity: MainActivity, private val editClassDescText: EditText)
-        : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>()
+    class CourseAdapter(private val courseList: List<Course>, private val mainActivity: MainActivity, private val editClassDescText: EditText) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>()
     {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseViewHolder
+        {
             val itemView = LayoutInflater.from(parent.context).inflate(R.layout.courseitems, parent, false)
             return CourseViewHolder(itemView)
         }
@@ -468,14 +471,16 @@ class MainActivity : ComponentActivity() {
     private fun updateHomeworkRecyclerViews()
     {
         val homeRecyclerView = findViewById<RecyclerView>(R.id.homeScreenRecycler)
-        if (homeRecyclerView != null) {
+        if (homeRecyclerView != null)
+        {
             val homeAdapter = HomeworkAdapter(homeworkList, this)
             homeRecyclerView.adapter = homeAdapter
             homeRecyclerView.layoutManager = LinearLayoutManager(this)
         }
 
         val currentRecyclerView = findViewById<RecyclerView>(R.id.curHWRecycler)
-        if (currentRecyclerView != null) {
+        if (currentRecyclerView != null)
+        {
             val currentAdapter = HomeworkAdapter(homeworkList, this)
             currentRecyclerView.adapter = currentAdapter
             currentRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -488,22 +493,18 @@ class MainActivity : ComponentActivity() {
             val itemView = LayoutInflater.from(parent.context).inflate(R.layout.homeworkitems, parent, false)
             return HomeworkViewHolder(itemView)
         }
-
         override fun onBindViewHolder(holder: HomeworkViewHolder, position: Int)
         {
             val currentHomework = homeworkList[position]
             holder.bind(currentHomework)
         }
-
         override fun getItemCount(): Int
         {
             return homeworkList.size
         }
-
         inner class HomeworkViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         {
             private val homeworkRecyclerView: Button = itemView.findViewById(R.id.homeworkButtonView)
-
             init {
                 homeworkRecyclerView.setOnClickListener {
                     val homework = homeworkList[adapterPosition]
@@ -529,7 +530,6 @@ class MainActivity : ComponentActivity() {
             findViewById<EditText>(R.id.edit_editDueDateText).setText(homework.dueDate)
         }
     }
-
     private fun saveProfileInfo()
     {
         val profileInfo = getSharedPreferences("UserData", Context.MODE_PRIVATE)
@@ -547,7 +547,6 @@ class MainActivity : ComponentActivity() {
 
         editor.apply()
     }
-
     private fun loadUpdatedProfileInfo()
     {
         val profileInfo = getSharedPreferences("UserData", Context.MODE_PRIVATE)
