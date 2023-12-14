@@ -46,17 +46,19 @@
         android:textSize="34sp" />
 
     <EditText
+        android:id="@+id/edit_editClassDescText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="false"
+        android:hint="Select a course for this HW assignment"
+        android:paddingBottom="15dp" />
+
+    <EditText
         android:id="@+id/edit_editAssignmentDescText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="What is your HW assignment"
-        android:paddingBottom="15dp" />
-
-    <EditText
-        android:id="@+id/edit_editClassDescText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Select a course for this HW assignment"
         android:paddingBottom="15dp" />
 
     <EditText
