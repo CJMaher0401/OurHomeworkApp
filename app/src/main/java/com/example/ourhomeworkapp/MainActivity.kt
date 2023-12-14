@@ -27,14 +27,18 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var colorPickerView: ColorPickerView
     private lateinit var colorEditText: EditText
-
     data class Course(val courseName: String, val courseColor: Int)
     private lateinit var courseList: MutableList<Course>
-    private lateinit var addHomeworkLayout: View
-    private lateinit var editClassDescText: EditText
-
     data class Homework(val courseName: String, val assignmentDesc: String, val dueDate: String, val color: Int)
     private lateinit var homeworkList: MutableList<Homework>
+
+    private lateinit var editClassDescText: EditText
+    private lateinit var addHomeworkLayout: View
+
+    private lateinit var updateEditClassDescText: EditText
+    private lateinit var editHomeworkLayout: View
+
+    private var currentLayout: Int = R.layout.homescreen_layout
 
     private lateinit var auth: FirebaseAuth
 
@@ -42,18 +46,21 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         courseList = mutableListOf()
+
         addHomeworkLayout = layoutInflater.inflate(R.layout.addhomeworkscreen_layout, null)
         editClassDescText = addHomeworkLayout.findViewById(R.id.editCourseDescText)
 
+        editHomeworkLayout = layoutInflater.inflate(R.layout.edithwscreen_layout, null)
+        updateEditClassDescText = editHomeworkLayout.findViewById(R.id.edit_editClassDescText)
+
         homeworkList = mutableListOf()
-
-
 
         inflateLayout(R.layout.homescreen_layout)
     }
 
     private fun inflateLayout(layoutResID: Int, afterInflate: (() -> Unit)? = null)
     {
+        currentLayout = layoutResID
 
         val inflater = LayoutInflater.from(this)
         val layout = inflater.inflate(layoutResID, null)
@@ -266,11 +273,19 @@ class MainActivity : ComponentActivity() {
                 editReminderText.setOnClickListener {
                     showDateAndTimePicker(editReminderText)
                 }
+
             }
             R.layout.edithwcoursescreen_layout -> {
                 findViewById<Button>(R.id.edit_returnToAddHWButton).setOnClickListener {
                     inflateLayout(R.layout.edithwscreen_layout)
                 }
+                val editRecyclerView = findViewById<RecyclerView>(R.id.editHWRecyclerView)
+                if (editRecyclerView != null)
+                {
+                    updateCourseRecyclerView()
+                }
+
+                updateEditClassDescText = editHomeworkLayout.findViewById(R.id.edit_editClassDescText)
             }
         }
     }
@@ -380,6 +395,14 @@ class MainActivity : ComponentActivity() {
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(this)
         }
+
+        val editRecyclerView = findViewById<RecyclerView>(R.id.editHWRecyclerView)
+        if (editRecyclerView != null)
+        {
+            val adapter = CourseAdapter(courseList, this, editClassDescText)
+            editRecyclerView.adapter = adapter
+            editRecyclerView.layoutManager = LinearLayoutManager(this)
+        }
     }
 
     class CourseAdapter(private val courseList: List<Course>, private val mainActivity: MainActivity, private val editClassDescText: EditText)
@@ -409,12 +432,27 @@ class MainActivity : ComponentActivity() {
             init {
                 courseNameButtonView.setOnClickListener {
                     val course = courseList[adapterPosition]
-                    mainActivity.inflateLayout(R.layout.addhomeworkscreen_layout)
+
+                    if(mainActivity.currentLayout == R.layout.yourcoursesscreen_layout)
                     {
-                        val editClassDescText = mainActivity.findViewById<EditText>(R.id.editCourseDescText)
-                        editClassDescText?.apply {
-                            setText(course.courseName)
-                            setTextColor(course.courseColor)
+                        mainActivity.inflateLayout(R.layout.addhomeworkscreen_layout)
+                        {
+                            val editClassDescText = mainActivity.findViewById<EditText>(R.id.editCourseDescText)
+                                editClassDescText?.apply {
+                                    setText(course.courseName)
+                                    setTextColor(course.courseColor)
+                                }
+                        }
+                    }
+                    else
+                    {
+                        mainActivity.inflateLayout(R.layout.edithwscreen_layout)
+                        {
+                            val updateEditClassDescText = mainActivity.findViewById<EditText>(R.id.edit_editClassDescText)
+                            updateEditClassDescText?.apply {
+                                setText(course.courseName)
+                                setTextColor(course.courseColor)
+                            }
                         }
                     }
                 }
@@ -491,8 +529,6 @@ class MainActivity : ComponentActivity() {
             findViewById<EditText>(R.id.edit_editDueDateText).setText(homework.dueDate)
         }
     }
-
-
 
     private fun saveProfileInfo()
     {
