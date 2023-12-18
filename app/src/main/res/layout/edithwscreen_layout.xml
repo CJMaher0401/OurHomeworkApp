@@ -75,5 +75,12 @@
         android:hint="Set a reminder for your HW"
         android:paddingBottom="15dp" />
 
+    <Button
+        android:id="@+id/completeHWButton"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="#EED8C7"
+        android:text="This assignment is complete!" />
+
 
 </LinearLayout>

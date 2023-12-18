@@ -29,8 +29,10 @@ class MainActivity : ComponentActivity() {
     private lateinit var colorEditText: EditText
     data class Course(val courseName: String, val courseColor: Int)
     private lateinit var courseList: MutableList<Course>
-    data class Homework(val courseName: String, val assignmentDesc: String, val dueDate: String, val color: Int)
+    data class Homework(val courseName: String, val assignmentDesc: String, val dueDate: String, val color: Int, var isCompleted: Boolean = false)
     private lateinit var homeworkList: MutableList<Homework>
+
+    private lateinit var completedHomeworkList: MutableList<Homework>
 
     private lateinit var editClassDescText: EditText
     private lateinit var addHomeworkLayout: View
@@ -54,6 +56,8 @@ class MainActivity : ComponentActivity() {
         updateEditClassDescText = editHomeworkLayout.findViewById(R.id.edit_editClassDescText)
 
         homeworkList = mutableListOf()
+
+        completedHomeworkList = mutableListOf()
 
         inflateLayout(R.layout.homescreen_layout)
     }
@@ -248,6 +252,13 @@ class MainActivity : ComponentActivity() {
                 findViewById<Button>(R.id.compCompHWButton).setOnClickListener {
                     inflateLayout(R.layout.completedhwscreen_layout)
                 }
+
+                findViewById<RecyclerView>(R.id.compHWRecycler).setOnClickListener{
+
+                }
+                val recyclerViewCompHW: RecyclerView = findViewById(R.id.compHWRecycler)
+                recyclerViewCompHW.layoutManager = LinearLayoutManager(this)
+                updateHomeworkRecyclerViews()
             }
 
             R.layout.edithwscreen_layout -> {
@@ -265,6 +276,9 @@ class MainActivity : ComponentActivity() {
 
                 findViewById<EditText>(R.id.edit_editAssignmentDescText).setOnClickListener {
 
+                }
+
+                findViewById<Button>(R.id.completeHWButton).setOnClickListener {
                 }
 
                 val editDueDateText = findViewById<EditText>(R.id.edit_editDueDateText)
@@ -441,10 +455,10 @@ class MainActivity : ComponentActivity() {
                         mainActivity.inflateLayout(R.layout.addhomeworkscreen_layout)
                         {
                             val editClassDescText = mainActivity.findViewById<EditText>(R.id.editCourseDescText)
-                                editClassDescText?.apply {
-                                    setText(course.courseName)
-                                    setTextColor(course.courseColor)
-                                }
+                            editClassDescText?.apply {
+                                setText(course.courseName)
+                                setTextColor(course.courseColor)
+                            }
                         }
                     }
                     else
@@ -485,6 +499,15 @@ class MainActivity : ComponentActivity() {
             currentRecyclerView.adapter = currentAdapter
             currentRecyclerView.layoutManager = LinearLayoutManager(this)
         }
+
+        val completedRecyclerView = findViewById<RecyclerView>(R.id.compHWRecycler)
+        if (completedRecyclerView != null)
+        {
+            val completedAdapter = HomeworkAdapter(completedHomeworkList, this)
+            completedRecyclerView.adapter = completedAdapter
+            completedRecyclerView.layoutManager = LinearLayoutManager(this)
+        }
+
     }
     class HomeworkAdapter(private val homeworkList: List<Homework>, private val mainActivity: MainActivity) : RecyclerView.Adapter<HomeworkAdapter.HomeworkViewHolder>()
     {
@@ -496,7 +519,10 @@ class MainActivity : ComponentActivity() {
         override fun onBindViewHolder(holder: HomeworkViewHolder, position: Int)
         {
             val currentHomework = homeworkList[position]
-            holder.bind(currentHomework)
+            if(!currentHomework.isCompleted)
+            {
+                holder.bind(currentHomework)
+            }
         }
         override fun getItemCount(): Int
         {
@@ -528,6 +554,14 @@ class MainActivity : ComponentActivity() {
             }
             findViewById<EditText>(R.id.edit_editAssignmentDescText).setText(homework.assignmentDesc)
             findViewById<EditText>(R.id.edit_editDueDateText).setText(homework.dueDate)
+        }
+        findViewById<Button>(R.id.completeHWButton).setOnClickListener {
+            homework.isCompleted = true
+            completedHomeworkList.add(homework)
+            homeworkList.remove(homework)
+            updateHomeworkRecyclerViews()
+
+            inflateLayout(R.layout.completedhwscreen_layout)
         }
     }
     private fun saveProfileInfo()
