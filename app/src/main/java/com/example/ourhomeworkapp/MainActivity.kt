@@ -41,12 +41,21 @@ class MainActivity : ComponentActivity() {
 
     private var currentLayout: Int = R.layout.homescreen_layout
 
-    private lateinit var auth: FirebaseAuth
+    //Emilio
+    //private lateinit var auth: FirebaseAuth
+    //private lateinit var usernameInput : EditText
+    //private lateinit var passwordInput : EditText
+    //private lateinit var loginBtn : Button
+    //private lateinit var registerBtn : Button
+    //TextInputEditText editTextEmail, editTextPassword;
 
     //hello
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //setContentView(R.layout.registerscreen_layout);
+        //FirebaseAuth = auth.getInstance();
 
         courseList = mutableListOf()
 
@@ -61,6 +70,7 @@ class MainActivity : ComponentActivity() {
         completedHomeworkList = mutableListOf()
 
         inflateLayout(R.layout.homescreen_layout)
+
     }
 
     private fun inflateLayout(layoutResID: Int, afterInflate: (() -> Unit)? = null)
@@ -597,4 +607,5 @@ class MainActivity : ComponentActivity() {
         findViewById<EditText>(R.id.editParentPhoneNumText).setText(parentPhoneNum)
     }
 }
+
 
