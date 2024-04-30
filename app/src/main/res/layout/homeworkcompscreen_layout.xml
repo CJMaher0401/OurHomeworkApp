@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/editHWlayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EED8C7"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/completeCancelButton"
+            android:layout_width="136dp"
+            android:layout_height="50dp"
+            android:background="#EDD7C6"
+            android:text="Cancel"
+            android:textAlignment="center"
+            style="?android:attr/borderlessButtonStyle"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/completeSaveButton"
+            android:layout_width="136dp"
+            android:layout_height="wrap_content"
+            android:background="#EDD7C6"
+            android:text="Save"
+            style="?android:attr/borderlessButtonStyle"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/completeHomeworkText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingBottom="20dp"
+        android:text="Completed Homework"
+        android:textColor="#000000"
+        android:textSize="34sp" />
+
+    <EditText
+        android:id="@+id/edit_completeClassDescText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false"
+        android:hint="Select a course for this HW assignment"
+        android:paddingBottom="15dp" />
+
+    <EditText
+        android:id="@+id/edit_completeAssignmentDescText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="What is your HW assignment"
+        android:paddingBottom="15dp" />
+
+    <EditText
+        android:id="@+id/edit_completeDueDateText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter the due date"
+        android:paddingBottom="15dp" />
+
+    <EditText
+        android:id="@+id/edit_completeReminderText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Set a reminder for your HW"
+        android:paddingBottom="15dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/completeUndoButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="205dp"
+            android:layout_height="50dp"
+            android:background="#EDD7C6"
+            android:text="Undo Completion"
+            android:textAlignment="center" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/completeDeleteButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="205dp"
+            android:layout_height="wrap_content"
+            android:background="#EDD7C6"
+            android:text="Delete Homework" />
+    </LinearLayout>
+
+
+</LinearLayout>

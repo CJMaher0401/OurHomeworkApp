@@ -280,6 +280,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<Button>(R.id.completeHWButton).setOnClickListener {
+                    inflateLayout(R.layout.completedhwscreen_layout)
                 }
 
                 val editDueDateText = findViewById<EditText>(R.id.edit_editDueDateText)
@@ -305,6 +306,21 @@ class MainActivity : ComponentActivity() {
                 }
 
                 updateEditClassDescText = editHomeworkLayout.findViewById(R.id.edit_editClassDescText)
+            }
+            R.layout.homeworkcompscreen_layout ->
+            {
+                findViewById<Button>(R.id.completeCancelButton).setOnClickListener{
+                    inflateLayout(R.layout.completedhwscreen_layout)
+                }
+                findViewById<Button>(R.id.completeSaveButton).setOnClickListener{
+                    inflateLayout(R.layout.completedhwscreen_layout)
+                }
+                findViewById<Button>(R.id.completeUndoButton).setOnClickListener{
+
+                }
+                findViewById<Button>(R.id.completeDeleteButton).setOnClickListener{
+
+                }
             }
         }
     }
@@ -521,6 +537,10 @@ class MainActivity : ComponentActivity() {
         {
             val currentHomework = homeworkList[position]
             if(!currentHomework.isCompleted)
+            {
+                holder.bind(currentHomework)
+            }
+            else if(currentHomework.isCompleted)
             {
                 holder.bind(currentHomework)
             }
