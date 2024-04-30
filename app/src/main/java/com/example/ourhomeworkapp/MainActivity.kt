@@ -4,7 +4,6 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +42,8 @@ class MainActivity : ComponentActivity() {
     private var currentLayout: Int = R.layout.homescreen_layout
 
     private lateinit var auth: FirebaseAuth
+
+    //hello
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
