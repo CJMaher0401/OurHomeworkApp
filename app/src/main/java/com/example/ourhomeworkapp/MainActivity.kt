@@ -26,10 +26,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
+import org.w3c.dom.Text
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -58,28 +61,32 @@ class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var launcher: ActivityResultLauncher<Intent>
+    private lateinit var emailInput : EditText
+    private lateinit var passwordInput : EditText
+    private lateinit var regButton : Button
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
 
-
+        // Inflate the login screen layout initially
         inflateLayout(R.layout.loginscreen_layout)
-
+        // Initialize FirebaseAuth and GoogleSignInClient
         auth = FirebaseAuth.getInstance()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(com.firebase.ui.auth.R.string.default_web_client_id))
             .requestEmail()
             .build()
-
-        findViewById<Button>(R.id.gSignInBtn)?.setOnClickListener {
+        // Set OnClickListener for Google Sign-In button
+        findViewById<ImageButton>(R.id.gSignInBtn)?.setOnClickListener {
             googleSignInClient = GoogleSignIn.getClient(this, gso)
             signInGoogle()
         }
 
 
-
+        // Register ActivityResultLauncher for handling Google Sign-In result
         launcher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
@@ -92,6 +99,9 @@ class MainActivity : ComponentActivity() {
             }
 
 
+
+        emailInput = findViewById(R.id.email_input)
+        passwordInput = findViewById(R.id.password_input)
 
         courseList = mutableListOf()
 
@@ -106,6 +116,22 @@ class MainActivity : ComponentActivity() {
         completedHomeworkList = mutableListOf()
 
 
+
+    }
+
+    private fun handleFirebaseError(exception: Exception?) {
+        when (exception) {
+            is FirebaseAuthUserCollisionException -> {
+                Toast.makeText(this, "Email already in use", Toast.LENGTH_SHORT).show()
+            }
+            is FirebaseAuthInvalidCredentialsException -> {
+                Toast.makeText(this, "Invalid email or password format", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                Log.e("FirebaseAuth", "Error: $exception")
+                Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show()
+            }
+        }
 
     }
 
@@ -141,6 +167,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    
 
     private fun inflateLayout(layoutResID: Int, afterInflate: (() -> Unit)? = null)
     {
@@ -156,14 +183,38 @@ class MainActivity : ComponentActivity() {
         when (layoutResID)
         {
             R.layout.loginscreen_layout ->{
+                emailInput = findViewById(R.id.email_input)
+                passwordInput = findViewById(R.id.password_input)
+
                 findViewById<Button>(R.id.register_btn).setOnClickListener{
                     inflateLayout(R.layout.registerscreen_layout)
                 }
 
                 findViewById<Button>(R.id.login_btn).setOnClickListener{
+                    val email = emailInput.text.toString()
+                    val password = passwordInput.text.toString()
+
+                    if (email.isNotEmpty() && password.isNotEmpty()) {
+                        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                // Login successful
+                                Log.d("FirebaseAuth", "User signed in successfully")
+                                Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
+
+                                // Redirect to a different activity or update the UI
+                                inflateLayout(R.layout.homescreen_layout) // Example of changing layout
+                            } else {
+                                // Handle login errors
+                                handleFirebaseLoginError(task.exception)
+                            }
+                        }
+                    } else {
+                        Toast.makeText(this, "Email and password cannot be empty", Toast.LENGTH_SHORT).show()
+                    }
+                
 
                 }
-                findViewById<Button>(R.id.gSignInBtn).setOnClickListener{
+                findViewById<ImageButton>(R.id.gSignInBtn).setOnClickListener{
                      fun updateUI(account: GoogleSignInAccount) {
                          val credential = GoogleAuthProvider.getCredential(account.idToken, null)
                          auth.signInWithCredential(credential).addOnCompleteListener {
@@ -183,7 +234,34 @@ class MainActivity : ComponentActivity() {
             }
 
             R.layout.registerscreen_layout->{
-                findViewById<Button>(R.id.createAccount_btn)
+                emailInput = findViewById(R.id.email_input)
+                passwordInput = findViewById(R.id.password_input)
+                regButton = findViewById(R.id.createAccount_btn)
+
+
+                regButton.setOnClickListener {
+                    val email = emailInput.text.toString()
+                    val password = passwordInput.text.toString()
+
+                    if(email.isNotEmpty() && password.isNotEmpty()){
+                        auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener{task ->
+                            if (task.isSuccessful){
+                                //reg was successful
+                                Log.d("FirebaseAuth", "User registered successfully")
+                                Toast.makeText(this,"Account created successfully!", Toast.LENGTH_SHORT).show()
+
+                                inflateLayout(R.layout.homescreen_layout)
+                            } else {
+                                handleFirebaseError(task.exception)
+                            }
+                        }
+                    } else {
+                        Toast.makeText(this, "Email and password cannot be empty", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                findViewById<Button>(R.id.goToLogin).setOnClickListener {
+                    inflateLayout(R.layout.loginscreen_layout)
+                }
             }
 
             R.layout.homescreen_layout -> {
@@ -251,7 +329,7 @@ class MainActivity : ComponentActivity() {
                     googleSignInClient.signOut().addOnCompleteListener{task ->
                         if (task.isSuccessful){
                             inflateLayout(R.layout.loginscreen_layout)
-                            finish()
+
                         }
                         else{
                             Log.e("GoogleSignOut", "Sign-out failed", task.exception) // Log for debugging
@@ -432,6 +510,22 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun handleFirebaseLoginError(exception: Exception?) {
+        when (exception) {
+            is FirebaseAuthUserCollisionException -> {
+                Toast.makeText(this, "Email already in use", Toast.LENGTH_SHORT).show()
+            }
+            is FirebaseAuthInvalidCredentialsException -> {
+                Toast.makeText(this, "Invalid email or password format", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                Log.e("FirebaseAuth", "Error: $exception")
+                Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    }
+    
     private fun showDatePicker(editText: EditText)
     {
         val currentDate = Calendar.getInstance()

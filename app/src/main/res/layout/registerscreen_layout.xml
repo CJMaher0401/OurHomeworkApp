@@ -20,18 +20,20 @@
             android:src="@drawable/profile_image"
             android:importantForAccessibility="no" />
 
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_corners"
+            android:drawableStart="@drawable/fui_ic_mail_white_24dp"
             android:hint="@string/email"
             android:textColor="@color/white"
             android:textColorHint="@color/white"
             android:textSize="20sp"
-            android:padding="18dp"
+            android:padding="16dp"
             android:inputType="textEmailAddress"
-            android:layout_marginTop="32dp"
-            android:id="@+id/username_input"
+            android:layout_marginTop="16dp"
+            android:id="@+id/email_input"
             android:importantForAutofill="no" />
 
         <EditText
@@ -58,6 +60,18 @@
             android:layout_marginTop="8dp"
             android:textSize="20sp"
             android:id="@+id/createAccount_btn"/>
+
+        <Button
+            android:layout_width="256dp"
+            android:layout_height="wrap_content"
+            android:text="Already have an account? Sign in!"
+            android:background="@drawable/rounded_corners"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/purple_500"
+            android:layout_marginTop="8dp"
+            android:textSize="20sp"
+            android:id="@+id/goToLogin"/>
+
 
     </LinearLayout>
 

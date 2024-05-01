@@ -32,7 +32,7 @@
             android:padding="18dp"
             android:inputType="textEmailAddress"
             android:layout_marginTop="32dp"
-            android:id="@+id/username_input"
+            android:id="@+id/email_input"
             android:importantForAutofill="no" />
 
         <EditText
@@ -86,12 +86,14 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <Button
+            <ImageButton
                 android:id="@+id/gSignInBtn"
-                android:layout_width="64dp"
-                android:layout_height="62dp"
+                android:layout_width="69dp"
+                android:layout_height="69dp"
                 android:layout_margin="16dp"
-                app:icon="@drawable/google"/>
+                android:src="@drawable/fui_ic_googleg_color_24dp"
+                android:backgroundTint="@color/black"
+                android:contentDescription="@string/googlelogin" />
 
         </LinearLayout>
 
