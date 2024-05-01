@@ -91,6 +91,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+
+
         courseList = mutableListOf()
 
         addHomeworkLayout = layoutInflater.inflate(R.layout.addhomeworkscreen_layout, null)
@@ -243,6 +245,19 @@ class MainActivity : ComponentActivity() {
                 findViewById<Button>(R.id.profileMyProfileButton).setOnClickListener {
                     inflateLayout(R.layout.profilescreen_layout) {
                         loadUpdatedProfileInfo()
+                    }
+                }
+                findViewById<Button>(R.id.signOutButton).setOnClickListener {
+                    googleSignInClient.signOut().addOnCompleteListener{task ->
+                        if (task.isSuccessful){
+                            inflateLayout(R.layout.loginscreen_layout)
+                            finish()
+                        }
+                        else{
+                            Log.e("GoogleSignOut", "Sign-out failed", task.exception) // Log for debugging
+                            Toast.makeText(this, "Failed to sign out. Please try again.", Toast.LENGTH_SHORT).show() // Inform the user
+                        }
+
                     }
                 }
             }
