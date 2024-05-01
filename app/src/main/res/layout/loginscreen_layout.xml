@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background = "@drawable/login_background"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/login_background"
     android:gravity="center">
 
 
@@ -85,28 +86,15 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <ImageView
+            <Button
+                android:id="@+id/gSignInBtn"
                 android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_height="62dp"
                 android:layout_margin="16dp"
-                android:src="@drawable/google"
-                android:importantForAccessibility="no" />
+                app:icon="@drawable/google"/>
 
-            <ImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_margin="16dp"
-                android:src="@drawable/xtwitter"
-                android:importantForAccessibility="no" />
-
-            <ImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_margin="16dp"
-                android:src="@drawable/facebook"
-                android:importantForAccessibility="no" />
         </LinearLayout>
 
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

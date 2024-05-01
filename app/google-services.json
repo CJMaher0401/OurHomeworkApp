@@ -1,26 +1,44 @@
 {
   "project_info": {
-    "project_number": "1028430783070",
-    "project_id": "ourhomework-3d7be",
-    "storage_bucket": "ourhomework-3d7be.appspot.com"
+    "project_number": "873070560382",
+    "project_id": "ourhomework-7f013",
+    "storage_bucket": "ourhomework-7f013.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1028430783070:android:c5496c0dae5b1e0f610acf",
+        "mobilesdk_app_id": "1:873070560382:android:3b15fb806f0a372ffc842f",
         "android_client_info": {
           "package_name": "com.example.ourhomeworkapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "873070560382-jn6p3lv3qu1r1p4ct24b9rufnshcppu8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ourhomeworkapp",
+            "certificate_hash": "ed3f83c7485f1445fb4d50dcca2d7849e96578f5"
+          }
+        },
+        {
+          "client_id": "873070560382-qdva16a1a7m0ahlak9mh0h4ss4r4b3cr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyAa2b9v009soVodeapdmBXq6X-qyehj7Xk"
+          "current_key": "AIzaSyAy0y4VpyX7dYGZf6RnTSpHucsBVhwXU_A"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "873070560382-dc160qk2el712cajoos79eb4932f3837.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

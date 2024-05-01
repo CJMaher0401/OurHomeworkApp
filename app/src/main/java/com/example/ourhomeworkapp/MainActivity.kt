@@ -1,19 +1,32 @@
 package com.example.ourhomeworkapp
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.tasks.Task
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
@@ -41,21 +54,42 @@ class MainActivity : ComponentActivity() {
 
     private var currentLayout: Int = R.layout.homescreen_layout
 
-    //Emilio
-    //private lateinit var auth: FirebaseAuth
-    //private lateinit var usernameInput : EditText
-    //private lateinit var passwordInput : EditText
-    //private lateinit var loginBtn : Button
-    //private lateinit var registerBtn : Button
-    //TextInputEditText editTextEmail, editTextPassword;
 
-    //hello
+    private lateinit var auth: FirebaseAuth
+    private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var launcher: ActivityResultLauncher<Intent>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //setContentView(R.layout.registerscreen_layout);
-        //FirebaseAuth = auth.getInstance();
+
+
+        inflateLayout(R.layout.loginscreen_layout)
+
+        auth = FirebaseAuth.getInstance()
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(com.firebase.ui.auth.R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+
+        findViewById<Button>(R.id.gSignInBtn)?.setOnClickListener {
+            googleSignInClient = GoogleSignIn.getClient(this, gso)
+            signInGoogle()
+        }
+
+
+
+        launcher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                    handleResults(task)
+                }
+                else {
+                    Toast.makeText(this, "Google Sign-In failed", Toast.LENGTH_SHORT).show()
+                }
+            }
 
         courseList = mutableListOf()
 
@@ -69,8 +103,41 @@ class MainActivity : ComponentActivity() {
 
         completedHomeworkList = mutableListOf()
 
-        inflateLayout(R.layout.homescreen_layout)
 
+
+    }
+
+    private fun signInGoogle(){
+        val signInIntent = googleSignInClient.signInIntent
+        launcher.launch(signInIntent)
+    }
+
+    private fun handleResults(task: Task<GoogleSignInAccount>) {
+        if (task.isSuccessful){
+            val account : GoogleSignInAccount? = task.result
+            if (account != null){
+                Log.d("SIGN_IN", "Account retrieved: ${account.email}")
+                updateUI(account)
+            }
+
+        }else{
+            Log.e("SIGN_IN", "Error: ${task.exception}")
+            Toast.makeText(this, task.exception.toString(), Toast.LENGTH_SHORT).show()
+        }
+
+    }
+
+    private fun updateUI(account: GoogleSignInAccount) {
+        val credential = GoogleAuthProvider.getCredential(account.idToken , null)
+        auth.signInWithCredential(credential).addOnCompleteListener{
+            if (it.isSuccessful){
+                Log.d("SIGN_IN", "Firebase authentication successful")
+                inflateLayout(R.layout.homescreen_layout)
+
+            }else{
+                Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun inflateLayout(layoutResID: Int, afterInflate: (() -> Unit)? = null)
@@ -86,6 +153,37 @@ class MainActivity : ComponentActivity() {
 
         when (layoutResID)
         {
+            R.layout.loginscreen_layout ->{
+                findViewById<Button>(R.id.register_btn).setOnClickListener{
+                    inflateLayout(R.layout.registerscreen_layout)
+                }
+
+                findViewById<Button>(R.id.login_btn).setOnClickListener{
+
+                }
+                findViewById<Button>(R.id.gSignInBtn).setOnClickListener{
+                     fun updateUI(account: GoogleSignInAccount) {
+                         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                         auth.signInWithCredential(credential).addOnCompleteListener {
+                             if (it.isSuccessful)
+                             {
+                                 inflateLayout(R.layout.homescreen_layout)
+
+                             }
+                             else
+                             {
+                                 Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT)
+                                     .show()
+                             }
+                         }
+                     }
+                }
+            }
+
+            R.layout.registerscreen_layout->{
+                findViewById<Button>(R.id.createAccount_btn)
+            }
+
             R.layout.homescreen_layout -> {
                 findViewById<Button>(R.id.profileButton).setOnClickListener {
                     inflateLayout(R.layout.profilescreen_layout) {
@@ -607,5 +705,7 @@ class MainActivity : ComponentActivity() {
         findViewById<EditText>(R.id.editParentPhoneNumText).setText(parentPhoneNum)
     }
 }
+
+
 
 
