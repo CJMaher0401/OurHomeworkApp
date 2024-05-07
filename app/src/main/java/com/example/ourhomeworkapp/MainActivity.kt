@@ -279,6 +279,17 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<Button>(R.id.editsaveButton).setOnClickListener {
+                    val editCourseDesc = this.findViewById<EditText>(R.id.edit_editClassDescText).text.toString()
+                    val editAssignmentDesc = findViewById<EditText>(R.id.edit_editAssignmentDescText).text.toString()
+                    val editDueDate = this.findViewById<EditText>(R.id.edit_editDueDateText).text.toString()
+                    val editColor = findViewById<EditText>(R.id.edit_editClassDescText).currentTextColor
+
+                    val homework = Homework(editCourseDesc, editAssignmentDesc, editDueDate, editColor)
+
+                    homeworkList.add(homework)
+
+                    updateHomeworkRecyclerViews()
+
                     inflateLayout(R.layout.currentupcominghw_layout)
                 }
 
