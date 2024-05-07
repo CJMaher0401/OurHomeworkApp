@@ -33,6 +33,10 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var completedHomeworkList: MutableList<Homework>
 
+    private lateinit var homeAdapter: HomeworkAdapter
+    private lateinit var currentUpcomingAdapter: HomeworkAdapter
+    private lateinit var completedAdapter: HomeworkAdapter
+
     private lateinit var editClassDescText: EditText
     private lateinit var addHomeworkLayout: View
 
@@ -60,9 +64,16 @@ class MainActivity : ComponentActivity() {
 
         completedHomeworkList = mutableListOf()
 
+        homeAdapter = HomeworkAdapter(homeworkList, this, "home")
+        currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
+        completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
+
+
         inflateLayout(R.layout.homescreen_layout)
     }
 
+    //Code that handles anything and everything to do with navigating the app starts here, including what happens when a button is pressed,
+    //what layout to open when a button is pressed, what actions to preform when a button is pressed, updating recycler views, and more.
     private fun inflateLayout(layoutResID: Int, afterInflate: (() -> Unit)? = null)
     {
         currentLayout = layoutResID
@@ -100,7 +111,7 @@ class MainActivity : ComponentActivity() {
                         loadUpdatedProfileInfo()
                     }
                 }
-
+                setupRecyclerViews()
                 val recyclerViewHomeScreen: RecyclerView = findViewById(R.id.homeScreenRecycler)
                 recyclerViewHomeScreen.layoutManager = LinearLayoutManager(this)
                 updateHomeworkRecyclerViews()
@@ -268,6 +279,17 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<Button>(R.id.editsaveButton).setOnClickListener {
+                    val editCourseDesc = this.findViewById<EditText>(R.id.edit_editClassDescText).text.toString()
+                    val editAssignmentDesc = findViewById<EditText>(R.id.edit_editAssignmentDescText).text.toString()
+                    val editDueDate = this.findViewById<EditText>(R.id.edit_editDueDateText).text.toString()
+                    val editColor = findViewById<EditText>(R.id.edit_editClassDescText).currentTextColor
+
+                    val homework = Homework(editCourseDesc, editAssignmentDesc, editDueDate, editColor)
+
+                    homeworkList.add(homework)
+
+                    updateHomeworkRecyclerViews()
+
                     inflateLayout(R.layout.currentupcominghw_layout)
                 }
 
@@ -294,6 +316,7 @@ class MainActivity : ComponentActivity() {
                 }
 
             }
+
             R.layout.edithwcoursescreen_layout -> {
                 findViewById<Button>(R.id.edit_returnToAddHWButton).setOnClickListener {
                     inflateLayout(R.layout.edithwscreen_layout)
@@ -307,6 +330,7 @@ class MainActivity : ComponentActivity() {
 
                 updateEditClassDescText = editHomeworkLayout.findViewById(R.id.edit_editClassDescText)
             }
+
             R.layout.homeworkcompscreen_layout ->
             {
                 findViewById<Button>(R.id.completeCancelButton).setOnClickListener{
@@ -317,6 +341,7 @@ class MainActivity : ComponentActivity() {
                 }
                 findViewById<Button>(R.id.completeUndoButton).setOnClickListener{
 
+
                 }
                 findViewById<Button>(R.id.completeDeleteButton).setOnClickListener{
 
@@ -324,7 +349,9 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    //Inflate layout function code finishes here!
 
+    //Code that has to do with the add homework screen starts here
     private fun showDatePicker(editText: EditText)
     {
         val currentDate = Calendar.getInstance()
@@ -377,7 +404,9 @@ class MainActivity : ComponentActivity() {
         )
         datePickerDialog.show()
     }
+    //Code that deals with the add homework screen ends here!
 
+    //Code that deals with color coding courses starts here
     private fun showColorWheel()
     {
         colorEditText = if (!::colorEditText.isInitialized) {
@@ -413,32 +442,9 @@ class MainActivity : ComponentActivity() {
             .attachBrightnessSlideBar(true)
             .show()
     }
+    //Code that deals with color coding courses ends here!
 
-    private fun saveCourse(courseName: String, courseColor: Int)
-    {
-        val course = Course(courseName, courseColor)
-        courseList.add(course)
-    }
-
-    private fun updateCourseRecyclerView()
-    {
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        if (recyclerView != null)
-        {
-            val adapter = CourseAdapter(courseList, this, editClassDescText)
-            recyclerView.adapter = adapter
-            recyclerView.layoutManager = LinearLayoutManager(this)
-        }
-
-        val editRecyclerView = findViewById<RecyclerView>(R.id.editHWRecyclerView)
-        if (editRecyclerView != null)
-        {
-            val adapter = CourseAdapter(courseList, this, editClassDescText)
-            editRecyclerView.adapter = adapter
-            editRecyclerView.layoutManager = LinearLayoutManager(this)
-        }
-    }
-
+    //Code that handles the course creation, storage and management starts here
     class CourseAdapter(private val courseList: List<Course>, private val mainActivity: MainActivity, private val editClassDescText: EditText) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>()
     {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseViewHolder
@@ -499,34 +505,34 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun updateHomeworkRecyclerViews()
+    private fun updateCourseRecyclerView()
     {
-        val homeRecyclerView = findViewById<RecyclerView>(R.id.homeScreenRecycler)
-        if (homeRecyclerView != null)
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        if (recyclerView != null)
         {
-            val homeAdapter = HomeworkAdapter(homeworkList, this)
-            homeRecyclerView.adapter = homeAdapter
-            homeRecyclerView.layoutManager = LinearLayoutManager(this)
+            val adapter = CourseAdapter(courseList, this, editClassDescText)
+            recyclerView.adapter = adapter
+            recyclerView.layoutManager = LinearLayoutManager(this)
         }
 
-        val currentRecyclerView = findViewById<RecyclerView>(R.id.curHWRecycler)
-        if (currentRecyclerView != null)
+        val editRecyclerView = findViewById<RecyclerView>(R.id.editHWRecyclerView)
+        if (editRecyclerView != null)
         {
-            val currentAdapter = HomeworkAdapter(homeworkList, this)
-            currentRecyclerView.adapter = currentAdapter
-            currentRecyclerView.layoutManager = LinearLayoutManager(this)
+            val adapter = CourseAdapter(courseList, this, editClassDescText)
+            editRecyclerView.adapter = adapter
+            editRecyclerView.layoutManager = LinearLayoutManager(this)
         }
-
-        val completedRecyclerView = findViewById<RecyclerView>(R.id.compHWRecycler)
-        if (completedRecyclerView != null)
-        {
-            val completedAdapter = HomeworkAdapter(completedHomeworkList, this)
-            completedRecyclerView.adapter = completedAdapter
-            completedRecyclerView.layoutManager = LinearLayoutManager(this)
-        }
-
     }
-    class HomeworkAdapter(private val homeworkList: List<Homework>, private val mainActivity: MainActivity) : RecyclerView.Adapter<HomeworkAdapter.HomeworkViewHolder>()
+
+    private fun saveCourse(courseName: String, courseColor: Int)
+    {
+        val course = Course(courseName, courseColor)
+        courseList.add(course)
+    }
+    //Code that handles courses ends here!
+
+    //Code that handles homework creation, storage and management begins here
+    class HomeworkAdapter(private val homeworkList: List<Homework>, private val mainActivity: MainActivity, private val origin: String ) : RecyclerView.Adapter<HomeworkAdapter.HomeworkViewHolder>()
     {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeworkViewHolder
         {
@@ -536,13 +542,13 @@ class MainActivity : ComponentActivity() {
         override fun onBindViewHolder(holder: HomeworkViewHolder, position: Int)
         {
             val currentHomework = homeworkList[position]
-            if(!currentHomework.isCompleted)
-            {
-                holder.bind(currentHomework)
-            }
-            else if(currentHomework.isCompleted)
-            {
-                holder.bind(currentHomework)
+            holder.bind(currentHomework)
+
+            holder.itemView.findViewById<Button>(R.id.homeworkButtonView).setOnClickListener{
+                when(origin){
+                    "home", "currentUpcoming" -> mainActivity.editHomework(currentHomework)
+                    "completed" -> mainActivity.viewCompletedHomework(currentHomework)
+                }
             }
         }
         override fun getItemCount(): Int
@@ -556,7 +562,7 @@ class MainActivity : ComponentActivity() {
                 homeworkRecyclerView.setOnClickListener {
                     val homework = homeworkList[adapterPosition]
                     val color = homeworkRecyclerView.currentTextColor
-                    (itemView.context as MainActivity).editHomework(homework, color)
+                    (itemView.context as MainActivity).editHomework(homework) //,color)
                 }
             }
             fun bind(homework: Homework)
@@ -566,12 +572,56 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    fun editHomework(homework: Homework, color: Int)
+
+    private fun setupRecyclerViews() {
+        findViewById<RecyclerView>(R.id.homeScreenRecycler)?.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = HomeworkAdapter(homeworkList, this@MainActivity, "home")
+        }
+        findViewById<RecyclerView>(R.id.curHWRecycler)?.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = HomeworkAdapter(homeworkList, this@MainActivity, "currentUpcoming")
+        }
+        findViewById<RecyclerView>(R.id.compHWRecycler)?.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = HomeworkAdapter(completedHomeworkList, this@MainActivity, "completed")
+        }
+    }
+
+    private fun updateHomeworkRecyclerViews()
     {
-        inflateLayout(R.layout.edithwscreen_layout) {
+        val homeRecyclerView = findViewById<RecyclerView>(R.id.homeScreenRecycler)
+        if (homeRecyclerView != null)
+        {
+            val homeAdapter = HomeworkAdapter(homeworkList, this, "home")
+            homeRecyclerView.adapter = homeAdapter
+            homeRecyclerView.layoutManager = LinearLayoutManager(this)
+        }
+
+        val currentRecyclerView = findViewById<RecyclerView>(R.id.curHWRecycler)
+        if (currentRecyclerView != null)
+        {
+            val currentAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
+            currentRecyclerView.adapter = currentAdapter
+            currentRecyclerView.layoutManager = LinearLayoutManager(this)
+        }
+
+        val completedRecyclerView = findViewById<RecyclerView>(R.id.compHWRecycler)
+        if (completedRecyclerView != null)
+        {
+            val completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
+            completedRecyclerView.adapter = completedAdapter
+            completedRecyclerView.layoutManager = LinearLayoutManager(this)
+        }
+    }
+
+    fun editHomework(homework: Homework)
+    {
+        inflateLayout(R.layout.edithwscreen_layout)
+        {
             findViewById<EditText>(R.id.edit_editClassDescText).apply {
                 setText(homework.courseName)
-                setTextColor(color)
+                setTextColor(homework.color)
             }
             findViewById<EditText>(R.id.edit_editAssignmentDescText).setText(homework.assignmentDesc)
             findViewById<EditText>(R.id.edit_editDueDateText).setText(homework.dueDate)
@@ -585,6 +635,37 @@ class MainActivity : ComponentActivity() {
             inflateLayout(R.layout.completedhwscreen_layout)
         }
     }
+
+    fun viewCompletedHomework(homework: Homework)
+    {
+        inflateLayout(R.layout.homeworkcompscreen_layout)
+        {
+            findViewById<EditText>(R.id.edit_completeClassDescText).apply {
+                setText(homework.courseName)
+                setTextColor(homework.color)
+            }
+            findViewById<EditText>(R.id.edit_completeAssignmentDescText).setText(homework.assignmentDesc)
+            findViewById<EditText>(R.id.edit_completeDueDateText).setText(homework.dueDate)
+        }
+        findViewById<Button>(R.id.completeUndoButton).setOnClickListener {
+            homework.isCompleted = false
+            completedHomeworkList.remove(homework)
+            homeworkList.add(homework)
+            updateHomeworkRecyclerViews()
+
+            inflateLayout(R.layout.currentupcominghw_layout)
+        }
+        findViewById<Button>(R.id.completeDeleteButton).setOnClickListener {
+            homework.isCompleted = true
+            completedHomeworkList.remove(homework)
+            updateHomeworkRecyclerViews()
+
+            inflateLayout(R.layout.completedhwscreen_layout)
+        }
+    }
+    //Code that handles homework ends here!
+
+    //Code that handles profile info begins here, BEWARE: will probably be deleted!
     private fun saveProfileInfo()
     {
         val profileInfo = getSharedPreferences("UserData", Context.MODE_PRIVATE)
@@ -617,4 +698,5 @@ class MainActivity : ComponentActivity() {
         findViewById<EditText>(R.id.editParentPhoneNumText).setText(parentPhoneNum)
     }
 }
+//Code that handles profile info ends here!
 
