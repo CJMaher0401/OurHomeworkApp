@@ -376,7 +376,7 @@ class MainActivity : ComponentActivity() {
                     val homework = Homework(courseDesc, assignmentDesc, dueDate, color)
 
                     homeworkList.add(homework)
-
+                    uploadHomeworkData()
                     updateHomeworkRecyclerViews()
 
                     inflateLayout(R.layout.currentupcominghw_layout)
@@ -926,6 +926,9 @@ class MainActivity : ComponentActivity() {
         findViewById<EditText>(R.id.editEmailText).setText(email)
         findViewById<EditText>(R.id.editParentPhoneNumText).setText(parentPhoneNum)
     }
+    //Code that handles profile info ends here!
+
+    //code for uploading and editing data to the database starts here
 
     private fun uploadProfileData(){
 
@@ -953,11 +956,39 @@ class MainActivity : ComponentActivity() {
                 Log.w(TAG, "Error adding document $it")
             }
     }
+
+    private fun uploadHomeworkData(){
+        val courseDesc = this.findViewById<EditText>(R.id.editCourseDescText).text.toString()
+        val assignmentDesc = findViewById<EditText>(R.id.editAssignmentDescText).text.toString()
+        val dueDate = this.findViewById<EditText>(R.id.editDueDateText).text.toString()
+        val color = findViewById<EditText>(R.id.editCourseDescText).currentTextColor
+
+        val homework = Homework(courseDesc, assignmentDesc, dueDate, color)
+
+        val userHomeworkMap : MutableMap<String, Any> = HashMap()
+        userHomeworkMap["courseDesc"] = courseDesc
+        userHomeworkMap["assignmentDesc"] = assignmentDesc
+        userHomeworkMap["dueDate"] = dueDate
+        userHomeworkMap["color"] = color
+
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+        fireStoreDatabase.collection("users").document(userId).collection("userHomework").document(userId).set(userHomeworkMap)
+
+            .addOnSuccessListener {
+                Log.d(TAG, "Added document with ID $it")
+            }
+            .addOnFailureListener {
+                Log.w(TAG, "Error adding document $it")
+            }
+
+    }
 }
 
 
 
-//Code that handles profile info ends here!
+//code for uploading and editing data to the database ends here
+
 
 
 
