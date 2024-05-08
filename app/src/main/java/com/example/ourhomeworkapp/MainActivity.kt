@@ -19,25 +19,29 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ourhomeworkapp.databinding.ActivityMainBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
-import com.google.android.material.button.MaterialButton
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
-import org.w3c.dom.Text
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 
+
+const val TAG = "FIRESTORE"
 class MainActivity : ComponentActivity() {
 
     private lateinit var colorPickerView: ColorPickerView
@@ -69,7 +73,10 @@ class MainActivity : ComponentActivity() {
     private lateinit var passwordInput : EditText
     private lateinit var regButton : Button
 
+    private var binding : ActivityMainBinding? = null
 
+    lateinit var firestore: FirebaseFirestore
+    val fireStoreDatabase = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,6 +108,9 @@ class MainActivity : ComponentActivity() {
                     Toast.makeText(this, "Google Sign-In failed", Toast.LENGTH_SHORT).show()
                 }
             }
+
+        FirebaseFirestore.setLoggingEnabled(true)
+        firestore = Firebase.firestore
 
 
 
@@ -320,6 +330,7 @@ class MainActivity : ComponentActivity() {
                 }
                 findViewById<Button>(R.id.saveChangesButton).setOnClickListener {
                     saveProfileInfo()
+                    uploadProfileData()
                     inflateLayout(R.layout.homescreen_layout)
 
                 }
@@ -915,7 +926,37 @@ class MainActivity : ComponentActivity() {
         findViewById<EditText>(R.id.editEmailText).setText(email)
         findViewById<EditText>(R.id.editParentPhoneNumText).setText(parentPhoneNum)
     }
+
+    private fun uploadProfileData(){
+
+        val firstName = findViewById<EditText>(R.id.editFirstNameText).text.toString()
+        val lastName = findViewById<EditText>(R.id.editLastNameText).text.toString()
+        val email = findViewById<EditText>(R.id.editEmailText).text.toString()
+        val parentPhoneNum = findViewById<EditText>(R.id.editParentPhoneNumText).text.toString()
+
+        //val userId = FirebaseAuth.getInstance().currentUser.set(user)
+
+        val user: MutableMap<String, Any> = HashMap()
+        user["firstName"] = firstName
+        user["lastName"] = lastName
+        user["email"] = email
+        user["parentPhoneNum"] = parentPhoneNum
+
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+        fireStoreDatabase.collection("users").document(userId).set(user)
+
+            .addOnSuccessListener {
+                Log.d(TAG, "Added document with ID $it")
+            }
+            .addOnFailureListener {
+                Log.w(TAG, "Error adding document $it")
+            }
+    }
 }
+
+
+
 //Code that handles profile info ends here!
 
 
