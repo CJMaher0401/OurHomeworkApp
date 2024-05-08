@@ -1,22 +1,38 @@
 package com.example.ourhomeworkapp
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.tasks.Task
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.GoogleAuthProvider
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
+import org.w3c.dom.Text
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -45,12 +61,51 @@ class MainActivity : ComponentActivity() {
 
     private var currentLayout: Int = R.layout.homescreen_layout
 
-    private lateinit var auth: FirebaseAuth
 
-    //hello
+    private lateinit var auth: FirebaseAuth
+    private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var launcher: ActivityResultLauncher<Intent>
+    private lateinit var emailInput : EditText
+    private lateinit var passwordInput : EditText
+    private lateinit var regButton : Button
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+        // Inflate the login screen layout initially
+        inflateLayout(R.layout.loginscreen_layout)
+        // Initialize FirebaseAuth and GoogleSignInClient
+        auth = FirebaseAuth.getInstance()
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(com.firebase.ui.auth.R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        // Set OnClickListener for Google Sign-In button
+        findViewById<ImageButton>(R.id.gSignInBtn)?.setOnClickListener {
+            googleSignInClient = GoogleSignIn.getClient(this, gso)
+            signInGoogle()
+        }
+
+
+        // Register ActivityResultLauncher for handling Google Sign-In result
+        launcher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                    handleResults(task)
+                }
+                else {
+                    Toast.makeText(this, "Google Sign-In failed", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+
+
+        emailInput = findViewById(R.id.email_input)
+        passwordInput = findViewById(R.id.password_input)
 
         courseList = mutableListOf()
 
@@ -64,6 +119,57 @@ class MainActivity : ComponentActivity() {
 
         completedHomeworkList = mutableListOf()
 
+
+
+    }
+
+    private fun handleFirebaseError(exception: Exception?) {
+        when (exception) {
+            is FirebaseAuthUserCollisionException -> {
+                Toast.makeText(this, "Email already in use", Toast.LENGTH_SHORT).show()
+            }
+            is FirebaseAuthInvalidCredentialsException -> {
+                Toast.makeText(this, "Invalid email or password format", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                Log.e("FirebaseAuth", "Error: $exception")
+                Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    }
+
+    private fun signInGoogle(){
+        val signInIntent = googleSignInClient.signInIntent
+        launcher.launch(signInIntent)
+    }
+
+    private fun handleResults(task: Task<GoogleSignInAccount>) {
+        if (task.isSuccessful){
+            val account : GoogleSignInAccount? = task.result
+            if (account != null){
+                Log.d("SIGN_IN", "Account retrieved: ${account.email}")
+                updateUI(account)
+            }
+
+        }else{
+            Log.e("SIGN_IN", "Error: ${task.exception}")
+            Toast.makeText(this, task.exception.toString(), Toast.LENGTH_SHORT).show()
+        }
+
+    }
+
+    private fun updateUI(account: GoogleSignInAccount) {
+        val credential = GoogleAuthProvider.getCredential(account.idToken , null)
+        auth.signInWithCredential(credential).addOnCompleteListener{
+            if (it.isSuccessful){
+                Log.d("SIGN_IN", "Firebase authentication successful")
+                inflateLayout(R.layout.homescreen_layout)
+
+            }else{
+                Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
+            }
+        }
         homeAdapter = HomeworkAdapter(homeworkList, this, "home")
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
@@ -87,6 +193,88 @@ class MainActivity : ComponentActivity() {
 
         when (layoutResID)
         {
+            R.layout.loginscreen_layout ->{
+                emailInput = findViewById(R.id.email_input)
+                passwordInput = findViewById(R.id.password_input)
+
+                findViewById<Button>(R.id.register_btn).setOnClickListener{
+                    inflateLayout(R.layout.registerscreen_layout)
+                }
+
+                findViewById<Button>(R.id.login_btn).setOnClickListener{
+                    val email = emailInput.text.toString()
+                    val password = passwordInput.text.toString()
+
+                    if (email.isNotEmpty() && password.isNotEmpty()) {
+                        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                // Login successful
+                                Log.d("FirebaseAuth", "User signed in successfully")
+                                Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
+
+                                // Redirect to a different activity or update the UI
+                                inflateLayout(R.layout.homescreen_layout) // Example of changing layout
+                            } else {
+                                // Handle login errors
+                                handleFirebaseLoginError(task.exception)
+                            }
+                        }
+                    } else {
+                        Toast.makeText(this, "Email and password cannot be empty", Toast.LENGTH_SHORT).show()
+                    }
+
+
+                }
+                findViewById<ImageButton>(R.id.gSignInBtn).setOnClickListener{
+                     fun updateUI(account: GoogleSignInAccount) {
+                         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                         auth.signInWithCredential(credential).addOnCompleteListener {
+                             if (it.isSuccessful)
+                             {
+                                 inflateLayout(R.layout.homescreen_layout)
+
+                             }
+                             else
+                             {
+                                 Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT)
+                                     .show()
+                             }
+                         }
+                     }
+                }
+            }
+
+            R.layout.registerscreen_layout->{
+                emailInput = findViewById(R.id.email_input)
+                passwordInput = findViewById(R.id.password_input)
+                regButton = findViewById(R.id.createAccount_btn)
+
+
+                regButton.setOnClickListener {
+                    val email = emailInput.text.toString()
+                    val password = passwordInput.text.toString()
+
+                    if(email.isNotEmpty() && password.isNotEmpty()){
+                        auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener{task ->
+                            if (task.isSuccessful){
+                                //reg was successful
+                                Log.d("FirebaseAuth", "User registered successfully")
+                                Toast.makeText(this,"Account created successfully!", Toast.LENGTH_SHORT).show()
+
+                                inflateLayout(R.layout.homescreen_layout)
+                            } else {
+                                handleFirebaseError(task.exception)
+                            }
+                        }
+                    } else {
+                        Toast.makeText(this, "Email and password cannot be empty", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                findViewById<Button>(R.id.goToLogin).setOnClickListener {
+                    inflateLayout(R.layout.loginscreen_layout)
+                }
+            }
+
             R.layout.homescreen_layout -> {
                 findViewById<Button>(R.id.profileButton).setOnClickListener {
                     inflateLayout(R.layout.profilescreen_layout) {
@@ -146,6 +334,19 @@ class MainActivity : ComponentActivity() {
                 findViewById<Button>(R.id.profileMyProfileButton).setOnClickListener {
                     inflateLayout(R.layout.profilescreen_layout) {
                         loadUpdatedProfileInfo()
+                    }
+                }
+                findViewById<Button>(R.id.signOutButton).setOnClickListener {
+                    googleSignInClient.signOut().addOnCompleteListener{task ->
+                        if (task.isSuccessful){
+                            inflateLayout(R.layout.loginscreen_layout)
+
+                        }
+                        else{
+                            Log.e("GoogleSignOut", "Sign-out failed", task.exception) // Log for debugging
+                            Toast.makeText(this, "Failed to sign out. Please try again.", Toast.LENGTH_SHORT).show() // Inform the user
+                        }
+
                     }
                 }
             }
@@ -340,8 +541,6 @@ class MainActivity : ComponentActivity() {
                     inflateLayout(R.layout.completedhwscreen_layout)
                 }
                 findViewById<Button>(R.id.completeUndoButton).setOnClickListener{
-
-
                 }
                 findViewById<Button>(R.id.completeDeleteButton).setOnClickListener{
 
@@ -350,8 +549,27 @@ class MainActivity : ComponentActivity() {
         }
     }
     //Inflate layout function code finishes here!
+    private fun handleFirebaseLoginError(exception: Exception?) {
+        when (exception) {
+            is FirebaseAuthUserCollisionException -> {
+                Toast.makeText(this, "Email already in use", Toast.LENGTH_SHORT).show()
+            }
+            is FirebaseAuthInvalidCredentialsException -> {
+                Toast.makeText(this, "Invalid email or password format", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                Log.e("FirebaseAuth", "Error: $exception")
+                Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show()
+            }
+        }
 
+    }
     //Code that has to do with the add homework screen starts here
+
+
+
+
+
     private fun showDatePicker(editText: EditText)
     {
         val currentDate = Calendar.getInstance()
@@ -699,4 +917,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 //Code that handles profile info ends here!
+
+
+
 
