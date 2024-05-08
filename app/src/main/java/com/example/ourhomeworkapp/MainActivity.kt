@@ -72,6 +72,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        inflateLayout(R.layout.loginscreen_layout)
         // Initialize FirebaseAuth and GoogleSignInClient
         auth = FirebaseAuth.getInstance()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -118,7 +119,6 @@ class MainActivity : ComponentActivity() {
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
 
-        inflateLayout(R.layout.loginscreen_layout)
 
     }
 
@@ -158,7 +158,8 @@ class MainActivity : ComponentActivity() {
 
     }
 
-    private fun updateUI(account: GoogleSignInAccount) {
+    private fun updateUI(account: GoogleSignInAccount)
+    {
         val credential = GoogleAuthProvider.getCredential(account.idToken , null)
         auth.signInWithCredential(credential).addOnCompleteListener{
             if (it.isSuccessful){
