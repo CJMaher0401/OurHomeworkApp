@@ -24,7 +24,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
-import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -32,7 +31,6 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
-import org.w3c.dom.Text
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -74,9 +72,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-        // Inflate the login screen layout initially
-        inflateLayout(R.layout.loginscreen_layout)
         // Initialize FirebaseAuth and GoogleSignInClient
         auth = FirebaseAuth.getInstance()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -119,7 +114,11 @@ class MainActivity : ComponentActivity() {
 
         completedHomeworkList = mutableListOf()
 
+        homeAdapter = HomeworkAdapter(homeworkList, this, "home")
+        currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
+        completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
 
+        inflateLayout(R.layout.loginscreen_layout)
 
     }
 
@@ -170,12 +169,6 @@ class MainActivity : ComponentActivity() {
                 Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
             }
         }
-        homeAdapter = HomeworkAdapter(homeworkList, this, "home")
-        currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
-        completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
-
-
-        inflateLayout(R.layout.homescreen_layout)
     }
 
     //Code that handles anything and everything to do with navigating the app starts here, including what happens when a button is pressed,
