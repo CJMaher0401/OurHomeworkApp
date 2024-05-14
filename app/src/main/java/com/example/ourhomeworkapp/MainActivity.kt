@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var colorEditText: EditText
     data class Course(val courseName: String, val courseColor: Int)
     private lateinit var courseList: MutableList<Course>
-    data class Homework(val courseName: String, val assignmentDesc: String, val dueDate: String, val color: Int, var isCompleted: Boolean = false)
+    data class Homework(var courseName: String, var assignmentDesc: String, var dueDate: String, var color: Int, var isCompleted: Boolean = false)
     private lateinit var homeworkList: MutableList<Homework>
 
     private lateinit var completedHomeworkList: MutableList<Homework>
@@ -56,6 +56,8 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var updateEditClassDescText: EditText
     private lateinit var editHomeworkLayout: View
+
+    private var editingHomeworkIndex: Int = -1
 
     private var currentLayout: Int = R.layout.homescreen_layout
 
@@ -479,9 +481,19 @@ class MainActivity : ComponentActivity() {
                     val editDueDate = this.findViewById<EditText>(R.id.edit_editDueDateText).text.toString()
                     val editColor = findViewById<EditText>(R.id.edit_editClassDescText).currentTextColor
 
-                    val homework = Homework(editCourseDesc, editAssignmentDesc, editDueDate, editColor)
-
-                    homeworkList.add(homework)
+                    if (editingHomeworkIndex != -1)
+                    {
+                        val homework = homeworkList[editingHomeworkIndex]
+                        homework.courseName = editCourseDesc
+                        homework.assignmentDesc = editAssignmentDesc
+                        homework.dueDate = editDueDate
+                        homework.color = editColor
+                    }
+                    else
+                    {
+                        val homework = Homework(editCourseDesc, editAssignmentDesc, editDueDate, editColor)
+                        homeworkList.add(homework)
+                    }
 
                     updateHomeworkRecyclerViews()
 
@@ -758,7 +770,7 @@ class MainActivity : ComponentActivity() {
 
             holder.itemView.findViewById<Button>(R.id.homeworkButtonView).setOnClickListener{
                 when(origin){
-                    "home", "currentUpcoming" -> mainActivity.editHomework(currentHomework)
+                    "home", "currentUpcoming" -> mainActivity.editHomework(currentHomework, position)
                     "completed" -> mainActivity.viewCompletedHomework(currentHomework)
                 }
             }
@@ -774,7 +786,7 @@ class MainActivity : ComponentActivity() {
                 homeworkRecyclerView.setOnClickListener {
                     val homework = homeworkList[adapterPosition]
                     val color = homeworkRecyclerView.currentTextColor
-                    (itemView.context as MainActivity).editHomework(homework) //,color)
+                    (itemView.context as MainActivity).editHomework(homework, position) //,color)
                 }
             }
             fun bind(homework: Homework)
@@ -827,8 +839,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun editHomework(homework: Homework)
+    fun editHomework(homework: Homework, index: Int)
     {
+        editingHomeworkIndex = index
         inflateLayout(R.layout.edithwscreen_layout)
         {
             findViewById<EditText>(R.id.edit_editClassDescText).apply {
