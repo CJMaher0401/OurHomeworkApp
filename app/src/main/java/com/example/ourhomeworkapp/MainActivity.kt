@@ -201,6 +201,7 @@ class MainActivity : ComponentActivity() {
 
         afterInflate?.invoke()
 
+
         when (layoutResID)
         {
             R.layout.loginscreen_layout ->{
