@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#ECD6C5"
+    android:background="@drawable/background_light"
     android:orientation="vertical">
 
 <LinearLayout
@@ -16,7 +16,7 @@
         android:id="@+id/coursecancelButton"
         android:layout_width="136dp"
         android:layout_height="50dp"
-        android:background="#EDD7C6"
+
         android:text="Cancel"
         android:textAlignment="center"
         style="?android:attr/borderlessButtonStyle"/>
@@ -30,7 +30,7 @@
         android:id="@+id/coursesaveButton"
         android:layout_width="136dp"
         android:layout_height="wrap_content"
-        android:background="#EDD7C6"
+
         android:text="Save"
         style="?android:attr/borderlessButtonStyle"/>
 </LinearLayout>
@@ -66,7 +66,7 @@
     android:id="@+id/pickYourColorButton"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#EBD5C4"
+    android:background="@color/fui_transparent"
     android:text="Pick the color of your course"
     />
 

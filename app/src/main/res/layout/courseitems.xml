@@ -5,12 +5,13 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+
     <Button
         android:id="@+id/courseNameButtonView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal|left|center_vertical"
-        android:background="#EED8C7"
+        android:background="@color/fui_transparent"
         android:textSize="24sp"
         style="?android:attr/borderlessButtonStyle"/>
 
