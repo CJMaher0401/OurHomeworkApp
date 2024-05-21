@@ -127,8 +127,8 @@ class MainActivity : ComponentActivity() {
 
 
 
-        emailInput = findViewById(R.id.email_input)
-        passwordInput = findViewById(R.id.password_input)
+       // emailInput = findViewById(R.id.email_input)
+        //passwordInput = findViewById(R.id.password_input)
 
         courseList = mutableListOf()
 
@@ -144,61 +144,6 @@ class MainActivity : ComponentActivity() {
 
 
 
-    }
-
-    private fun handleFirebaseError(exception: Exception?) {
-        when (exception) {
-            is FirebaseAuthUserCollisionException -> {
-                Toast.makeText(this, "Email already in use", Toast.LENGTH_SHORT).show()
-            }
-            is FirebaseAuthInvalidCredentialsException -> {
-                Toast.makeText(this, "Invalid email or password format", Toast.LENGTH_SHORT).show()
-            }
-            else -> {
-                Log.e("FirebaseAuth", "Error: $exception")
-                Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-    }
-
-    private fun signInGoogle(){
-        val signInIntent = googleSignInClient.signInIntent
-        launcher.launch(signInIntent)
-    }
-
-    private fun handleResults(task: Task<GoogleSignInAccount>) {
-        if (task.isSuccessful){
-            val account : GoogleSignInAccount? = task.result
-            if (account != null){
-                Log.d("SIGN_IN", "Account retrieved: ${account.email}")
-                updateUI(account)
-            }
-
-        }else{
-            Log.e("SIGN_IN", "Error: ${task.exception}")
-            Toast.makeText(this, task.exception.toString(), Toast.LENGTH_SHORT).show()
-        }
-
-    }
-
-    private fun updateUI(account: GoogleSignInAccount) {
-        val credential = GoogleAuthProvider.getCredential(account.idToken , null)
-        auth.signInWithCredential(credential).addOnCompleteListener{
-            if (it.isSuccessful){
-                Log.d("SIGN_IN", "Firebase authentication successful")
-                inflateLayout(R.layout.homescreen_layout)
-
-            }else{
-                Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
-            }
-        }
-        homeAdapter = HomeworkAdapter(homeworkList, this, "home")
-        currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
-        completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
-
-
-        inflateLayout(R.layout.homescreen_layout)
     }
 
     //Code that handles anything and everything to do with navigating the app starts here, including what happens when a button is pressed,
