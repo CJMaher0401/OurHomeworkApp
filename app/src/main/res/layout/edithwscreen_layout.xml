@@ -16,7 +16,7 @@
             android:id="@+id/editcancelButton"
             android:layout_width="136dp"
             android:layout_height="50dp"
-
+            android:background="@color/fui_transparent"
             android:text="Cancel"
             android:textAlignment="center"
             style="?android:attr/borderlessButtonStyle"/>
@@ -30,7 +30,7 @@
             android:id="@+id/editsaveButton"
             android:layout_width="136dp"
             android:layout_height="wrap_content"
-
+            android:background="@color/fui_transparent"
             android:text="Save"
             style="?android:attr/borderlessButtonStyle"/>
     </LinearLayout>

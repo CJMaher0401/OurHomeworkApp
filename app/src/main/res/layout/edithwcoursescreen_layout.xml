@@ -18,7 +18,7 @@
             android:id="@+id/edit_returnToAddHWButton"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-
+            android:background="@color/fui_transparent"
             android:text="Cancel"
             app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
