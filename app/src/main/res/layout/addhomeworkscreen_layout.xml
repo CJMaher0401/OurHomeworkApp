@@ -17,6 +17,10 @@
             android:layout_width="136dp"
             android:layout_height="50dp"
             android:background="@color/fui_transparent"
+            android:shadowColor="@color/white"
+            android:shadowDx="-1"
+            android:shadowDy="-1"
+            android:shadowRadius="1"
             android:text="Cancel"
             android:textAlignment="center"
             style="?android:attr/borderlessButtonStyle"/>
@@ -31,6 +35,10 @@
             android:layout_width="136dp"
             android:layout_height="wrap_content"
             android:background="@color/fui_transparent"
+            android:shadowColor="@color/white"
+            android:shadowDx="-1"
+            android:shadowDy="-1"
+            android:shadowRadius="1"
             android:text="Save"
             style="?android:attr/borderlessButtonStyle"/>
     </LinearLayout>
@@ -42,6 +50,10 @@
         android:gravity="center"
         android:paddingBottom="20dp"
         android:text="Add Homework"
+        android:shadowColor="@color/white"
+        android:shadowDx="-1"
+        android:shadowDy="-1"
+        android:shadowRadius="1"
         android:textColor="#000000"
         android:textSize="34sp" />
 
@@ -49,6 +61,7 @@
         android:id="@+id/courseNameText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:text="    Your Course:"
         android:textColor="#000000" />
 
