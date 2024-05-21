@@ -1,11 +1,14 @@
 package com.example.ourhomeworkapp
 
-import android.app.Activity
+import android.Manifest
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.telephony.SmsManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +20,8 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -61,7 +66,6 @@ class MainActivity : ComponentActivity() {
 
     private var currentLayout: Int = R.layout.homescreen_layout
 
-
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var launcher: ActivityResultLauncher<Intent>
@@ -69,7 +73,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var passwordInput : EditText
     private lateinit var regButton : Button
 
-
+    private val SMS_PERMISSION_CODE = 101
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,7 +91,7 @@ class MainActivity : ComponentActivity() {
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
 
-        inflateLayout(R.layout.homescreen_layout)
+        inflateLayout(R.layout.loginscreen_layout)
 
         auth = FirebaseAuth.getInstance()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -102,7 +106,7 @@ class MainActivity : ComponentActivity() {
         launcher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult())
             { result ->
-                if (result.resultCode == Activity.RESULT_OK)
+                if (result.resultCode == RESULT_OK)
                 {
                     val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                     handleResults(task)
@@ -113,9 +117,47 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-        //emailInput = findViewById(R.id.email_input)
-        //passwordInput = findViewById(R.id.password_input)
+        emailInput = findViewById(R.id.email_input)
+        passwordInput = findViewById(R.id.password_input)
     }
+
+    private fun requestSmsPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.SEND_SMS), SMS_PERMISSION_CODE)
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == SMS_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "SMS Permission Granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "SMS Permission Denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun sendSMS(phoneNumber: String, message: String) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+            try {
+                val smsManager: SmsManager = SmsManager.getDefault()
+                smsManager.sendTextMessage(phoneNumber, null, message, null, null)
+                Toast.makeText(this, "SMS sent successfully", Toast.LENGTH_SHORT).show()
+                Log.d("SMS", "SMS sent to $phoneNumber: $message")
+            } catch (e: Exception) {
+                Toast.makeText(this, "Failed to send SMS", Toast.LENGTH_SHORT).show()
+                Log.e("SMS", "Failed to send SMS", e)
+                e.printStackTrace()
+            }
+        } else {
+            Toast.makeText(this, "SMS permission not granted", Toast.LENGTH_SHORT).show()
+            requestSmsPermission()
+        }
+    }
+
 
     //Code that handles anything and everything to do with navigating the app starts here, including what happens when a button is pressed,
     //what layout to open when a button is pressed, what actions to preform when a button is pressed, updating recycler views, and more.
@@ -219,6 +261,7 @@ class MainActivity : ComponentActivity() {
             }
 
             R.layout.homescreen_layout -> {
+                requestSmsPermission()
                 findViewById<Button>(R.id.profileButton).setOnClickListener {
                     inflateLayout(R.layout.profilescreen_layout) {
                         loadUpdatedProfileInfo()
@@ -312,6 +355,9 @@ class MainActivity : ComponentActivity() {
                     updateHomeworkRecyclerViews()
                     clearHomeworkInput()
                     inflateLayout(R.layout.currentupcominghw_layout)
+
+                    val message = "Hey Connor added an $courseDesc assignment titled $assignmentDesc and it is due on $dueDate."
+                    sendSMS("5551234567", message)
                 }
 
                 findViewById<EditText>(R.id.editCourseDescText).setOnClickListener {
@@ -456,7 +502,16 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<Button>(R.id.completeHWButton).setOnClickListener {
+                    val homework = homeworkList[editingHomeworkIndex]
+                    homework.isCompleted = true
+                    completedHomeworkList.add(homework)
+                    homeworkList.remove(homework)
+                    updateHomeworkRecyclerViews()
+
                     inflateLayout(R.layout.completedhwscreen_layout)
+
+                    val message = "Hey Connor just completed the ${homework.assignmentDesc} for his ${homework.courseName} Class."
+                    sendSMS("5551234567", message)
                 }
 
                 val editDueDateText = findViewById<EditText>(R.id.edit_editDueDateText)
@@ -662,6 +717,8 @@ class MainActivity : ComponentActivity() {
             .show()
     }
     //Code that deals with color coding courses ends here!
+
+    //Code that handles SMS messaging starts here!
 
     //Code that handles the course creation, storage and management starts here
     class CourseAdapter(private val courseList: List<Course>, private val mainActivity: MainActivity, private val editClassDescText: EditText) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>()
