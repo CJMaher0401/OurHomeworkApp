@@ -6,6 +6,7 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.telephony.SmsManager
 import android.util.Log
@@ -44,7 +45,6 @@ import java.util.Calendar
 import java.util.Locale
 
 
-
 const val TAG = "FIRESTORE"
 class MainActivity : ComponentActivity() {
 
@@ -80,8 +80,7 @@ class MainActivity : ComponentActivity() {
 
     private var binding : ActivityMainBinding? = null
 
-    lateinit var firestore: FirebaseFirestore
-    val fireStoreDatabase = FirebaseFirestore.getInstance()
+    private lateinit var firestore: FirebaseFirestore
     private val SMS_PERMISSION_CODE = 101
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -988,6 +987,66 @@ class MainActivity : ComponentActivity() {
         }
     }
     //Code that handles homework ends here!
+    //code for uploading and editing data to the database starts here
+
+    private fun uploadProfileData(){
+
+        val fireStoreDatabase = FirebaseFirestore.getInstance()
+
+        val firstName = findViewById<EditText>(R.id.editFirstNameText).text.toString()
+        val lastName = findViewById<EditText>(R.id.editLastNameText).text.toString()
+        val email = findViewById<EditText>(R.id.editEmailText).text.toString()
+        val parentPhoneNum = findViewById<EditText>(R.id.editParentPhoneNumText).text.toString()
+
+        //val userId = FirebaseAuth.getInstance().currentUser.set(user)
+
+        val user: MutableMap<String, Any> = HashMap()
+        user["firstName"] = firstName
+        user["lastName"] = lastName
+        user["email"] = email
+        user["parentPhoneNum"] = parentPhoneNum
+
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+        fireStoreDatabase.collection("users").document(userId).set(user)
+
+            .addOnSuccessListener {
+                Log.d(TAG, "Added document with ID")
+            }
+            .addOnFailureListener {
+                Log.w(TAG, "Error adding document")
+            }
+    }
+
+    private fun uploadHomeworkData(){
+        val fireStoreDatabase = FirebaseFirestore.getInstance()
+
+        val courseDesc = this.findViewById<EditText>(R.id.editCourseDescText).text.toString()
+        val assignmentDesc = findViewById<EditText>(R.id.editAssignmentDescText).text.toString()
+        val dueDate = this.findViewById<EditText>(R.id.editDueDateText).text.toString()
+        val color = findViewById<EditText>(R.id.editCourseDescText).currentTextColor
+
+        val homework = MainActivity.Homework(courseDesc, assignmentDesc, dueDate, color)
+
+        val userHomeworkMap : MutableMap<String, Any> = HashMap()
+        userHomeworkMap["courseDesc"] = courseDesc
+        userHomeworkMap["assignmentDesc"] = assignmentDesc
+        userHomeworkMap["dueDate"] = dueDate
+        userHomeworkMap["color"] = color
+
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+        fireStoreDatabase.collection("users").document(userId).collection("userHomework").document(userId).set(userHomeworkMap)
+
+            .addOnSuccessListener {
+                Log.d(TAG, "Added document with ID $it")
+            }
+            .addOnFailureListener {
+                Log.w(TAG, "Error adding document $it")
+            }
+
+    }
+    //code for uploading and editing data to the database ends here
 
     //Code that handles profile info begins here, BEWARE: will probably be deleted!
     private fun saveProfileInfo()
@@ -1024,66 +1083,12 @@ class MainActivity : ComponentActivity() {
 }
 //Code that handles profile info ends here!
 
-    //code for uploading and editing data to the database starts here
-
-    private fun uploadProfileData(){
-
-        val firstName = findViewById<EditText>(R.id.editFirstNameText).text.toString()
-        val lastName = findViewById<EditText>(R.id.editLastNameText).text.toString()
-        val email = findViewById<EditText>(R.id.editEmailText).text.toString()
-        val parentPhoneNum = findViewById<EditText>(R.id.editParentPhoneNumText).text.toString()
-
-        //val userId = FirebaseAuth.getInstance().currentUser.set(user)
-
-        val user: MutableMap<String, Any> = HashMap()
-        user["firstName"] = firstName
-        user["lastName"] = lastName
-        user["email"] = email
-        user["parentPhoneNum"] = parentPhoneNum
-
-        val userId = FirebaseAuth.getInstance().currentUser!!.uid
-
-        fireStoreDatabase.collection("users").document(userId).set(user)
-
-            .addOnSuccessListener {
-                Log.d(TAG, "Added document with ID $it")
-            }
-            .addOnFailureListener {
-                Log.w(TAG, "Error adding document $it")
-            }
-    }
-
-    private fun uploadHomeworkData(){
-        val courseDesc = this.findViewById<EditText>(R.id.editCourseDescText).text.toString()
-        val assignmentDesc = findViewById<EditText>(R.id.editAssignmentDescText).text.toString()
-        val dueDate = this.findViewById<EditText>(R.id.editDueDateText).text.toString()
-        val color = findViewById<EditText>(R.id.editCourseDescText).currentTextColor
-
-        val homework = Homework(courseDesc, assignmentDesc, dueDate, color)
-
-        val userHomeworkMap : MutableMap<String, Any> = HashMap()
-        userHomeworkMap["courseDesc"] = courseDesc
-        userHomeworkMap["assignmentDesc"] = assignmentDesc
-        userHomeworkMap["dueDate"] = dueDate
-        userHomeworkMap["color"] = color
-
-        val userId = FirebaseAuth.getInstance().currentUser!!.uid
-
-        fireStoreDatabase.collection("users").document(userId).collection("userHomework").document(userId).set(userHomeworkMap)
-
-            .addOnSuccessListener {
-                Log.d(TAG, "Added document with ID $it")
-            }
-            .addOnFailureListener {
-                Log.w(TAG, "Error adding document $it")
-            }
-
-    }
-}
 
 
 
-//code for uploading and editing data to the database ends here
+
+
+
 
 
 
