@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="top"
-    android:background="#EED8C7"
+    android:background="@drawable/background_light"
     android:orientation="vertical">
 
     <!-- This is the linear layout that contains the buttons, I needed to add a view to
@@ -22,7 +22,6 @@
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="200dp"
             android:layout_height="50dp"
-            android:background="#EDD7C6"
             android:text="Test Profile"
             android:textAlignment="center" />
 
@@ -37,10 +36,10 @@
             android:layout_width="96dp"
             android:layout_height="50dp"
             android:layout_gravity="right|top"
-            android:background="#EDD7C6"
+            android:background="@color/fui_transparent"
             android:contentDescription="this is how you can quick add a homework assignment"
-            android:src="@android:drawable/ic_menu_add"
-            android:tint="#F36259" />
+            android:src="@drawable/icons8_add_50"
+            />
     </LinearLayout>
 
     <CalendarView
@@ -79,7 +78,6 @@
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="135dp"
             android:layout_height="55dp"
-            android:background="#EDD7C6"
             android:text="Home"
             app:srcCompat="@android:drawable/ic_menu_revert" />
 
@@ -88,7 +86,6 @@
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="140dp"
             android:layout_height="55dp"
-            android:background="#EDD7C6"
             android:text="Your HW"
             app:srcCompat="@android:drawable/ic_menu_sort_by_size" />
 
@@ -97,7 +94,6 @@
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="133dp"
             android:layout_height="55dp"
-            android:background="#EDD7C6"
             android:text="Your Profile"
             app:srcCompat="@android:drawable/ic_menu_my_calendar" />
     </LinearLayout>

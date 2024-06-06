@@ -3,7 +3,7 @@
     android:id="@+id/addHWlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EED8C7"
+    android:background="@drawable/background_light"
     android:orientation="vertical">
 
     <LinearLayout
@@ -16,8 +16,12 @@
             android:id="@+id/addHWcancelButton"
             android:layout_width="136dp"
             android:layout_height="50dp"
-            android:background="#EED8C7"
-            android:text="Cancel"
+            android:background="@color/fui_transparent"
+            android:shadowColor="@color/white"
+            android:shadowDx="-1"
+            android:shadowDy="-1"
+            android:shadowRadius="1"
+            android:text="@string/cancel"
             android:textAlignment="center"
             style="?android:attr/borderlessButtonStyle"/>
 
@@ -30,8 +34,12 @@
             android:id="@+id/addHWsaveButton"
             android:layout_width="136dp"
             android:layout_height="wrap_content"
-            android:background="#EED8C7"
-            android:text="Save"
+            android:background="@color/fui_transparent"
+            android:shadowColor="@color/white"
+            android:shadowDx="-1"
+            android:shadowDy="-1"
+            android:shadowRadius="1"
+            android:text="@string/save"
             style="?android:attr/borderlessButtonStyle"/>
     </LinearLayout>
 
@@ -41,7 +49,11 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingBottom="20dp"
-        android:text="Add Homework"
+        android:text="@string/add_homework"
+        android:shadowColor="@color/white"
+        android:shadowDx="-1"
+        android:shadowDy="-1"
+        android:shadowRadius="1"
         android:textColor="#000000"
         android:textSize="34sp" />
 
@@ -49,6 +61,7 @@
         android:id="@+id/courseNameText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:text="    Your Course:"
         android:textColor="#000000" />
 
@@ -58,6 +71,7 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:focusable="false"
+
         android:hint="Select a course for this HW assignment"
         android:inputType="none"
         android:paddingBottom="15dp" />

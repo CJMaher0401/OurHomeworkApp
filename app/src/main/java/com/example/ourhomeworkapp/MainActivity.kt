@@ -24,15 +24,19 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ourhomeworkapp.databinding.ActivityMainBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
@@ -41,6 +45,7 @@ import java.util.Calendar
 import java.util.Locale
 
 
+const val TAG = "FIRESTORE"
 class MainActivity : ComponentActivity() {
 
     private lateinit var colorPickerView: ColorPickerView
@@ -73,6 +78,9 @@ class MainActivity : ComponentActivity() {
     private lateinit var passwordInput : EditText
     private lateinit var regButton : Button
 
+    private var binding : ActivityMainBinding? = null
+
+    private lateinit var firestore: FirebaseFirestore
     private val SMS_PERMISSION_CODE = 101
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -117,8 +125,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-        emailInput = findViewById(R.id.email_input)
-        passwordInput = findViewById(R.id.password_input)
+        FirebaseFirestore.setLoggingEnabled(true)
+        firestore = Firebase.firestore
+
+       // emailInput = findViewById(R.id.email_input)
+        //passwordInput = findViewById(R.id.password_input)
+
     }
 
     private fun requestSmsPermission() {
@@ -175,6 +187,7 @@ class MainActivity : ComponentActivity() {
         setContentView(layout)
 
         afterInflate?.invoke()
+
 
         when (layoutResID)
         {
@@ -306,6 +319,7 @@ class MainActivity : ComponentActivity() {
                 }
                 findViewById<Button>(R.id.saveChangesButton).setOnClickListener {
                     saveProfileInfo()
+                    uploadProfileData()
                     inflateLayout(R.layout.homescreen_layout)
 
                 }
@@ -352,6 +366,7 @@ class MainActivity : ComponentActivity() {
                     val homework = Homework(courseDesc, assignmentDesc, dueDate, color)
 
                     homeworkList.add(homework)
+                    uploadHomeworkData()
                     updateHomeworkRecyclerViews()
                     clearHomeworkInput()
                     inflateLayout(R.layout.currentupcominghw_layout)
@@ -972,6 +987,66 @@ class MainActivity : ComponentActivity() {
         }
     }
     //Code that handles homework ends here!
+    //code for uploading and editing data to the database starts here
+
+    private fun uploadProfileData(){
+
+        val fireStoreDatabase = FirebaseFirestore.getInstance()
+
+        val firstName = findViewById<EditText>(R.id.editFirstNameText).text.toString()
+        val lastName = findViewById<EditText>(R.id.editLastNameText).text.toString()
+        val email = findViewById<EditText>(R.id.editEmailText).text.toString()
+        val parentPhoneNum = findViewById<EditText>(R.id.editParentPhoneNumText).text.toString()
+
+        //val userId = FirebaseAuth.getInstance().currentUser.set(user)
+
+        val user: MutableMap<String, Any> = HashMap()
+        user["firstName"] = firstName
+        user["lastName"] = lastName
+        user["email"] = email
+        user["parentPhoneNum"] = parentPhoneNum
+
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+        fireStoreDatabase.collection("users").document(userId).set(user)
+
+            .addOnSuccessListener {
+                Log.d(TAG, "Added document with ID")
+            }
+            .addOnFailureListener {
+                Log.w(TAG, "Error adding document")
+            }
+    }
+
+    private fun uploadHomeworkData(){
+        val fireStoreDatabase = FirebaseFirestore.getInstance()
+
+        val courseDesc = this.findViewById<EditText>(R.id.editCourseDescText).text.toString()
+        val assignmentDesc = findViewById<EditText>(R.id.editAssignmentDescText).text.toString()
+        val dueDate = this.findViewById<EditText>(R.id.editDueDateText).text.toString()
+        val color = findViewById<EditText>(R.id.editCourseDescText).currentTextColor
+
+        val homework = MainActivity.Homework(courseDesc, assignmentDesc, dueDate, color)
+
+        val userHomeworkMap : MutableMap<String, Any> = HashMap()
+        userHomeworkMap["courseDesc"] = courseDesc
+        userHomeworkMap["assignmentDesc"] = assignmentDesc
+        userHomeworkMap["dueDate"] = dueDate
+        userHomeworkMap["color"] = color
+
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+        fireStoreDatabase.collection("users").document(userId).collection("userHomework").document(userId).set(userHomeworkMap)
+
+            .addOnSuccessListener {
+                Log.d(TAG, "Added document with ID $it")
+            }
+            .addOnFailureListener {
+                Log.w(TAG, "Error adding document $it")
+            }
+
+    }
+    //code for uploading and editing data to the database ends here
 
     //Code that handles profile info begins here, BEWARE: will probably be deleted!
     private fun saveProfileInfo()
@@ -1007,6 +1082,14 @@ class MainActivity : ComponentActivity() {
     }
 }
 //Code that handles profile info ends here!
+
+
+
+
+
+
+
+
 
 
 
