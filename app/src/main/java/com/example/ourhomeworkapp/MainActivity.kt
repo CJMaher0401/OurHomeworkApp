@@ -99,7 +99,7 @@ class MainActivity : ComponentActivity() {
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
 
-        inflateLayout(R.layout.loginscreen_layout)
+        inflateLayout(R.layout.introscreen_name_layout)
 
         auth = FirebaseAuth.getInstance()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -124,13 +124,6 @@ class MainActivity : ComponentActivity() {
                     Toast.makeText(this, "Google Sign-In failed", Toast.LENGTH_SHORT).show()
                 }
             }
-
-        FirebaseFirestore.setLoggingEnabled(true)
-        firestore = Firebase.firestore
-
-       // emailInput = findViewById(R.id.email_input)
-        //passwordInput = findViewById(R.id.password_input)
-
     }
 
     private fun requestSmsPermission() {
