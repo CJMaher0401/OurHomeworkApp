@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
-                android:text="Feature 1"
+                android:text="Create Classes"
                 android:textColor="@color/primaryTextColor"
                 android:textSize="16sp" />
 
@@ -57,7 +57,7 @@
                 android:layout_height="114dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="4dp"
-                android:text="Brief description of feature 1."
+                android:text="Create your own classes to organize your school assignments easier!"
                 android:textColor="@color/secondaryTextColor"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
-                android:text="Feature 2"
+                android:text="SMS Updates"
                 android:textColor="@color/primaryTextColor"
                 android:textSize="16sp" />
 
@@ -92,7 +92,7 @@
                 android:layout_height="114dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="4dp"
-                android:text="Brief description of feature 2."
+                android:text="Include your parents in your school life without directly having them invovled!"
                 android:textColor="@color/secondaryTextColor"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -118,7 +118,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
-                android:text="Feature 3"
+                android:text="Color Code it All"
                 android:textColor="@color/primaryTextColor"
                 android:textSize="16sp" />
 
@@ -127,7 +127,7 @@
                 android:layout_height="114dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="4dp"
-                android:text="Brief description of feature 3."
+                android:text="Customize your classes and assignments by color coding them to your exact liking!"
                 android:textColor="@color/secondaryTextColor"
                 android:textSize="14sp" />
         </LinearLayout>
