@@ -37,6 +37,7 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
@@ -46,13 +47,20 @@ import java.util.Locale
 
 
 const val TAG = "FIRESTORE"
+
+
 class MainActivity : ComponentActivity() {
 
     private lateinit var colorPickerView: ColorPickerView
     private lateinit var colorEditText: EditText
     data class Course(val courseName: String, val courseColor: Int)
     private lateinit var courseList: MutableList<Course>
-    data class Homework(var courseName: String, var assignmentDesc: String, var dueDate: String, var color: Int, var isCompleted: Boolean = false)
+    data class Homework(
+        var courseName: String = "",
+        var assignmentDesc: String = "",
+        var dueDate: String = "",
+        var color: Int = 0,
+        var isCompleted: Boolean = false)
     private lateinit var homeworkList: MutableList<Homework>
 
     private lateinit var completedHomeworkList: MutableList<Homework>
@@ -83,6 +91,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var firestore: FirebaseFirestore
     private val SMS_PERMISSION_CODE = 101
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -98,6 +108,8 @@ class MainActivity : ComponentActivity() {
         homeAdapter = HomeworkAdapter(homeworkList, this, "home")
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
+
+
 
         inflateLayout(R.layout.loginscreen_layout)
 
@@ -128,8 +140,14 @@ class MainActivity : ComponentActivity() {
         FirebaseFirestore.setLoggingEnabled(true)
         firestore = Firebase.firestore
 
-       // emailInput = findViewById(R.id.email_input)
-        //passwordInput = findViewById(R.id.password_input)
+        FirebaseAuth.getInstance().addAuthStateListener { auth ->
+            val user = auth.currentUser
+            if (user != null) {
+                retrieveHomeworkData(user.uid)
+            } else {
+                Log.w(TAG, "User not authenticated, cannot retrieve homework data.")
+            }
+        }
 
     }
 
@@ -211,7 +229,9 @@ class MainActivity : ComponentActivity() {
                                 Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
 
                                 // Redirect to a different activity or update the UI
-                                inflateLayout(R.layout.homescreen_layout) // Example of changing layout
+                                inflateLayout(R.layout.homescreen_layout)
+
+
                             } else {
                                 // Handle login errors
                                 handleFirebaseLoginError(task.exception)
@@ -229,6 +249,7 @@ class MainActivity : ComponentActivity() {
                          auth.signInWithCredential(credential).addOnCompleteListener {
                              if (it.isSuccessful)
                              {
+
                                  inflateLayout(R.layout.homescreen_layout)
 
                              }
@@ -496,6 +517,7 @@ class MainActivity : ComponentActivity() {
                         homework.assignmentDesc = editAssignmentDesc
                         homework.dueDate = editDueDate
                         homework.color = editColor
+
                     }
                     else
                     {
@@ -823,7 +845,7 @@ class MainActivity : ComponentActivity() {
     //Code that handles courses ends here!
 
     //Code that handles homework creation, storage and management begins here
-    class HomeworkAdapter(private val homeworkList: List<Homework>, private val mainActivity: MainActivity, private val origin: String ) : RecyclerView.Adapter<HomeworkAdapter.HomeworkViewHolder>()
+    class HomeworkAdapter(private val homeworkList: MutableList<Homework>, private val mainActivity: MainActivity, private val origin: String ) : RecyclerView.Adapter<HomeworkAdapter.HomeworkViewHolder>()
     {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeworkViewHolder
         {
@@ -1036,7 +1058,7 @@ class MainActivity : ComponentActivity() {
 
         val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
-        fireStoreDatabase.collection("users").document(userId).collection("userHomework").document(userId).set(userHomeworkMap)
+        fireStoreDatabase.collection("users").document(userId).collection("userHomework").add(userHomeworkMap)
 
             .addOnSuccessListener {
                 Log.d(TAG, "Added document with ID $it")
@@ -1046,7 +1068,31 @@ class MainActivity : ComponentActivity() {
             }
 
     }
-    //code for uploading and editing data to the database ends here
+
+    private fun retrieveHomeworkData(userId: String){
+        homeworkList.clear() // Clear the existing list
+
+        // Fetch data from Firestore
+        val firestore = Firebase.firestore
+        val userHomeworkRef = firestore.collection("users").document(userId).collection("userHomework")
+
+        userHomeworkRef.get()
+            .addOnSuccessListener { documents ->
+                for (document in documents){
+                    try{
+                        val homework = document.toObject<Homework>()
+                        homeworkList.add(homework)
+                    } catch (e: Exception){
+                        Log.e(TAG, "Error converting document", e)
+                    }
+                }
+                updateHomeworkRecyclerViews() // Update RecyclerView after fetching data
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error getting documents: ", exception)
+            }
+    }
+    //code for uploading, retrieving, and editing data to the database ends here
 
     //Code that handles profile info begins here, BEWARE: will probably be deleted!
     private fun saveProfileInfo()
