@@ -5,7 +5,7 @@
     android:id="@+id/yourCoursesLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EED8C7"
+    android:background="@drawable/background_light"
     android:orientation="vertical">
 
     <LinearLayout
@@ -18,7 +18,7 @@
             android:id="@+id/returnToAddHWButton"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="#EDD7C6"
+            android:background="@color/fui_transparent"
             android:text="Cancel"
             app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
@@ -31,7 +31,7 @@
             android:id="@+id/addNewClassButton"
             android:layout_width="106dp"
             android:layout_height="match_parent"
-            android:background="#EDD7C6"
+            android:background="@color/fui_transparent"
             android:text="Add Course"
             app:srcCompat="@android:drawable/ic_menu_add" />
     </LinearLayout>
