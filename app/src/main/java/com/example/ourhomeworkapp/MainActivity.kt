@@ -116,9 +116,6 @@ class MainActivity : ComponentActivity() {
                     Toast.makeText(this, "Google Sign-In failed", Toast.LENGTH_SHORT).show()
                 }
             }
-
-        //emailInput = findViewById(R.id.email_input)
-        //passwordInput = findViewById(R.id.password_input)
     }
 
     private fun requestSmsPermission() {
