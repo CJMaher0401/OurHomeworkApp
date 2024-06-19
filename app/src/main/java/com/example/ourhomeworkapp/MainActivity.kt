@@ -56,9 +56,11 @@ class MainActivity : ComponentActivity() {
     data class Course(val courseName: String, val courseColor: Int)
     private lateinit var courseList: MutableList<Course>
     data class Homework(
+        var id: String = "",
         var courseName: String = "",
         var assignmentDesc: String = "",
         var dueDate: String = "",
+        var reminderDate: String = "",
         var color: Int = 0,
         var isCompleted: Boolean = false)
     private lateinit var homeworkList: MutableList<Homework>
@@ -379,12 +381,14 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<Button>(R.id.addHWsaveButton).setOnClickListener {
+                    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener // Ensure user is authenticated
                     val courseDesc = this.findViewById<EditText>(R.id.editCourseDescText).text.toString()
                     val assignmentDesc = findViewById<EditText>(R.id.editAssignmentDescText).text.toString()
                     val dueDate = this.findViewById<EditText>(R.id.editDueDateText).text.toString()
                     val color = findViewById<EditText>(R.id.editCourseDescText).currentTextColor
+                    val reminderDate = this.findViewById<EditText>(R.id.editReminderText).text.toString()
 
-                    val homework = Homework(courseDesc, assignmentDesc, dueDate, color)
+                    val homework = Homework(userId, courseDesc, assignmentDesc, dueDate, reminderDate, color)
 
                     homeworkList.add(homework)
                     uploadHomeworkData()
@@ -505,23 +509,27 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<Button>(R.id.editsaveButton).setOnClickListener {
+                    val id = FirebaseAuth.getInstance().currentUser?.uid.toString()
                     val editCourseDesc = this.findViewById<EditText>(R.id.edit_editClassDescText).text.toString()
                     val editAssignmentDesc = findViewById<EditText>(R.id.edit_editAssignmentDescText).text.toString()
                     val editDueDate = this.findViewById<EditText>(R.id.edit_editDueDateText).text.toString()
+                    val editReminderDate = this.findViewById<EditText>(R.id.editReminderText).text.toString()
                     val editColor = findViewById<EditText>(R.id.edit_editClassDescText).currentTextColor
 
                     if (editingHomeworkIndex != -1)
                     {
                         val homework = homeworkList[editingHomeworkIndex]
+                        homework.id = id
                         homework.courseName = editCourseDesc
                         homework.assignmentDesc = editAssignmentDesc
                         homework.dueDate = editDueDate
+                        homework.reminderDate = editReminderDate
                         homework.color = editColor
 
                     }
                     else
                     {
-                        val homework = Homework(editCourseDesc, editAssignmentDesc, editDueDate, editColor)
+                        val homework = Homework(id, editCourseDesc, editAssignmentDesc, editDueDate, editReminderDate, editColor)
                         homeworkList.add(homework)
                     }
 
@@ -588,7 +596,7 @@ class MainActivity : ComponentActivity() {
                 findViewById<Button>(R.id.completeUndoButton).setOnClickListener{
                 }
                 findViewById<Button>(R.id.completeDeleteButton).setOnClickListener{
-
+                    deleteHomeworkFromFireStore(Homework())
                 }
             }
         }
@@ -1042,32 +1050,59 @@ class MainActivity : ComponentActivity() {
 
     private fun uploadHomeworkData(){
         val fireStoreDatabase = FirebaseFirestore.getInstance()
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
+        val id = FirebaseAuth.getInstance().currentUser?.uid.toString()
         val courseDesc = this.findViewById<EditText>(R.id.editCourseDescText).text.toString()
         val assignmentDesc = findViewById<EditText>(R.id.editAssignmentDescText).text.toString()
         val dueDate = this.findViewById<EditText>(R.id.editDueDateText).text.toString()
         val color = findViewById<EditText>(R.id.editCourseDescText).currentTextColor
+        val reminderDate = this.findViewById<EditText>(R.id.editReminderText).toString()
 
-        val homework = MainActivity.Homework(courseDesc, assignmentDesc, dueDate, color)
+        val homework = MainActivity.Homework(id, courseDesc, assignmentDesc, dueDate, reminderDate,  color)
 
         val userHomeworkMap : MutableMap<String, Any> = HashMap()
+        userHomeworkMap["id"] = id
         userHomeworkMap["courseDesc"] = courseDesc
         userHomeworkMap["assignmentDesc"] = assignmentDesc
         userHomeworkMap["dueDate"] = dueDate
+        userHomeworkMap["reminderDate"] = reminderDate
         userHomeworkMap["color"] = color
 
-        val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+        val documentId = fireStoreDatabase.collection("users").document(userId).collection("userHomework").document().id
 
         fireStoreDatabase.collection("users").document(userId).collection("userHomework").add(userHomeworkMap)
 
             .addOnSuccessListener {
-                Log.d(TAG, "Added document with ID $it")
+                Log.d(TAG, "Homework successfully uploaded with ID: $documentId")
             }
             .addOnFailureListener {
                 Log.w(TAG, "Error adding document $it")
             }
 
+
+            // this section was supposed to upload the course name and color but is currently causing the app to crash
+            //whenever the homework gets saved. i'll try to make it its own method and it probably has something to do with
+            // that its not an edit text but a text view.
+
+        //val courseName = this.findViewById<EditText>(R.id.courseNameText).text.toString()
+        //val courseColor = findViewById<EditText>(R.id.courseColorView).currentTextColor
+
+       // val userCourseMap : MutableMap<String, Any> = HashMap()
+        //userCourseMap["courseName"] = courseName
+        //userCourseMap["courseColor"] = courseColor
+
+        //fireStoreDatabase.collection("users").document(userId).collection("userCourses").add(userCourseMap)
+            //.addOnSuccessListener {
+                //Log.d(TAG, "Added document with ID $it")
+            //}
+           // .addOnFailureListener {
+            //    Log.w(TAG, "Error adding document $it")
+           // }
+
     }
+
 
     private fun retrieveHomeworkData(userId: String){
         homeworkList.clear() // Clear the existing list
@@ -1081,7 +1116,10 @@ class MainActivity : ComponentActivity() {
                 for (document in documents){
                     try{
                         val homework = document.toObject<Homework>()
-                        homeworkList.add(homework)
+                        if (homework != null) {
+
+                            homeworkList.add(homework)
+                        }
                     } catch (e: Exception){
                         Log.e(TAG, "Error converting document", e)
                     }
@@ -1092,6 +1130,21 @@ class MainActivity : ComponentActivity() {
                 Log.e(TAG, "Error getting documents: ", exception)
             }
     }
+    private fun deleteHomeworkFromFireStore(homework:Homework){
+        val firestore = Firebase.firestore
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return // Ensure user is authenticated
+
+        firestore.collection("users").document(userId)
+            .collection("userHomework").document(homework.id) // Use homework ID or unique identifier
+            .delete()
+            .addOnSuccessListener {
+                Log.d(TAG, "DocumentSnapshot successfully deleted!")
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error deleting document", e)
+            }
+    }
+
     //code for uploading, retrieving, and editing data to the database ends here
 
     //Code that handles profile info begins here, BEWARE: will probably be deleted!
