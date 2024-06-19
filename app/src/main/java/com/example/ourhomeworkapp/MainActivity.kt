@@ -30,13 +30,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
@@ -46,6 +44,7 @@ import java.util.Locale
 
 
 const val TAG = "FIRESTORE"
+
 class MainActivity : ComponentActivity() {
 
     private lateinit var colorPickerView: ColorPickerView
@@ -99,7 +98,7 @@ class MainActivity : ComponentActivity() {
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
 
-        inflateLayout(R.layout.introscreen_name_layout)
+        inflateLayout(R.layout.loginscreen_layout)
 
         auth = FirebaseAuth.getInstance()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -263,6 +262,34 @@ class MainActivity : ComponentActivity() {
                 }
                 findViewById<Button>(R.id.goToLogin).setOnClickListener {
                     inflateLayout(R.layout.loginscreen_layout)
+                }
+            }
+            R.layout.introscreen_welcome_layout -> {
+
+                findViewById<Button>(R.id.welcomeNextButton).setOnClickListener {
+                    inflateLayout(R.layout.introscreen_name_layout)
+                }
+            }
+
+            R.layout.introscreen_name_layout -> {
+
+                findViewById<Button>(R.id.nameNextButton).setOnClickListener {
+                    inflateLayout(R.layout.introscreen_phonenum_layout)
+                }
+
+                findViewById<EditText>(R.id.nameInput).setOnClickListener {
+
+                }
+            }
+
+            R.layout.introscreen_phonenum_layout -> {
+
+                findViewById<Button>(R.id.phoneNumNextButton).setOnClickListener {
+                    inflateLayout(R.layout.homescreen_layout)
+                }
+
+                findViewById<EditText>(R.id.phoneNumInput).setOnClickListener {
+
                 }
             }
 

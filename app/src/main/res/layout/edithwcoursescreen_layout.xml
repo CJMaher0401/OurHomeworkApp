@@ -55,7 +55,5 @@
         android:clickable="true"
         android:focusable="true"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/courseitems"
-        />
-
+        tools:listitem="@layout/courseitems"/>
 </LinearLayout>

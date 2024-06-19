@@ -8,11 +8,12 @@
         android:id="@+id/welcomeMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome to OurHomework!"
-        android:textSize="24sp"
-        android:textColor="@color/primaryTextColor"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp" />
+        android:layout_marginTop="50dp"
+        android:fontFamily="@font/comfortaa_light"
+        android:text="Welcome to OurHomework!"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="24sp" />
 
     <GridLayout
         android:id="@+id/featuresContainer"
@@ -76,7 +77,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/ic_feature2" />
+                 />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -111,7 +112,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/ic_feature3" />
+                 />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -146,7 +147,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/ic_feature4" />
+                 />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -167,6 +168,22 @@
                 android:textSize="14sp" />
         </LinearLayout>
     </GridLayout>
+
+    <Button
+        android:id="@+id/welcomeNextButton"
+        android:layout_width="92dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="278dp"
+        android:layout_marginTop="400dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="40dp"
+        android:background="@color/primaryButtonColor"
+        android:padding="12dp"
+        android:text="Next"
+        android:textColor="@color/buttonTextColor" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -194,5 +211,4 @@
             android:layout_margin="4dp"
             android:background="@drawable/inactive_dot" />
     </LinearLayout>
-
 </RelativeLayout>
