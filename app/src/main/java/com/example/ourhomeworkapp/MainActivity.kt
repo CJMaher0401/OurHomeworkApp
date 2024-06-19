@@ -1072,10 +1072,6 @@ class MainActivity : ComponentActivity() {
         userHomeworkMap["reminderDate"] = reminderDate
         userHomeworkMap["color"] = color
 
-
-
-
-
         val documentId = fireStoreDatabase.collection("users")
             .document(userId)
             .collection("userHomework")
@@ -1122,12 +1118,24 @@ class MainActivity : ComponentActivity() {
 
     private fun retrieveHomeworkData(userId: String){
         homeworkList.clear() // Clear the existing list
+        completedHomeworkList.clear() // Clear the completed list
 
-        // Fetch data from Firestore
+        // Fetch data of both homeworks from Firestore
         val firestore = Firebase.firestore
-        val userHomeworkRef = firestore.collection("users").document(userId).collection("userHomework")
+        val currentHomeworkRef = firestore.collection("users")
+            .document(userId)
+            .collection("userHomework")
+            .document("currentHomework")
+            .collection("homeworks")
 
-        userHomeworkRef.get()
+        val completedHomeworkRef = firestore.collection("users")
+            .document(userId)
+            .collection("userHomework")
+            .document("completedHomework")
+            .collection("homeworks")
+
+        // Fetch current homework
+        currentHomeworkRef.get()
             .addOnSuccessListener { documents ->
                 for (document in documents){
                     try{
@@ -1140,12 +1148,42 @@ class MainActivity : ComponentActivity() {
                         Log.e(TAG, "Error converting document", e)
                     }
                 }
-                updateHomeworkRecyclerViews() // Update RecyclerView after fetching data
+                // Fetch completed homework after current homework is fetched
+                retrieveCompletedHW(userId)
             }
             .addOnFailureListener { exception ->
                 Log.e(TAG, "Error getting documents: ", exception)
             }
     }
+
+    // Fetch Completed Homework
+    private fun retrieveCompletedHW(userId: String){
+        val firestore = Firebase.firestore
+        val completedHomeworkRef = firestore.collection("users")
+            .document(userId)
+            .collection("userHomework")
+            .document("completedHomework")
+            .collection("homeworks")
+
+        completedHomeworkRef.get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    try {
+                        val homework = document.toObject<Homework>()
+                        if (homework != null) {
+                            completedHomeworkList.add(homework)
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error converting document", e)
+                    }
+                }
+                updateHomeworkRecyclerViews() // Update RecyclerView after fetching all data
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error getting documents: ", exception)
+            }
+    }
+
     private fun deleteHomeworkFromFireStore(homework:Homework){
         val firestore = Firebase.firestore
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return // Ensure user is authenticated
