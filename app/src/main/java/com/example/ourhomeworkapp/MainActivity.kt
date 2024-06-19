@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
     data class Course(val courseName: String, val courseColor: Int)
     private lateinit var courseList: MutableList<Course>
     data class Homework(
-        var id: String = "",
+        var documentId: String? = null,
         var courseName: String = "",
         var assignmentDesc: String = "",
         var dueDate: String = "",
@@ -391,7 +391,7 @@ class MainActivity : ComponentActivity() {
                     val homework = Homework(userId, courseDesc, assignmentDesc, dueDate, reminderDate, color)
 
                     homeworkList.add(homework)
-                    uploadHomeworkData()
+                    uploadHomeworkData(homework)
                     updateHomeworkRecyclerViews()
                     clearHomeworkInput()
                     inflateLayout(R.layout.currentupcominghw_layout)
@@ -519,7 +519,7 @@ class MainActivity : ComponentActivity() {
                     if (editingHomeworkIndex != -1)
                     {
                         val homework = homeworkList[editingHomeworkIndex]
-                        homework.id = id
+                        homework.documentId = id
                         homework.courseName = editCourseDesc
                         homework.assignmentDesc = editAssignmentDesc
                         homework.dueDate = editDueDate
@@ -550,9 +550,9 @@ class MainActivity : ComponentActivity() {
                     val homework = homeworkList[editingHomeworkIndex]
                     homework.isCompleted = true
                     completedHomeworkList.add(homework)
+                    moveHomeworkToCompleted(homework)//moves homework to completed in firestore
                     homeworkList.remove(homework)
                     updateHomeworkRecyclerViews()
-
                     inflateLayout(R.layout.completedhwscreen_layout)
 
                     val message = "Hey Connor just completed the ${homework.assignmentDesc} for his ${homework.courseName} Class."
@@ -596,7 +596,7 @@ class MainActivity : ComponentActivity() {
                 findViewById<Button>(R.id.completeUndoButton).setOnClickListener{
                 }
                 findViewById<Button>(R.id.completeDeleteButton).setOnClickListener{
-                    deleteHomeworkFromFireStore(Homework())
+
                 }
             }
         }
@@ -982,6 +982,7 @@ class MainActivity : ComponentActivity() {
         findViewById<Button>(R.id.completeHWButton).setOnClickListener {
             homework.isCompleted = true
             completedHomeworkList.add(homework)
+            moveHomeworkToCompleted(homework)
             homeworkList.remove(homework)
             updateHomeworkRecyclerViews()
 
@@ -1004,12 +1005,14 @@ class MainActivity : ComponentActivity() {
             homework.isCompleted = false
             completedHomeworkList.remove(homework)
             homeworkList.add(homework)
+            moveHomeworkToCurrent(homework) // Move homework back to current in Firestore
             updateHomeworkRecyclerViews()
 
             inflateLayout(R.layout.currentupcominghw_layout)
         }
         findViewById<Button>(R.id.completeDeleteButton).setOnClickListener {
             homework.isCompleted = true
+            deleteHomeworkFromFireStore(homework)
             completedHomeworkList.remove(homework)
             updateHomeworkRecyclerViews()
 
@@ -1048,21 +1051,21 @@ class MainActivity : ComponentActivity() {
             }
     }
 
-    private fun uploadHomeworkData(){
+    private fun uploadHomeworkData(homework: Homework){
         val fireStoreDatabase = FirebaseFirestore.getInstance()
         val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
-        val id = FirebaseAuth.getInstance().currentUser?.uid.toString()
+        //
         val courseDesc = this.findViewById<EditText>(R.id.editCourseDescText).text.toString()
         val assignmentDesc = findViewById<EditText>(R.id.editAssignmentDescText).text.toString()
         val dueDate = this.findViewById<EditText>(R.id.editDueDateText).text.toString()
         val color = findViewById<EditText>(R.id.editCourseDescText).currentTextColor
         val reminderDate = this.findViewById<EditText>(R.id.editReminderText).toString()
 
-        val homework = MainActivity.Homework(id, courseDesc, assignmentDesc, dueDate, reminderDate,  color)
+        //val homework = MainActivity.Homework(id, courseDesc, assignmentDesc, dueDate, reminderDate,  color)
 
         val userHomeworkMap : MutableMap<String, Any> = HashMap()
-        userHomeworkMap["id"] = id
+        //userHomeworkMap["id"] = id
         userHomeworkMap["courseDesc"] = courseDesc
         userHomeworkMap["assignmentDesc"] = assignmentDesc
         userHomeworkMap["dueDate"] = dueDate
@@ -1070,17 +1073,30 @@ class MainActivity : ComponentActivity() {
         userHomeworkMap["color"] = color
 
 
-        val documentId = fireStoreDatabase.collection("users").document(userId).collection("userHomework").document().id
 
-        fireStoreDatabase.collection("users").document(userId).collection("userHomework").add(userHomeworkMap)
 
+
+        val documentId = fireStoreDatabase.collection("users")
+            .document(userId)
+            .collection("userHomework")
+            .document("currentHomework")
+            .collection("homeworks")
+            .document().id
+
+        fireStoreDatabase.collection("users")
+            .document(userId)
+            .collection("userHomework")
+            .document("currentHomework")
+            .collection("homeworks")
+            .document(documentId)
+            .set(userHomeworkMap)
             .addOnSuccessListener {
                 Log.d(TAG, "Homework successfully uploaded with ID: $documentId")
+                homework.documentId = documentId
             }
             .addOnFailureListener {
                 Log.w(TAG, "Error adding document $it")
             }
-
 
             // this section was supposed to upload the course name and color but is currently causing the app to crash
             //whenever the homework gets saved. i'll try to make it its own method and it probably has something to do with
@@ -1134,15 +1150,83 @@ class MainActivity : ComponentActivity() {
         val firestore = Firebase.firestore
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return // Ensure user is authenticated
 
-        firestore.collection("users").document(userId)
-            .collection("userHomework").document(homework.id) // Use homework ID or unique identifier
-            .delete()
-            .addOnSuccessListener {
-                Log.d(TAG, "DocumentSnapshot successfully deleted!")
+
+        homework.documentId?.let {documentId ->
+            val completedHomeworkRef =firestore.collection("users")
+                .document(userId)
+                .collection("userHomework")
+                .document("completedHomework")
+                .collection("homeworks")
+                .document(documentId) // Use homework ID or unique identifier
+                .delete()
+                .addOnSuccessListener {
+                    Log.d(TAG, "Homework successfully deleted with ID: $documentId")
+                }
+                .addOnFailureListener { e ->
+                    Log.w(TAG, "Error deleting document", e)
+                }
+        }
+
+    }
+    private fun moveHomeworkToCompleted(homework: Homework) {
+        val fireStoreDatabase = FirebaseFirestore.getInstance()
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+        homework.documentId?.let { documentId ->
+            val currentHomeworkRef = fireStoreDatabase.collection("users")
+                .document(userId)
+                .collection("userHomework")
+                .document("currentHomework")
+                .collection("homeworks")
+                .document(documentId)
+
+            val completedHomeworkRef = fireStoreDatabase.collection("users")
+                .document(userId)
+                .collection("userHomework")
+                .document("completedHomework")
+                .collection("homeworks")
+                .document(documentId)
+
+            fireStoreDatabase.runTransaction { transaction ->
+                val snapshot = transaction.get(currentHomeworkRef)
+                transaction.set(completedHomeworkRef, snapshot.data!!)
+                transaction.delete(currentHomeworkRef)
+            }.addOnSuccessListener {
+                Log.d(TAG, "Homework moved to completed with ID: $documentId")
+            }.addOnFailureListener { e ->
+                Log.w(TAG, "Error moving document", e)
             }
-            .addOnFailureListener { e ->
-                Log.w(TAG, "Error deleting document", e)
+        }
+    }
+    private fun moveHomeworkToCurrent(homework: Homework) {
+        val fireStoreDatabase = FirebaseFirestore.getInstance()
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+        homework.documentId?.let { documentId ->
+            val completedHomeworkRef = fireStoreDatabase.collection("users")
+                .document(userId)
+                .collection("userHomework")
+                .document("completedHomework")
+                .collection("homeworks")
+                .document(documentId)
+
+            val currentHomeworkRef = fireStoreDatabase.collection("users")
+                .document(userId)
+                .collection("userHomework")
+                .document("currentHomework")
+                .collection("homeworks")
+                .document(documentId)
+
+            fireStoreDatabase.runTransaction { transaction ->
+                val snapshot = transaction.get(completedHomeworkRef)
+                transaction.set(currentHomeworkRef, snapshot.data!!)
+                transaction.delete(completedHomeworkRef)
+            }.addOnSuccessListener {
+                Log.d(TAG, "Homework moved back to current with ID: $documentId")
+            }.addOnFailureListener { e ->
+                Log.w(TAG, "Error moving document", e)
             }
+        }
     }
 
     //code for uploading, retrieving, and editing data to the database ends here
