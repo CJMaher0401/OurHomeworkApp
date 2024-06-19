@@ -274,6 +274,12 @@ class MainActivity : ComponentActivity() {
             R.layout.introscreen_name_layout -> {
 
                 findViewById<Button>(R.id.nameNextButton).setOnClickListener {
+                    val name = findViewById<EditText>(R.id.nameInput).text.toString()
+                    val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putString("userName", name)
+                    editor.apply()
+
                     inflateLayout(R.layout.introscreen_phonenum_layout)
                 }
 
@@ -285,6 +291,12 @@ class MainActivity : ComponentActivity() {
             R.layout.introscreen_phonenum_layout -> {
 
                 findViewById<Button>(R.id.phoneNumNextButton).setOnClickListener {
+                    val phoneNumber = findViewById<EditText>(R.id.phoneNumInput).text.toString()
+                    val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putString("userPhoneNumber", phoneNumber)
+                    editor.apply()
+
                     inflateLayout(R.layout.homescreen_layout)
                 }
 
@@ -389,10 +401,17 @@ class MainActivity : ComponentActivity() {
                     uploadHomeworkData()
                     updateHomeworkRecyclerViews()
                     clearHomeworkInput()
+
                     inflateLayout(R.layout.currentupcominghw_layout)
 
-                    val message = "Hey Connor added an $courseDesc assignment titled $assignmentDesc and it is due on $dueDate."
-                    sendSMS("5551234567", message)
+                    val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                    val userName = sharedPreferences.getString("userName", "User")
+                    val userPhoneNumber = sharedPreferences.getString("userPhoneNumber", "5551234567")
+
+                    val message = "Hey $userName added an $courseDesc assignment titled $assignmentDesc and it is due on $dueDate."
+                    if (userPhoneNumber != null) {
+                        sendSMS(userPhoneNumber, message)
+                    }
                 }
 
                 findViewById<EditText>(R.id.editCourseDescText).setOnClickListener {
@@ -545,8 +564,14 @@ class MainActivity : ComponentActivity() {
 
                     inflateLayout(R.layout.completedhwscreen_layout)
 
-                    val message = "Hey Connor just completed the ${homework.assignmentDesc} for his ${homework.courseName} Class."
-                    sendSMS("5551234567", message)
+                    val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                    val userName = sharedPreferences.getString("userName", "User")
+                    val userPhoneNumber = sharedPreferences.getString("userPhoneNumber", "5551234567")
+
+                    val message = "Hey $userName just completed the ${homework.assignmentDesc} for his ${homework.courseName} Class."
+                    if (userPhoneNumber != null) {
+                        sendSMS(userPhoneNumber, message)
+                    }
                 }
 
                 val editDueDateText = findViewById<EditText>(R.id.edit_editDueDateText)
