@@ -30,13 +30,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
@@ -46,6 +44,7 @@ import java.util.Locale
 
 
 const val TAG = "FIRESTORE"
+
 class MainActivity : ComponentActivity() {
 
     private lateinit var colorPickerView: ColorPickerView
@@ -99,7 +98,7 @@ class MainActivity : ComponentActivity() {
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
 
-        inflateLayout(R.layout.introscreen_name_layout)
+        inflateLayout(R.layout.introscreen_welcome_layout)
 
         auth = FirebaseAuth.getInstance()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -124,45 +123,16 @@ class MainActivity : ComponentActivity() {
                     Toast.makeText(this, "Google Sign-In failed", Toast.LENGTH_SHORT).show()
                 }
             }
-    }
 
-    private fun requestSmsPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.SEND_SMS), SMS_PERMISSION_CODE)
-            }
-        }
-    }
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val introCompleted = sharedPreferences.getBoolean("introCompleted", false)
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == SMS_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "SMS Permission Granted", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "SMS Permission Denied", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun sendSMS(phoneNumber: String, message: String) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
-            try {
-                val smsManager: SmsManager = SmsManager.getDefault()
-                smsManager.sendTextMessage(phoneNumber, null, message, null, null)
-                Toast.makeText(this, "SMS sent successfully", Toast.LENGTH_SHORT).show()
-                Log.d("SMS", "SMS sent to $phoneNumber: $message")
-            } catch (e: Exception) {
-                Toast.makeText(this, "Failed to send SMS", Toast.LENGTH_SHORT).show()
-                Log.e("SMS", "Failed to send SMS", e)
-                e.printStackTrace()
-            }
+        if (introCompleted) {
+            inflateLayout(R.layout.homescreen_layout)
         } else {
-            Toast.makeText(this, "SMS permission not granted", Toast.LENGTH_SHORT).show()
-            requestSmsPermission()
+            inflateLayout(R.layout.introscreen_welcome_layout)
         }
     }
-
 
     //Code that handles anything and everything to do with navigating the app starts here, including what happens when a button is pressed,
     //what layout to open when a button is pressed, what actions to preform when a button is pressed, updating recycler views, and more.
@@ -265,6 +235,47 @@ class MainActivity : ComponentActivity() {
                     inflateLayout(R.layout.loginscreen_layout)
                 }
             }
+            R.layout.introscreen_welcome_layout -> {
+
+                findViewById<Button>(R.id.welcomeNextButton).setOnClickListener {
+                    inflateLayout(R.layout.introscreen_name_layout)
+                }
+            }
+
+            R.layout.introscreen_name_layout -> {
+
+                findViewById<Button>(R.id.nameNextButton).setOnClickListener {
+                    val name = findViewById<EditText>(R.id.nameInput).text.toString()
+                    val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putString("userName", name)
+                    editor.apply()
+
+                    inflateLayout(R.layout.introscreen_phonenum_layout)
+                }
+
+                findViewById<EditText>(R.id.nameInput).setOnClickListener {
+
+                }
+            }
+
+            R.layout.introscreen_phonenum_layout -> {
+
+                findViewById<Button>(R.id.phoneNumNextButton).setOnClickListener {
+                    val phoneNumber = findViewById<EditText>(R.id.phoneNumInput).text.toString()
+                    val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putString("userPhoneNumber", phoneNumber)
+                    editor.putBoolean("introCompleted", true)
+                    editor.apply()
+
+                    inflateLayout(R.layout.homescreen_layout)
+                }
+
+                findViewById<EditText>(R.id.phoneNumInput).setOnClickListener {
+
+                }
+            }
 
             R.layout.homescreen_layout -> {
                 requestSmsPermission()
@@ -362,10 +373,17 @@ class MainActivity : ComponentActivity() {
                     uploadHomeworkData()
                     updateHomeworkRecyclerViews()
                     clearHomeworkInput()
+
                     inflateLayout(R.layout.currentupcominghw_layout)
 
-                    val message = "Hey Connor added an $courseDesc assignment titled $assignmentDesc and it is due on $dueDate."
-                    sendSMS("5551234567", message)
+                    val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                    val userName = sharedPreferences.getString("userName", "User")
+                    val userPhoneNumber = sharedPreferences.getString("userPhoneNumber", "5551234567")
+
+                    val message = "Hey $userName added an $courseDesc assignment titled $assignmentDesc and it is due on $dueDate."
+                    if (userPhoneNumber != null) {
+                        sendSMS(userPhoneNumber, message)
+                    }
                 }
 
                 findViewById<EditText>(R.id.editCourseDescText).setOnClickListener {
@@ -518,8 +536,14 @@ class MainActivity : ComponentActivity() {
 
                     inflateLayout(R.layout.completedhwscreen_layout)
 
-                    val message = "Hey Connor just completed the ${homework.assignmentDesc} for his ${homework.courseName} Class."
-                    sendSMS("5551234567", message)
+                    val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                    val userName = sharedPreferences.getString("userName", "User")
+                    val userPhoneNumber = sharedPreferences.getString("userPhoneNumber", "5551234567")
+
+                    val message = "Hey $userName just completed the ${homework.assignmentDesc} for his ${homework.courseName} Class."
+                    if (userPhoneNumber != null) {
+                        sendSMS(userPhoneNumber, message)
+                    }
                 }
 
                 val editDueDateText = findViewById<EditText>(R.id.edit_editDueDateText)
@@ -727,6 +751,42 @@ class MainActivity : ComponentActivity() {
     //Code that deals with color coding courses ends here!
 
     //Code that handles SMS messaging starts here!
+    private fun requestSmsPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.SEND_SMS), SMS_PERMISSION_CODE)
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == SMS_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "SMS Permission Granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "SMS Permission Denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun sendSMS(phoneNumber: String, message: String) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+            try {
+                val smsManager: SmsManager = SmsManager.getDefault()
+                smsManager.sendTextMessage(phoneNumber, null, message, null, null)
+                Toast.makeText(this, "SMS sent successfully", Toast.LENGTH_SHORT).show()
+                Log.d("SMS", "SMS sent to $phoneNumber: $message")
+            } catch (e: Exception) {
+                Toast.makeText(this, "Failed to send SMS", Toast.LENGTH_SHORT).show()
+                Log.e("SMS", "Failed to send SMS", e)
+                e.printStackTrace()
+            }
+        } else {
+            Toast.makeText(this, "SMS permission not granted", Toast.LENGTH_SHORT).show()
+            requestSmsPermission()
+        }
+    }
 
     //Code that handles the course creation, storage and management starts here
     class CourseAdapter(private val courseList: List<Course>, private val mainActivity: MainActivity, private val editClassDescText: EditText) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>()

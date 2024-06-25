@@ -97,5 +97,4 @@
             android:text="Your Profile"
             app:srcCompat="@android:drawable/ic_menu_my_calendar" />
     </LinearLayout>
-
 </LinearLayout>
