@@ -98,7 +98,7 @@ class MainActivity : ComponentActivity() {
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
 
-        inflateLayout(R.layout.loginscreen_layout)
+        inflateLayout(R.layout.introscreen_welcome_layout)
 
         auth = FirebaseAuth.getInstance()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -123,45 +123,16 @@ class MainActivity : ComponentActivity() {
                     Toast.makeText(this, "Google Sign-In failed", Toast.LENGTH_SHORT).show()
                 }
             }
-    }
 
-    private fun requestSmsPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.SEND_SMS), SMS_PERMISSION_CODE)
-            }
-        }
-    }
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val introCompleted = sharedPreferences.getBoolean("introCompleted", false)
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == SMS_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "SMS Permission Granted", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "SMS Permission Denied", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun sendSMS(phoneNumber: String, message: String) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
-            try {
-                val smsManager: SmsManager = SmsManager.getDefault()
-                smsManager.sendTextMessage(phoneNumber, null, message, null, null)
-                Toast.makeText(this, "SMS sent successfully", Toast.LENGTH_SHORT).show()
-                Log.d("SMS", "SMS sent to $phoneNumber: $message")
-            } catch (e: Exception) {
-                Toast.makeText(this, "Failed to send SMS", Toast.LENGTH_SHORT).show()
-                Log.e("SMS", "Failed to send SMS", e)
-                e.printStackTrace()
-            }
+        if (introCompleted) {
+            inflateLayout(R.layout.homescreen_layout)
         } else {
-            Toast.makeText(this, "SMS permission not granted", Toast.LENGTH_SHORT).show()
-            requestSmsPermission()
+            inflateLayout(R.layout.introscreen_welcome_layout)
         }
     }
-
 
     //Code that handles anything and everything to do with navigating the app starts here, including what happens when a button is pressed,
     //what layout to open when a button is pressed, what actions to preform when a button is pressed, updating recycler views, and more.
@@ -295,6 +266,7 @@ class MainActivity : ComponentActivity() {
                     val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
                     val editor = sharedPreferences.edit()
                     editor.putString("userPhoneNumber", phoneNumber)
+                    editor.putBoolean("introCompleted", true)
                     editor.apply()
 
                     inflateLayout(R.layout.homescreen_layout)
@@ -779,6 +751,42 @@ class MainActivity : ComponentActivity() {
     //Code that deals with color coding courses ends here!
 
     //Code that handles SMS messaging starts here!
+    private fun requestSmsPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.SEND_SMS), SMS_PERMISSION_CODE)
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == SMS_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "SMS Permission Granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "SMS Permission Denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun sendSMS(phoneNumber: String, message: String) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+            try {
+                val smsManager: SmsManager = SmsManager.getDefault()
+                smsManager.sendTextMessage(phoneNumber, null, message, null, null)
+                Toast.makeText(this, "SMS sent successfully", Toast.LENGTH_SHORT).show()
+                Log.d("SMS", "SMS sent to $phoneNumber: $message")
+            } catch (e: Exception) {
+                Toast.makeText(this, "Failed to send SMS", Toast.LENGTH_SHORT).show()
+                Log.e("SMS", "Failed to send SMS", e)
+                e.printStackTrace()
+            }
+        } else {
+            Toast.makeText(this, "SMS permission not granted", Toast.LENGTH_SHORT).show()
+            requestSmsPermission()
+        }
+    }
 
     //Code that handles the course creation, storage and management starts here
     class CourseAdapter(private val courseList: List<Course>, private val mainActivity: MainActivity, private val editClassDescText: EditText) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>()
