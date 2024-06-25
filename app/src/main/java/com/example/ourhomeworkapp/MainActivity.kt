@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -16,10 +17,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.Switch
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -81,6 +85,21 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var firestore: FirebaseFirestore
     private val SMS_PERMISSION_CODE = 101
+
+    private lateinit var reminderSwitch: Switch
+    private lateinit var messageSwitch: Switch
+    private lateinit var sharedPreferences: SharedPreferences
+
+    private lateinit var changeNumberEditText: EditText
+    private lateinit var confirmNumberEditText: EditText
+    private lateinit var saveButton: AppCompatButton
+    private lateinit var cancelButton: AppCompatButton
+
+    private lateinit var changeNameEditText: EditText
+    private lateinit var confirmNameEditText: EditText
+    private lateinit var savesButton: AppCompatButton
+    private lateinit var cancelsButton: AppCompatButton
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -586,8 +605,223 @@ class MainActivity : ComponentActivity() {
 
                 }
             }
+
+            R.layout.setting_page -> {
+
+                findViewById<ImageView>(R.id.settings_back_button).setOnClickListener {
+                    inflateLayout(R.layout.homescreen_layout)
+                }
+
+                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.edit_profile_button).setOnClickListener {
+                    inflateLayout(R.layout.edit_profile)
+                }
+
+                findViewById<ImageView>(R.id.notification_menu_button).setOnClickListener {
+                    inflateLayout(R.layout.notifications_page)
+                }
+
+
+                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.sign_out_button).setOnClickListener {
+                    inflateLayout(R.layout.homescreen_layout)
+                }
+
+            }
+
+            //code for notification page
+            R.layout.notifications_page -> {
+
+                reminderSwitch = findViewById(R.id.reminder_switch)
+                messageSwitch = findViewById(R.id.message_switch)
+
+                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.notification_back_button).setOnClickListener {
+                    inflateLayout(R.layout.setting_page)
+                }
+
+                sharedPreferences = getSharedPreferences("NotificationPreferences", Context.MODE_PRIVATE)
+
+                // Load the saved states
+                reminderSwitch.isChecked = sharedPreferences.getBoolean("reminderSwitchState", false)
+                messageSwitch.isChecked = sharedPreferences.getBoolean("messageSwitchState", false)
+
+                // Set listeners for the switches
+                reminderSwitch.setOnCheckedChangeListener { _, isChecked ->
+                    saveSwitchState("reminderSwitchState", isChecked)
+
+                }
+
+                messageSwitch.setOnCheckedChangeListener { _, isChecked ->
+                    saveSwitchState("messageSwitchState", isChecked)
+
+                }
+
+                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.save_notification_button).setOnClickListener {
+                    inflateLayout(R.layout.setting_page)
+                }
+
+            }
+
+
+
+            //code for edit profile page
+            R.layout.edit_profile -> {
+
+                findViewById<ImageView>(R.id.edit_profile_back_button).setOnClickListener {
+                    inflateLayout(R.layout.setting_page)
+                }
+
+                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.change_photo_button).setOnClickListener {
+                   //inflateLayout(R.layout.change_photo)
+                }
+
+                findViewById<ImageView>(R.id.change_name_button).setOnClickListener {
+                    inflateLayout(R.layout.change_name)
+                }
+
+                findViewById<ImageView>(R.id.change_number_button).setOnClickListener {
+                    inflateLayout(R.layout.change_number)
+                }
+
+                findViewById<ImageView>(R.id.add_teacher_button).setOnClickListener {
+                   // inflateLayout(R.layout.add_teacher)
+                }
+
+            }
+            //code for change name
+            R.layout.change_name -> {
+
+                findViewById<ImageView>(R.id.change_name_back_button).setOnClickListener {
+                    inflateLayout(R.layout.edit_profile)
+                }
+
+                changeNameEditText = findViewById(R.id.change_name_Text)
+                confirmNameEditText = findViewById(R.id.confirm_name_text)
+                saveButton = findViewById(R.id.change_name_save_button)
+                cancelButton = findViewById(R.id.change_name_cancel_button)
+
+                // Set click listener for Save button
+                saveButton.setOnClickListener {
+                    saveName()
+                    inflateLayout(R.layout.edit_profile)
+                }
+
+                // Set click listener for Cancel button
+                cancelButton.setOnClickListener {
+                    // Handle cancel logic here
+                    inflateLayout(R.layout.edit_profile)
+                }
+
+            }
+            //code for change number
+            R.layout.change_number -> {
+
+                findViewById<ImageView>(R.id.change_number_back_button).setOnClickListener {
+                    inflateLayout(R.layout.edit_profile)
+                }
+
+
+                // Initialize views
+                changeNumberEditText = findViewById(R.id.change_number_text)
+                confirmNumberEditText = findViewById(R.id.confirm_number_text)
+                saveButton = findViewById(R.id.change_number_save_button)
+                cancelButton = findViewById(R.id.change_number_cancel_button)
+
+                // Set click listener for Save button
+                saveButton.setOnClickListener {
+                    saveNumbers()
+                    inflateLayout(R.layout.edit_profile)
+                }
+
+                // Set click listener for Cancel button
+                cancelButton.setOnClickListener {
+                    // Handle cancel logic here
+                    inflateLayout(R.layout.edit_profile)
+                }
+
+
+            }
+
+
         }
+
+
+
     }
+
+    private fun saveName() {
+        val newName = changeNameEditText.text.toString().trim()
+        val confirmName = confirmNameEditText.text.toString().trim()
+
+        // Perform validation if necessary
+        if (newName.isEmpty()) {
+            changeNameEditText.error = "Please enter a new name"
+            return
+        }
+
+        if (confirmName.isEmpty()) {
+            confirmNameEditText.error = "Please confirm the name"
+            return
+        }
+
+        if (newName != confirmName) {
+            confirmNameEditText.error = "Names do not match"
+            return
+        }
+
+        // Save the name
+        saveNameToSharedPreferences(newName)
+
+        // show a success message or navigate away
+        Toast.makeText(this, "Name saved!", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveNameToSharedPreferences(newName: String) {
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("savedName", newName)
+        editor.apply()
+    }
+
+
+    private fun saveNumbers() {
+        val newNumber = changeNumberEditText.text.toString().trim()
+        val confirmNumber = confirmNumberEditText.text.toString().trim()
+
+        // Perform validation if necessary
+        if (newNumber.isEmpty()) {
+            changeNumberEditText.error = "Please enter a new number"
+            return
+        }
+
+        if (confirmNumber.isEmpty()) {
+            confirmNumberEditText.error = "Please confirm the number"
+            return
+        }
+
+        if (newNumber != confirmNumber) {
+            confirmNumberEditText.error = "Numbers do not match"
+            return
+        }
+
+        // Save the numbers
+        saveNumberToSharedPreferences(newNumber)
+
+        // show a success message or navigate away
+        Toast.makeText(this, "Numbers saved!", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveNumberToSharedPreferences(newNumber: String) {
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("savedNumber", newNumber)
+        editor.apply()
+    }
+
+    private fun saveSwitchState(key: String, state: Boolean) {
+        val editor = sharedPreferences.edit()
+        editor.putBoolean(key, state)
+        editor.apply()
+    }
+
     //Inflate layout function code finishes here!
 
     //Code that handles everything and anything to do with firebase starts here
