@@ -5,15 +5,15 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-
     <Button
         android:id="@+id/courseNameButtonView"
+        style="?android:attr/borderlessButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal|left|center_vertical"
         android:background="@color/fui_transparent"
-        android:textSize="24sp"
-        style="?android:attr/borderlessButtonStyle"/>
+        android:fontFamily="@font/alegreya"
+        android:gravity="center|center_horizontal|left|center_vertical"
+        android:textSize="24sp" />
 
     <View
         android:id="@+id/courseColorView"
@@ -21,5 +21,10 @@
         android:layout_height="24dp"
         android:visibility="gone"
         android:background="?attr/colorPrimary" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#D3D3D3" />
 
 </LinearLayout>

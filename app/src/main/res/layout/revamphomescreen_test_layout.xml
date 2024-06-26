@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/hwHomeScreen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="top"
+    android:orientation="vertical">
+
+    <!-- This is the linear layout that contains the buttons, I needed to add a view to
+    separate the buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/profileButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="203dp"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/comfortaa_bold"
+            android:gravity="center_horizontal|left|center_vertical"
+            android:text="Hey Connor"
+            android:textSize="16sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+
+        <ImageButton
+            android:id="@+id/addHWbutton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="end|top"
+            android:background="@color/fui_transparent"
+            android:contentDescription="this is how you can quick add a homework assignment"
+            android:paddingTop="15dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/red_add_button" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#D3D3D3" />
+
+    <CalendarView
+        android:id="@+id/hwCalendarView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:selectedWeekBackgroundColor="#F26259" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#D3D3D3" />
+
+    <TextView
+        android:id="@+id/courseNameText"
+        android:layout_width="match_parent"
+        android:layout_height="63dp"
+        android:fontFamily="@font/comfortaa_bold"
+        android:gravity="center|center_horizontal|center_vertical"
+        android:text="Upcoming Assignments"
+        android:textColor="#000000"
+        android:textSize="26sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#D3D3D3" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/homeScreenRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="210dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/homeworkitems" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#D3D3D3" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom|center"
+        android:gravity="bottom|center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/homeScreenButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="135dp"
+            android:layout_height="75dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/red_home_button" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#D3D3D3" />
+
+        <ImageButton
+            android:id="@+id/homeScreenMyHWButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="135dp"
+            android:layout_height="75dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/red_list_button"
+             />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#D3D3D3" />
+
+        <ImageButton
+            android:id="@+id/homeScreenMyProfileButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="135dp"
+            android:layout_height="75dp"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/red_settings_button" />
+    </LinearLayout>
+</LinearLayout>
