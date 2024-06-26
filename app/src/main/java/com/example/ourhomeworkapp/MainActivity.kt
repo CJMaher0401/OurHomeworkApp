@@ -98,7 +98,7 @@ class MainActivity : ComponentActivity() {
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
 
-        inflateLayout(R.layout.introscreen_welcome_layout)
+        inflateLayout(R.layout.homescreen_layout)
 
         auth = FirebaseAuth.getInstance()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -127,11 +127,11 @@ class MainActivity : ComponentActivity() {
         val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
         val introCompleted = sharedPreferences.getBoolean("introCompleted", false)
 
-        if (introCompleted) {
-            inflateLayout(R.layout.homescreen_layout)
-        } else {
-            inflateLayout(R.layout.introscreen_welcome_layout)
-        }
+//        if (introCompleted) {
+//            inflateLayout(R.layout.homescreen_layout)
+//        } else {
+//            inflateLayout(R.layout.introscreen_welcome_layout)
+//        }
     }
 
     //Code that handles anything and everything to do with navigating the app starts here, including what happens when a button is pressed,
