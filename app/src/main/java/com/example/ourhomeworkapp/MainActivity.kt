@@ -370,7 +370,7 @@ class MainActivity : ComponentActivity() {
                     val homework = Homework(courseDesc, assignmentDesc, dueDate, color)
 
                     homeworkList.add(homework)
-                    uploadHomeworkData()
+                    //uploadHomeworkData()
                     updateHomeworkRecyclerViews()
                     clearHomeworkInput()
 
