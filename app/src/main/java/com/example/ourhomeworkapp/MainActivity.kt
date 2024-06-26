@@ -737,7 +737,9 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    //Inflate layout function code finishes here!
 
+    //Code involved with the settings page begins here
     private fun saveName() {
         val newName = changeNameEditText.text.toString().trim()
         val confirmName = confirmNameEditText.text.toString().trim()
@@ -813,7 +815,7 @@ class MainActivity : ComponentActivity() {
         editor.apply()
     }
 
-    //Inflate layout function code finishes here!
+    //Code involved with settings page ends here
 
     //Code that handles everything and anything to do with firebase starts here
     private fun handleFirebaseError(exception: Exception?) {
