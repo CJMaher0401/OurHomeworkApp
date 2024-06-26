@@ -6,7 +6,6 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.telephony.SmsManager
 import android.util.Log
@@ -98,7 +97,8 @@ class MainActivity : ComponentActivity() {
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
 
-        inflateLayout(R.layout.homescreen_layout)
+
+        inflateLayout(R.layout.loginscreen_layout)
 
         auth = FirebaseAuth.getInstance()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -586,6 +586,8 @@ class MainActivity : ComponentActivity() {
 
                 }
             }
+
+
         }
     }
     //Inflate layout function code finishes here!
@@ -752,10 +754,8 @@ class MainActivity : ComponentActivity() {
 
     //Code that handles SMS messaging starts here!
     private fun requestSmsPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.SEND_SMS), SMS_PERMISSION_CODE)
-            }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.SEND_SMS), SMS_PERMISSION_CODE)
         }
     }
 
@@ -1040,6 +1040,7 @@ class MainActivity : ComponentActivity() {
         }
     }
     //Code that handles homework ends here!
+
     //code for uploading and editing data to the database starts here
 
     private fun uploadProfileData(){
