@@ -97,6 +97,7 @@ class MainActivity : ComponentActivity() {
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
 
+
         inflateLayout(R.layout.loginscreen_layout)
 
         auth = FirebaseAuth.getInstance()
@@ -369,7 +370,7 @@ class MainActivity : ComponentActivity() {
                     val homework = Homework(courseDesc, assignmentDesc, dueDate, color)
 
                     homeworkList.add(homework)
-                    uploadHomeworkData()
+                    //uploadHomeworkData()
                     updateHomeworkRecyclerViews()
                     clearHomeworkInput()
 
