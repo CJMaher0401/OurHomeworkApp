@@ -662,6 +662,10 @@ class MainActivity : ComponentActivity() {
 
 
 
+
+
+
+
             //code for edit profile page
             R.layout.edit_profile -> {
 
