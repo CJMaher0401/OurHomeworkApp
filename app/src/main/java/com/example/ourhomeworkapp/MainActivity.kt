@@ -33,6 +33,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -48,7 +49,6 @@ import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-
 
 const val TAG = "FIRESTORE"
 
