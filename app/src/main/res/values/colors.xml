@@ -7,4 +7,23 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+        <color name="lightBackground">#F5F5F5</color>
+        <color name="primaryTextColor">#333333</color>
+        <color name="secondaryTextColor">#666666</color>
+        <color name="primaryButtonColor">#4CAF50</color>
+        <color name="buttonTextColor">#FFFFFF</color>
+
+    <color name="dark_background">#FF3700B3</color>
+    <color name="light_bachground">#EED8C7</color>
+
+    <color name="button_background">#1E88E5</color>
+    <color name="night_mode">#536DFE</color>
+    <color name="notifications">#3D5AFE</color>
+    <color name="parent_teacher_mode">#304FFE</color>
+    <color name="Log_out">#3949AB</color>
+
+    <color name="night_mode_background">#1C2833</color>
+    <color name="default_mode_background">#EED8C7</color>
+
+
 </resources>

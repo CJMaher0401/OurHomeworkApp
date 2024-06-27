@@ -5,8 +5,8 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.telephony.SmsManager
 import android.util.Log
@@ -16,10 +16,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.Switch
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,14 +33,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
+
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
@@ -47,7 +51,6 @@ import java.util.Locale
 
 
 const val TAG = "FIRESTORE"
-
 
 class MainActivity : ComponentActivity() {
 
@@ -93,6 +96,20 @@ class MainActivity : ComponentActivity() {
     private lateinit var firestore: FirebaseFirestore
     private val SMS_PERMISSION_CODE = 101
 
+    private lateinit var reminderSwitch: Switch
+    private lateinit var messageSwitch: Switch
+    private lateinit var sharedPreferences: SharedPreferences
+
+    private lateinit var changeNumberEditText: EditText
+    private lateinit var confirmNumberEditText: EditText
+    private lateinit var saveButton: AppCompatButton
+    private lateinit var cancelButton: AppCompatButton
+
+    private lateinit var changeNameEditText: EditText
+    private lateinit var confirmNameEditText: EditText
+    private lateinit var savesButton: AppCompatButton
+    private lateinit var cancelsButton: AppCompatButton
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,8 +127,6 @@ class MainActivity : ComponentActivity() {
         homeAdapter = HomeworkAdapter(homeworkList, this, "home")
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
-
-
 
         inflateLayout(R.layout.loginscreen_layout)
 
@@ -151,45 +166,15 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-    }
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val introCompleted = sharedPreferences.getBoolean("introCompleted", false)
 
-    private fun requestSmsPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.SEND_SMS), SMS_PERMISSION_CODE)
-            }
-        }
+//        if (introCompleted) {
+//            inflateLayout(R.layout.homescreen_layout)
+//        } else {
+//            inflateLayout(R.layout.introscreen_welcome_layout)
+//        }
     }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == SMS_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "SMS Permission Granted", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "SMS Permission Denied", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun sendSMS(phoneNumber: String, message: String) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
-            try {
-                val smsManager: SmsManager = SmsManager.getDefault()
-                smsManager.sendTextMessage(phoneNumber, null, message, null, null)
-                Toast.makeText(this, "SMS sent successfully", Toast.LENGTH_SHORT).show()
-                Log.d("SMS", "SMS sent to $phoneNumber: $message")
-            } catch (e: Exception) {
-                Toast.makeText(this, "Failed to send SMS", Toast.LENGTH_SHORT).show()
-                Log.e("SMS", "Failed to send SMS", e)
-                e.printStackTrace()
-            }
-        } else {
-            Toast.makeText(this, "SMS permission not granted", Toast.LENGTH_SHORT).show()
-            requestSmsPermission()
-        }
-    }
-
 
     //Code that handles anything and everything to do with navigating the app starts here, including what happens when a button is pressed,
     //what layout to open when a button is pressed, what actions to preform when a button is pressed, updating recycler views, and more.
@@ -295,6 +280,47 @@ class MainActivity : ComponentActivity() {
                     inflateLayout(R.layout.loginscreen_layout)
                 }
             }
+            R.layout.introscreen_welcome_layout -> {
+
+                findViewById<Button>(R.id.welcomeNextButton).setOnClickListener {
+                    inflateLayout(R.layout.introscreen_name_layout)
+                }
+            }
+
+            R.layout.introscreen_name_layout -> {
+
+                findViewById<Button>(R.id.nameNextButton).setOnClickListener {
+                    val name = findViewById<EditText>(R.id.nameInput).text.toString()
+                    val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putString("userName", name)
+                    editor.apply()
+
+                    inflateLayout(R.layout.introscreen_phonenum_layout)
+                }
+
+                findViewById<EditText>(R.id.nameInput).setOnClickListener {
+
+                }
+            }
+
+            R.layout.introscreen_phonenum_layout -> {
+
+                findViewById<Button>(R.id.phoneNumNextButton).setOnClickListener {
+                    val phoneNumber = findViewById<EditText>(R.id.phoneNumInput).text.toString()
+                    val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putString("userPhoneNumber", phoneNumber)
+                    editor.putBoolean("introCompleted", true)
+                    editor.apply()
+
+                    inflateLayout(R.layout.homescreen_layout)
+                }
+
+                findViewById<EditText>(R.id.phoneNumInput).setOnClickListener {
+
+                }
+            }
 
             R.layout.homescreen_layout -> {
                 requestSmsPermission()
@@ -391,13 +417,22 @@ class MainActivity : ComponentActivity() {
                     val homework = Homework(userId, courseDesc, assignmentDesc, dueDate, reminderDate, color)
 
                     homeworkList.add(homework)
+
                     uploadHomeworkData(homework)
+
                     updateHomeworkRecyclerViews()
                     clearHomeworkInput()
+
                     inflateLayout(R.layout.currentupcominghw_layout)
 
-                    val message = "Hey Connor added an $courseDesc assignment titled $assignmentDesc and it is due on $dueDate."
-                    sendSMS("5551234567", message)
+                    val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                    val userName = sharedPreferences.getString("userName", "User")
+                    val userPhoneNumber = sharedPreferences.getString("userPhoneNumber", "5551234567")
+
+                    val message = "Hey $userName added an $courseDesc assignment titled $assignmentDesc and it is due on $dueDate."
+                    if (userPhoneNumber != null) {
+                        sendSMS(userPhoneNumber, message)
+                    }
                 }
 
                 findViewById<EditText>(R.id.editCourseDescText).setOnClickListener {
@@ -555,8 +590,14 @@ class MainActivity : ComponentActivity() {
                     updateHomeworkRecyclerViews()
                     inflateLayout(R.layout.completedhwscreen_layout)
 
-                    val message = "Hey Connor just completed the ${homework.assignmentDesc} for his ${homework.courseName} Class."
-                    sendSMS("5551234567", message)
+                    val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                    val userName = sharedPreferences.getString("userName", "User")
+                    val userPhoneNumber = sharedPreferences.getString("userPhoneNumber", "5551234567")
+
+                    val message = "Hey $userName just completed the ${homework.assignmentDesc} for his ${homework.courseName} Class."
+                    if (userPhoneNumber != null) {
+                        sendSMS(userPhoneNumber, message)
+                    }
                 }
 
                 val editDueDateText = findViewById<EditText>(R.id.edit_editDueDateText)
@@ -599,9 +640,217 @@ class MainActivity : ComponentActivity() {
 
                 }
             }
+
+            R.layout.setting_page -> {
+
+                findViewById<ImageView>(R.id.settings_back_button).setOnClickListener {
+                    inflateLayout(R.layout.homescreen_layout)
+                }
+
+                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.edit_profile_button).setOnClickListener {
+                    inflateLayout(R.layout.edit_profile)
+                }
+
+                findViewById<ImageView>(R.id.notification_menu_button).setOnClickListener {
+                    inflateLayout(R.layout.notifications_page)
+                }
+
+
+                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.sign_out_button).setOnClickListener {
+                    inflateLayout(R.layout.homescreen_layout)
+                }
+
+            }
+
+            //code for notification page
+            R.layout.notifications_page -> {
+
+                reminderSwitch = findViewById(R.id.reminder_switch)
+                messageSwitch = findViewById(R.id.message_switch)
+
+                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.notification_back_button).setOnClickListener {
+                    inflateLayout(R.layout.setting_page)
+                }
+
+                sharedPreferences = getSharedPreferences("NotificationPreferences", Context.MODE_PRIVATE)
+
+                // Load the saved states
+                reminderSwitch.isChecked = sharedPreferences.getBoolean("reminderSwitchState", false)
+                messageSwitch.isChecked = sharedPreferences.getBoolean("messageSwitchState", false)
+
+                // Set listeners for the switches
+                reminderSwitch.setOnCheckedChangeListener { _, isChecked ->
+                    saveSwitchState("reminderSwitchState", isChecked)
+
+                }
+
+                messageSwitch.setOnCheckedChangeListener { _, isChecked ->
+                    saveSwitchState("messageSwitchState", isChecked)
+
+                }
+
+                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.save_notification_button).setOnClickListener {
+                    inflateLayout(R.layout.setting_page)
+                }
+
+            }
+
+            //code for edit profile page
+            R.layout.edit_profile -> {
+
+                findViewById<ImageView>(R.id.edit_profile_back_button).setOnClickListener {
+                    inflateLayout(R.layout.setting_page)
+                }
+
+                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.change_photo_button).setOnClickListener {
+                   //inflateLayout(R.layout.change_photo)
+                }
+
+                findViewById<ImageView>(R.id.change_name_button).setOnClickListener {
+                    inflateLayout(R.layout.change_name)
+                }
+
+                findViewById<ImageView>(R.id.change_number_button).setOnClickListener {
+                    inflateLayout(R.layout.change_number)
+                }
+
+                findViewById<ImageView>(R.id.add_teacher_button).setOnClickListener {
+                   // inflateLayout(R.layout.add_teacher)
+                }
+
+            }
+            //code for change name
+            R.layout.change_name -> {
+
+                findViewById<ImageView>(R.id.change_name_back_button).setOnClickListener {
+                    inflateLayout(R.layout.edit_profile)
+                }
+
+                changeNameEditText = findViewById(R.id.change_name_Text)
+                confirmNameEditText = findViewById(R.id.confirm_name_text)
+                saveButton = findViewById(R.id.change_name_save_button)
+                cancelButton = findViewById(R.id.change_name_cancel_button)
+
+                // Set click listener for Save button
+                saveButton.setOnClickListener {
+                    saveName()
+                    inflateLayout(R.layout.edit_profile)
+                }
+
+                // Set click listener for Cancel button
+                cancelButton.setOnClickListener {
+                    // Handle cancel logic here
+                    inflateLayout(R.layout.edit_profile)
+                }
+
+            }
+            //code for change number
+            R.layout.change_number -> {
+
+                findViewById<ImageView>(R.id.change_number_back_button).setOnClickListener {
+                    inflateLayout(R.layout.edit_profile)
+                }
+
+
+                // Initialize views
+                changeNumberEditText = findViewById(R.id.change_number_text)
+                confirmNumberEditText = findViewById(R.id.confirm_number_text)
+                saveButton = findViewById(R.id.change_number_save_button)
+                cancelButton = findViewById(R.id.change_number_cancel_button)
+
+                // Set click listener for Save button
+                saveButton.setOnClickListener {
+                    saveNumbers()
+                    inflateLayout(R.layout.edit_profile)
+                }
+
+                // Set click listener for Cancel button
+                cancelButton.setOnClickListener {
+                    // Handle cancel logic here
+                    inflateLayout(R.layout.edit_profile)
+                }
+            }
         }
     }
     //Inflate layout function code finishes here!
+
+    //Code involved with the settings page begins here
+    private fun saveName() {
+        val newName = changeNameEditText.text.toString().trim()
+        val confirmName = confirmNameEditText.text.toString().trim()
+
+        // Perform validation if necessary
+        if (newName.isEmpty()) {
+            changeNameEditText.error = "Please enter a new name"
+            return
+        }
+
+        if (confirmName.isEmpty()) {
+            confirmNameEditText.error = "Please confirm the name"
+            return
+        }
+
+        if (newName != confirmName) {
+            confirmNameEditText.error = "Names do not match"
+            return
+        }
+
+        // Save the name
+        saveNameToSharedPreferences(newName)
+
+        // show a success message or navigate away
+        Toast.makeText(this, "Name saved!", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveNameToSharedPreferences(newName: String) {
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("savedName", newName)
+        editor.apply()
+    }
+
+
+    private fun saveNumbers() {
+        val newNumber = changeNumberEditText.text.toString().trim()
+        val confirmNumber = confirmNumberEditText.text.toString().trim()
+
+        // Perform validation if necessary
+        if (newNumber.isEmpty()) {
+            changeNumberEditText.error = "Please enter a new number"
+            return
+        }
+
+        if (confirmNumber.isEmpty()) {
+            confirmNumberEditText.error = "Please confirm the number"
+            return
+        }
+
+        if (newNumber != confirmNumber) {
+            confirmNumberEditText.error = "Numbers do not match"
+            return
+        }
+
+        // Save the numbers
+        saveNumberToSharedPreferences(newNumber)
+
+        // show a success message or navigate away
+        Toast.makeText(this, "Numbers saved!", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveNumberToSharedPreferences(newNumber: String) {
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("savedNumber", newNumber)
+        editor.apply()
+    }
+
+    private fun saveSwitchState(key: String, state: Boolean) {
+        val editor = sharedPreferences.edit()
+        editor.putBoolean(key, state)
+        editor.apply()
+    }
+
+    //Code involved with settings page ends here
 
     //Code that handles everything and anything to do with firebase starts here
     private fun handleFirebaseError(exception: Exception?) {
@@ -764,6 +1013,40 @@ class MainActivity : ComponentActivity() {
     //Code that deals with color coding courses ends here!
 
     //Code that handles SMS messaging starts here!
+    private fun requestSmsPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.SEND_SMS), SMS_PERMISSION_CODE)
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == SMS_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "SMS Permission Granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "SMS Permission Denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun sendSMS(phoneNumber: String, message: String) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+            try {
+                val smsManager: SmsManager = SmsManager.getDefault()
+                smsManager.sendTextMessage(phoneNumber, null, message, null, null)
+                Toast.makeText(this, "SMS sent successfully", Toast.LENGTH_SHORT).show()
+                Log.d("SMS", "SMS sent to $phoneNumber: $message")
+            } catch (e: Exception) {
+                Toast.makeText(this, "Failed to send SMS", Toast.LENGTH_SHORT).show()
+                Log.e("SMS", "Failed to send SMS", e)
+                e.printStackTrace()
+            }
+        } else {
+            Toast.makeText(this, "SMS permission not granted", Toast.LENGTH_SHORT).show()
+            requestSmsPermission()
+        }
+    }
 
     //Code that handles the course creation, storage and management starts here
     class CourseAdapter(private val courseList: List<Course>, private val mainActivity: MainActivity, private val editClassDescText: EditText) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>()
@@ -1020,6 +1303,7 @@ class MainActivity : ComponentActivity() {
         }
     }
     //Code that handles homework ends here!
+
     //code for uploading and editing data to the database starts here
 
     private fun uploadProfileData(){

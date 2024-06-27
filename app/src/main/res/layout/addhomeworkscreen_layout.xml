@@ -123,6 +123,4 @@
         android:hint="Set a reminder for your HW"
         android:inputType="none"
         android:paddingBottom="15dp" />
-
-
 </LinearLayout>

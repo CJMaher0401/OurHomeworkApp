@@ -77,5 +77,4 @@
         android:focusable="true"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/homeworkitems" />
-
 </LinearLayout>

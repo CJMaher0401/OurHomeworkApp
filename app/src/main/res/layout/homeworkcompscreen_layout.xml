@@ -103,6 +103,4 @@
             android:background="@color/fui_transparent"
             android:text="Delete Homework" />
     </LinearLayout>
-
-
 </LinearLayout>

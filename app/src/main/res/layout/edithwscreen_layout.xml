@@ -81,6 +81,4 @@
         android:layout_height="55dp"
         android:background="@color/fui_transparent"
         android:text="This assignment is complete!" />
-
-
 </LinearLayout>

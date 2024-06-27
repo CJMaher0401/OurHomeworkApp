@@ -94,9 +94,6 @@
                 android:src="@drawable/fui_ic_googleg_color_24dp"
                 android:backgroundTint="@color/black"
                 android:contentDescription="@string/googlelogin" />
-
         </LinearLayout>
-
     </LinearLayout>
-
 </LinearLayout>

@@ -78,5 +78,4 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/homeworkitems"
         android:background="@color/fui_transparent"/>
-
 </LinearLayout>

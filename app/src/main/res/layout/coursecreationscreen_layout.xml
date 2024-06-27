@@ -67,9 +67,5 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/fui_transparent"
-    android:text="Pick the color of your course"
-    />
-
-
-
+    android:text="Pick the color of your course" />
 </LinearLayout>
