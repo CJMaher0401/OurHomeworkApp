@@ -18,6 +18,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Switch
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
@@ -128,7 +129,7 @@ class MainActivity : ComponentActivity() {
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
 
-        inflateLayout(R.layout.loginscreen_layout)
+        inflateLayout(R.layout.setting_page)
 
         auth = FirebaseAuth.getInstance()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -646,6 +647,8 @@ class MainActivity : ComponentActivity() {
                 findViewById<ImageView>(R.id.settings_back_button).setOnClickListener {
                     inflateLayout(R.layout.homescreen_layout)
                 }
+                val usernameDisplay: TextView = findViewById(R.id.name_display)
+                displaySavedName(usernameDisplay)
 
                 findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.edit_profile_button).setOnClickListener {
                     inflateLayout(R.layout.edit_profile)
@@ -668,7 +671,7 @@ class MainActivity : ComponentActivity() {
                 reminderSwitch = findViewById(R.id.reminder_switch)
                 messageSwitch = findViewById(R.id.message_switch)
 
-                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.notification_back_button).setOnClickListener {
+                findViewById<ImageView>(R.id.notification_back_button).setOnClickListener {
                     inflateLayout(R.layout.setting_page)
                 }
 
@@ -772,14 +775,20 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    //Inflate layout function code finishes here!
 
-    //Code involved with the settings page begins here
+    //displays saved name to settings page
+    private fun displaySavedName(textView: TextView) {
+        val sharedPref = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val savedName = sharedPref.getString("user_name", "Default Name") // "Default Name" is a fallback if no name is saved
+        textView.text = savedName
+        Log.d("SettingsActivity", "Retrieved name: $savedName")
+    }
+
     private fun saveName() {
-        val newName = changeNameEditText.text.toString().trim()
-        val confirmName = confirmNameEditText.text.toString().trim()
+        val newName = changeNameEditText.text.toString()
+        val confirmName = confirmNameEditText.text.toString()
 
-        // Perform validation if necessary
+        // Perform validation
         if (newName.isEmpty()) {
             changeNameEditText.error = "Please enter a new name"
             return
@@ -805,8 +814,9 @@ class MainActivity : ComponentActivity() {
     private fun saveNameToSharedPreferences(newName: String) {
         val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        editor.putString("savedName", newName)
+        editor.putString("user_name", newName)
         editor.apply()
+        Log.d("ChangeNameActivity", "Name saved: $newName")
     }
 
 
