@@ -807,6 +807,7 @@ class MainActivity : ComponentActivity() {
 
         // Save the name
         saveNameToSharedPreferences(newName)
+        sendConfirmationSMS()
 
         // show a success message or navigate away
         Toast.makeText(this, "Name saved!", Toast.LENGTH_SHORT).show()
@@ -1039,6 +1040,26 @@ class MainActivity : ComponentActivity() {
                 Toast.makeText(this, "SMS Permission Denied", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+
+
+    //Function to send SMS using the dynamically saved phone number
+    private fun sendSMSWithSavedNumber(message: String) {
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val savedNumber = sharedPreferences.getString("savedNumber", null)
+
+        if (savedNumber.isNullOrEmpty()) {
+            Toast.makeText(this, "Phone number not found", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        sendSMS(savedNumber, message)
+    }
+
+    private fun sendConfirmationSMS() {
+        val message = "Your phone number has been updated successfully."
+        sendSMSWithSavedNumber(message)
     }
 
     private fun sendSMS(phoneNumber: String, message: String) {
