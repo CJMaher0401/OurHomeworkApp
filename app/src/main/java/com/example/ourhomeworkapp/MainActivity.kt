@@ -782,6 +782,7 @@ class MainActivity : ComponentActivity() {
         val savedName = sharedPref.getString("user_name", "Default Name") // "Default Name" is a fallback if no name is saved
         textView.text = savedName
         Log.d("SettingsActivity", "Retrieved name: $savedName")
+
     }
 
     private fun saveName() {
