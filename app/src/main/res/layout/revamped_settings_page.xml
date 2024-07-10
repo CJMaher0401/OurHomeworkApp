@@ -37,12 +37,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                />
+
             <TextView
                 android:id="@+id/name_display"
                 android:layout_width="wrap_content"
@@ -53,18 +48,7 @@
                 android:textSize="20dp"
                 android:textStyle="bold"/>
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/edit_profile_button"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_marginTop="20dp"
-                android:paddingStart="30dp"
-                android:layout_gravity="center"
-                android:background="@drawable/round_back_for_secondary"
-                android:text="Edit Profile"
-                android:textColor="#EED8C7"
-                android:textAllCaps="false"
-                android:paddingEnd="30dp"/>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -75,39 +59,39 @@
                 android:orientation="vertical"
                 android:padding="15dp">
 
-                <!--darkmode-->
+
+
+                <!--change name-->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <ImageView
-                        android:id="@+id/dark_Mode_Icon"
                         android:layout_width="40dp"
+                        android:id="@+id/change_username"
                         android:layout_height="40dp"
-                        android:background="@drawable/round_back_for_night_mode"
-                        android:padding="12dp"
-                        android:src="@drawable/night_mode_icon" />
+
+                        android:background="@drawable/round_back_for_parent_teacher_mode"
+                        android:padding="12dp"/>
 
                     <TextView
+                        android:layout_marginStart="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:layout_toEndOf="@id/dark_Mode_Icon"
-                        android:text="Night Mode"
-                        android:textStyle="bold" />
+                        android:text="Change Name"
+                        android:textStyle="bold"
+                        android:layout_toEndOf="@id/change_username"/>
 
-                    <Switch
-                        android:id="@+id/night_mode_switch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="48dp"
+                    <ImageView
+                        android:id="@+id/change_name_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/enter_arrow"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:checked="false"
-                        android:switchMinWidth="50dp" />
-
+                        android:padding="14dp"/>
                 </RelativeLayout>
-
 
                 <!--notifications-->
                 <RelativeLayout
@@ -143,37 +127,40 @@
                 </RelativeLayout>
 
 
-                <!--parent teacher-->
+                <!--change password-->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <ImageView
-                        android:id="@+id/teacher_parent_icon"
                         android:layout_width="40dp"
+                        android:id="@+id/password_icon"
                         android:layout_height="40dp"
                         android:background="@drawable/round_back_for_parent_teacher_mode"
-                        android:padding="12dp"
-                        />
+                        android:padding="12dp"/>
 
                     <TextView
+                        android:layout_marginStart="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:layout_toEndOf="@id/teacher_parent_icon"
-                        android:text="parent teacher settings"
-                        android:textStyle="bold" />
+                        android:text="Change Number"
+                        android:textStyle="bold"
+                        android:layout_toEndOf="@id/password_icon"/>
 
                     <ImageView
-                        android:id="@+id/parent_teacher_id"
+                        android:id="@+id/change_number_button"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
+                        android:src="@drawable/enter_arrow"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:padding="14dp"
-                        android:src="@drawable/enter_arrow" />
+                        android:padding="14dp"/>
                 </RelativeLayout>
+
+
+
+
             </LinearLayout>
 
             <LinearLayout
@@ -188,7 +175,7 @@
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/sign_out_button"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
+                android:layout_height="30dp"
                 android:layout_marginTop="20dp"
                 android:paddingStart="30dp"
                 android:layout_gravity="center"

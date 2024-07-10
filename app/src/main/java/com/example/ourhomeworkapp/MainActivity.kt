@@ -129,7 +129,7 @@ class MainActivity : ComponentActivity() {
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
 
-        inflateLayout(R.layout.setting_page)
+        inflateLayout(R.layout.revamped_settings_page)
 
         auth = FirebaseAuth.getInstance()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -642,17 +642,22 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            R.layout.setting_page -> {
-
+            R.layout.revamped_settings_page -> {
                 findViewById<ImageView>(R.id.settings_back_button).setOnClickListener {
                     inflateLayout(R.layout.homescreen_layout)
                 }
                 val usernameDisplay: TextView = findViewById(R.id.name_display)
                 displaySavedName(usernameDisplay)
 
-                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.edit_profile_button).setOnClickListener {
-                    inflateLayout(R.layout.edit_profile)
+
+                findViewById<ImageView>(R.id.change_name_button).setOnClickListener {
+                    inflateLayout(R.layout.change_name)
                 }
+
+                findViewById<ImageView>(R.id.change_number_button).setOnClickListener {
+                    inflateLayout(R.layout.change_number)
+                }
+
 
                 findViewById<ImageView>(R.id.notification_menu_button).setOnClickListener {
                     inflateLayout(R.layout.notifications_page)
@@ -662,8 +667,31 @@ class MainActivity : ComponentActivity() {
                 findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.sign_out_button).setOnClickListener {
                     inflateLayout(R.layout.homescreen_layout)
                 }
-
             }
+
+
+          //  R.layout.setting_page -> {
+
+               // findViewById<ImageView>(R.id.settings_back_button).setOnClickListener {
+              //      inflateLayout(R.layout.homescreen_layout)
+             //   }
+              //  val usernameDisplay: TextView = findViewById(R.id.name_display)
+             //   displaySavedName(usernameDisplay)
+
+             //   findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.edit_profile_button).setOnClickListener {
+              //      inflateLayout(R.layout.edit_profile)
+              //  }
+
+             //   findViewById<ImageView>(R.id.notification_menu_button).setOnClickListener {
+             //       inflateLayout(R.layout.notifications_page)
+             //   }
+
+
+            //    findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.sign_out_button).setOnClickListener {
+              //      inflateLayout(R.layout.homescreen_layout)
+             //   }
+
+          //  }
 
             //code for notification page
             R.layout.notifications_page -> {
@@ -672,7 +700,7 @@ class MainActivity : ComponentActivity() {
                 messageSwitch = findViewById(R.id.message_switch)
 
                 findViewById<ImageView>(R.id.notification_back_button).setOnClickListener {
-                    inflateLayout(R.layout.setting_page)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
                 sharedPreferences = getSharedPreferences("NotificationPreferences", Context.MODE_PRIVATE)
@@ -693,40 +721,41 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.save_notification_button).setOnClickListener {
-                    inflateLayout(R.layout.setting_page)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
             }
 
             //code for edit profile page
-            R.layout.edit_profile -> {
+           // R.layout.edit_profile -> {
 
-                findViewById<ImageView>(R.id.edit_profile_back_button).setOnClickListener {
-                    inflateLayout(R.layout.setting_page)
-                }
+              //  findViewById<ImageView>(R.id.edit_profile_back_button).setOnClickListener {
+              //      inflateLayout(R.layout.setting_page)
+              //  }
 
-                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.change_photo_button).setOnClickListener {
-                   //inflateLayout(R.layout.change_photo)
-                }
+              //  findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.change_photo_button).setOnClickListener {
+              //     //inflateLayout(R.layout.change_photo)
+              //  }
 
-                findViewById<ImageView>(R.id.change_name_button).setOnClickListener {
-                    inflateLayout(R.layout.change_name)
-                }
+              //  findViewById<ImageView>(R.id.change_name_button).setOnClickListener {
+              //      inflateLayout(R.layout.change_name)
+              //  }
 
-                findViewById<ImageView>(R.id.change_number_button).setOnClickListener {
-                    inflateLayout(R.layout.change_number)
-                }
+              //  findViewById<ImageView>(R.id.change_number_button).setOnClickListener {
+              //      inflateLayout(R.layout.change_number)
+              //  }
 
-                findViewById<ImageView>(R.id.add_teacher_button).setOnClickListener {
+               // findViewById<ImageView>(R.id.add_teacher_button).setOnClickListener {
                    // inflateLayout(R.layout.add_teacher)
-                }
+              //  }
 
-            }
+           // }
+
             //code for change name
             R.layout.change_name -> {
 
                 findViewById<ImageView>(R.id.change_name_back_button).setOnClickListener {
-                    inflateLayout(R.layout.edit_profile)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
                 changeNameEditText = findViewById(R.id.change_name_Text)
@@ -737,13 +766,13 @@ class MainActivity : ComponentActivity() {
                 // Set click listener for Save button
                 saveButton.setOnClickListener {
                     saveName()
-                    inflateLayout(R.layout.edit_profile)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
                 // Set click listener for Cancel button
                 cancelButton.setOnClickListener {
                     // Handle cancel logic here
-                    inflateLayout(R.layout.edit_profile)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
             }
@@ -751,7 +780,7 @@ class MainActivity : ComponentActivity() {
             R.layout.change_number -> {
 
                 findViewById<ImageView>(R.id.change_number_back_button).setOnClickListener {
-                    inflateLayout(R.layout.edit_profile)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
 
@@ -764,13 +793,13 @@ class MainActivity : ComponentActivity() {
                 // Set click listener for Save button
                 saveButton.setOnClickListener {
                     saveNumbers()
-                    inflateLayout(R.layout.edit_profile)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
                 // Set click listener for Cancel button
                 cancelButton.setOnClickListener {
                     // Handle cancel logic here
-                    inflateLayout(R.layout.edit_profile)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
             }
         }
