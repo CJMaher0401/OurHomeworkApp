@@ -39,10 +39,9 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
-
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
-
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
@@ -56,8 +55,18 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var colorPickerView: ColorPickerView
     private lateinit var colorEditText: EditText
-    data class Course(val courseName: String, val courseColor: Int)
+
+    data class Course(
+        val courseName: String = "",
+        val courseColor: Int = 0,
+        val courseDesc: String = " ",
+        var currentHomeworks: List<Homework> = emptyList(),
+        var completedHomeworks: List<Homework> = emptyList(),
+        val courseId: String = " "
+    )
+
     private lateinit var courseList: MutableList<Course>
+
     data class Homework(
         var documentId: String? = null,
         var courseName: String = "",
@@ -65,7 +74,11 @@ class MainActivity : ComponentActivity() {
         var dueDate: String = "",
         var reminderDate: String = "",
         var color: Int = 0,
-        var isCompleted: Boolean = false)
+        val courseDesc: String = "",
+        var courseId: String = "",
+        var isCompleted: Boolean = false
+    )
+
     private lateinit var homeworkList: MutableList<Homework>
 
     private lateinit var completedHomeworkList: MutableList<Homework>
@@ -87,11 +100,11 @@ class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var launcher: ActivityResultLauncher<Intent>
-    private lateinit var emailInput : EditText
-    private lateinit var passwordInput : EditText
-    private lateinit var regButton : Button
+    private lateinit var emailInput: EditText
+    private lateinit var passwordInput: EditText
+    private lateinit var regButton: Button
 
-    private var binding : ActivityMainBinding? = null
+    private var binding: ActivityMainBinding? = null
 
     private lateinit var firestore: FirebaseFirestore
     private val SMS_PERMISSION_CODE = 101
@@ -109,7 +122,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var confirmNameEditText: EditText
     private lateinit var savesButton: AppCompatButton
     private lateinit var cancelsButton: AppCompatButton
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -143,13 +155,10 @@ class MainActivity : ComponentActivity() {
         launcher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult())
             { result ->
-                if (result.resultCode == RESULT_OK)
-                {
+                if (result.resultCode == RESULT_OK) {
                     val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                     handleResults(task)
-                }
-                else
-                {
+                } else {
                     Toast.makeText(this, "Google Sign-In failed", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -160,7 +169,7 @@ class MainActivity : ComponentActivity() {
         FirebaseAuth.getInstance().addAuthStateListener { auth ->
             val user = auth.currentUser
             if (user != null) {
-                retrieveHomeworkData(user.uid)
+                retrieveCoursesAndHomework(user.uid)
             } else {
                 Log.w(TAG, "User not authenticated, cannot retrieve homework data.")
             }
@@ -178,10 +187,8 @@ class MainActivity : ComponentActivity() {
 
     //Code that handles anything and everything to do with navigating the app starts here, including what happens when a button is pressed,
     //what layout to open when a button is pressed, what actions to preform when a button is pressed, updating recycler views, and more.
-    private fun inflateLayout(layoutResID: Int, afterInflate: (() -> Unit)? = null)
-    {
-        if (currentLayout == R.layout.addhomeworkscreen_layout)
-        {
+    private fun inflateLayout(layoutResID: Int, afterInflate: (() -> Unit)? = null) {
+        if (currentLayout == R.layout.addhomeworkscreen_layout) {
             saveHomeworkInput()
         }
         currentLayout = layoutResID
@@ -194,63 +201,65 @@ class MainActivity : ComponentActivity() {
         afterInflate?.invoke()
 
 
-        when (layoutResID)
-        {
-            R.layout.loginscreen_layout ->{
+        when (layoutResID) {
+            R.layout.loginscreen_layout -> {
                 emailInput = findViewById(R.id.email_input)
                 passwordInput = findViewById(R.id.password_input)
 
-                findViewById<Button>(R.id.register_btn).setOnClickListener{
+                findViewById<Button>(R.id.register_btn).setOnClickListener {
                     inflateLayout(R.layout.registerscreen_layout)
                 }
 
-                findViewById<Button>(R.id.login_btn).setOnClickListener{
+                findViewById<Button>(R.id.login_btn).setOnClickListener {
                     val email = emailInput.text.toString()
                     val password = passwordInput.text.toString()
 
                     if (email.isNotEmpty() && password.isNotEmpty()) {
-                        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                // Login successful
-                                Log.d("FirebaseAuth", "User signed in successfully")
-                                Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
+                        auth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    // Login successful
+                                    Log.d("FirebaseAuth", "User signed in successfully")
+                                    Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT)
+                                        .show()
 
-                                // Redirect to a different activity or update the UI
-                                inflateLayout(R.layout.homescreen_layout)
+                                    // Redirect to a different activity or update the UI
+                                    inflateLayout(R.layout.homescreen_layout)
 
 
-                            } else {
-                                // Handle login errors
-                                handleFirebaseLoginError(task.exception)
+                                } else {
+                                    // Handle login errors
+                                    handleFirebaseLoginError(task.exception)
+                                }
                             }
-                        }
                     } else {
-                        Toast.makeText(this, "Email and password cannot be empty", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this,
+                            "Email and password cannot be empty",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
 
                 }
-                findViewById<ImageButton>(R.id.gSignInBtn).setOnClickListener{
-                     fun updateUI(account: GoogleSignInAccount) {
-                         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                         auth.signInWithCredential(credential).addOnCompleteListener {
-                             if (it.isSuccessful)
-                             {
+                findViewById<ImageButton>(R.id.gSignInBtn).setOnClickListener {
+                    fun updateUI(account: GoogleSignInAccount) {
+                        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                        auth.signInWithCredential(credential).addOnCompleteListener {
+                            if (it.isSuccessful) {
 
-                                 inflateLayout(R.layout.homescreen_layout)
+                                inflateLayout(R.layout.homescreen_layout)
 
-                             }
-                             else
-                             {
-                                 Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT)
-                                     .show()
-                             }
-                         }
-                     }
+                            } else {
+                                Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                        }
+                    }
                 }
             }
 
-            R.layout.registerscreen_layout->{
+            R.layout.registerscreen_layout -> {
                 emailInput = findViewById(R.id.email_input)
                 passwordInput = findViewById(R.id.password_input)
                 regButton = findViewById(R.id.createAccount_btn)
@@ -260,26 +269,36 @@ class MainActivity : ComponentActivity() {
                     val email = emailInput.text.toString()
                     val password = passwordInput.text.toString()
 
-                    if(email.isNotEmpty() && password.isNotEmpty()){
-                        auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener{task ->
-                            if (task.isSuccessful){
-                                //reg was successful
-                                Log.d("FirebaseAuth", "User registered successfully")
-                                Toast.makeText(this,"Account created successfully!", Toast.LENGTH_SHORT).show()
+                    if (email.isNotEmpty() && password.isNotEmpty()) {
+                        auth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    //reg was successful
+                                    Log.d("FirebaseAuth", "User registered successfully")
+                                    Toast.makeText(
+                                        this,
+                                        "Account created successfully!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
 
-                                inflateLayout(R.layout.homescreen_layout)
-                            } else {
-                                handleFirebaseError(task.exception)
+                                    inflateLayout(R.layout.homescreen_layout)
+                                } else {
+                                    handleFirebaseError(task.exception)
+                                }
                             }
-                        }
                     } else {
-                        Toast.makeText(this, "Email and password cannot be empty", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this,
+                            "Email and password cannot be empty",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
                 findViewById<Button>(R.id.goToLogin).setOnClickListener {
                     inflateLayout(R.layout.loginscreen_layout)
                 }
             }
+
             R.layout.introscreen_welcome_layout -> {
 
                 findViewById<Button>(R.id.welcomeNextButton).setOnClickListener {
@@ -326,7 +345,7 @@ class MainActivity : ComponentActivity() {
                 requestSmsPermission()
                 findViewById<Button>(R.id.profileButton).setOnClickListener {
                     inflateLayout(R.layout.profilescreen_layout) {
-                        loadUpdatedProfileInfo()
+                        downloadProfileInfo()
                     }
                 }
 
@@ -344,7 +363,7 @@ class MainActivity : ComponentActivity() {
 
                 findViewById<Button>(R.id.homeScreenMyProfileButton).setOnClickListener {
                     inflateLayout(R.layout.profilescreen_layout) {
-                        loadUpdatedProfileInfo()
+                        downloadProfileInfo()
                     }
                 }
                 setupRecyclerViews()
@@ -367,7 +386,6 @@ class MainActivity : ComponentActivity() {
 
                 }
                 findViewById<Button>(R.id.saveChangesButton).setOnClickListener {
-                    saveProfileInfo()
                     uploadProfileData()
                     inflateLayout(R.layout.homescreen_layout)
 
@@ -382,18 +400,25 @@ class MainActivity : ComponentActivity() {
 
                 findViewById<Button>(R.id.profileMyProfileButton).setOnClickListener {
                     inflateLayout(R.layout.profilescreen_layout) {
-                        loadUpdatedProfileInfo()
+                        downloadProfileInfo()
                     }
                 }
                 findViewById<Button>(R.id.signOutButton).setOnClickListener {
-                    googleSignInClient.signOut().addOnCompleteListener{task ->
-                        if (task.isSuccessful){
+                    googleSignInClient.signOut().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
                             inflateLayout(R.layout.loginscreen_layout)
 
-                        }
-                        else{
-                            Log.e("GoogleSignOut", "Sign-out failed", task.exception) // Log for debugging
-                            Toast.makeText(this, "Failed to sign out. Please try again.", Toast.LENGTH_SHORT).show() // Inform the user
+                        } else {
+                            Log.e(
+                                "GoogleSignOut",
+                                "Sign-out failed",
+                                task.exception
+                            ) // Log for debugging
+                            Toast.makeText(
+                                this,
+                                "Failed to sign out. Please try again.",
+                                Toast.LENGTH_SHORT
+                            ).show() // Inform the user
                         }
 
                     }
@@ -407,19 +432,29 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<Button>(R.id.addHWsaveButton).setOnClickListener {
-                    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener // Ensure user is authenticated
-                    val courseDesc = this.findViewById<EditText>(R.id.editCourseDescText).text.toString()
-                    val assignmentDesc = findViewById<EditText>(R.id.editAssignmentDescText).text.toString()
+                    val userId = FirebaseAuth.getInstance().currentUser?.uid
+                        ?: return@setOnClickListener // Ensure user is authenticated
+                    val courseDesc =
+                        this.findViewById<EditText>(R.id.editCourseDescText).text.toString()
+                    val assignmentDesc =
+                        findViewById<EditText>(R.id.editAssignmentDescText).text.toString()
                     val dueDate = this.findViewById<EditText>(R.id.editDueDateText).text.toString()
                     val color = findViewById<EditText>(R.id.editCourseDescText).currentTextColor
-                    val reminderDate = this.findViewById<EditText>(R.id.editReminderText).text.toString()
+                    val reminderDate =
+                        this.findViewById<EditText>(R.id.editReminderText).text.toString()
 
-                    val homework = Homework(userId, courseDesc, assignmentDesc, dueDate, reminderDate, color)
+
+                    val homework = Homework(
+                        courseDesc = courseDesc,
+                        assignmentDesc = assignmentDesc,
+                        dueDate = dueDate,
+                        reminderDate = reminderDate,
+                        color = color,
+                        courseId = courseDesc
+                    )
 
                     homeworkList.add(homework)
-
                     uploadHomeworkData(homework)
-
                     updateHomeworkRecyclerViews()
                     clearHomeworkInput()
 
@@ -427,9 +462,11 @@ class MainActivity : ComponentActivity() {
 
                     val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
                     val userName = sharedPreferences.getString("userName", "User")
-                    val userPhoneNumber = sharedPreferences.getString("userPhoneNumber", "5551234567")
+                    val userPhoneNumber =
+                        sharedPreferences.getString("userPhoneNumber", "5551234567")
 
-                    val message = "Hey $userName added an $courseDesc assignment titled $assignmentDesc and it is due on $dueDate."
+                    val message =
+                        "Hey $userName added an $courseDesc assignment titled $assignmentDesc and it is due on $dueDate."
                     if (userPhoneNumber != null) {
                         sendSMS(userPhoneNumber, message)
                     }
@@ -450,6 +487,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 editClassDescText = addHomeworkLayout.findViewById(R.id.editCourseDescText)
+
             }
 
             R.layout.yourcoursesscreen_layout -> {
@@ -462,8 +500,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val recyclerView = findViewById<RecyclerView>(R.id.courseRecyclerView)
-                if (recyclerView != null)
-                {
+                if (recyclerView != null) {
                     updateCourseRecyclerView()
                 }
             }
@@ -474,13 +511,22 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<Button>(R.id.coursesaveButton).setOnClickListener {
+//                    val courseNameEditText = findViewById<EditText>(R.id.nameOfCourseText)
+//                    val courseDescEditText = findViewById<EditText>(R.id.editCourseDescText)
+//
+//                    val courseName = courseNameEditText?.text?.toString().orEmpty()
+//                    val courseColor = courseNameEditText?.currentTextColor ?: 0
+//                    val courseDesc = courseDescEditText?.text?.toString().orEmpty()
+
                     val courseName = this.findViewById<EditText>(R.id.nameOfCourseText).text.toString()
                     val courseColor = findViewById<EditText>(R.id.nameOfCourseText).currentTextColor
+                    val courseDesc = this.findViewById<EditText>(R.id.nameOfCourseText).text.toString()
 
-                    if(!courseList.any {it.courseName == courseName})
-                    {
-                        saveCourse(courseName, courseColor)
 
+                    if (!courseList.any { it.courseName == courseName }) {
+
+                        saveCourse(courseName, courseColor, courseDesc)
+                        updateCourseRecyclerView()
                         updateCourseRecyclerView()
                     }
                     inflateLayout(R.layout.yourcoursesscreen_layout)
@@ -530,7 +576,7 @@ class MainActivity : ComponentActivity() {
                     inflateLayout(R.layout.completedhwscreen_layout)
                 }
 
-                findViewById<RecyclerView>(R.id.compHWRecycler).setOnClickListener{
+                findViewById<RecyclerView>(R.id.compHWRecycler).setOnClickListener {
 
                 }
                 val recyclerViewCompHW: RecyclerView = findViewById(R.id.compHWRecycler)
@@ -545,14 +591,18 @@ class MainActivity : ComponentActivity() {
 
                 findViewById<Button>(R.id.editsaveButton).setOnClickListener {
                     val id = FirebaseAuth.getInstance().currentUser?.uid.toString()
-                    val editCourseDesc = this.findViewById<EditText>(R.id.edit_editClassDescText).text.toString()
-                    val editAssignmentDesc = findViewById<EditText>(R.id.edit_editAssignmentDescText).text.toString()
-                    val editDueDate = this.findViewById<EditText>(R.id.edit_editDueDateText).text.toString()
-                    val editReminderDate = this.findViewById<EditText>(R.id.editReminderText).text.toString()
-                    val editColor = findViewById<EditText>(R.id.edit_editClassDescText).currentTextColor
+                    val editCourseDesc =
+                        this.findViewById<EditText>(R.id.edit_editClassDescText).text.toString()
+                    val editAssignmentDesc =
+                        findViewById<EditText>(R.id.edit_editAssignmentDescText).text.toString()
+                    val editDueDate =
+                        this.findViewById<EditText>(R.id.edit_editDueDateText).text.toString()
+                    val editReminderDate =
+                        this.findViewById<EditText>(R.id.editReminderText).text.toString()
+                    val editColor =
+                        findViewById<EditText>(R.id.edit_editClassDescText).currentTextColor
 
-                    if (editingHomeworkIndex != -1)
-                    {
+                    if (editingHomeworkIndex != -1) {
                         val homework = homeworkList[editingHomeworkIndex]
                         homework.documentId = id
                         homework.courseName = editCourseDesc
@@ -561,10 +611,15 @@ class MainActivity : ComponentActivity() {
                         homework.reminderDate = editReminderDate
                         homework.color = editColor
 
-                    }
-                    else
-                    {
-                        val homework = Homework(id, editCourseDesc, editAssignmentDesc, editDueDate, editReminderDate, editColor)
+                    } else {
+                        val homework = Homework(
+                            id,
+                            editCourseDesc,
+                            editAssignmentDesc,
+                            editDueDate,
+                            editReminderDate,
+                            editColor
+                        )
                         homeworkList.add(homework)
                     }
 
@@ -592,9 +647,11 @@ class MainActivity : ComponentActivity() {
 
                     val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
                     val userName = sharedPreferences.getString("userName", "User")
-                    val userPhoneNumber = sharedPreferences.getString("userPhoneNumber", "5551234567")
+                    val userPhoneNumber =
+                        sharedPreferences.getString("userPhoneNumber", "5551234567")
 
-                    val message = "Hey $userName just completed the ${homework.assignmentDesc} for his ${homework.courseName} Class."
+                    val message =
+                        "Hey $userName just completed the ${homework.assignmentDesc} for his ${homework.courseName} Class."
                     if (userPhoneNumber != null) {
                         sendSMS(userPhoneNumber, message)
                     }
@@ -618,25 +675,24 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val editRecyclerView = findViewById<RecyclerView>(R.id.editCourseRecyclerView)
-                if (editRecyclerView != null)
-                {
+                if (editRecyclerView != null) {
                     updateCourseRecyclerView()
                 }
 
-                updateEditClassDescText = editHomeworkLayout.findViewById(R.id.edit_editClassDescText)
+                updateEditClassDescText =
+                    editHomeworkLayout.findViewById(R.id.edit_editClassDescText)
             }
 
-            R.layout.homeworkcompscreen_layout ->
-            {
-                findViewById<Button>(R.id.completeCancelButton).setOnClickListener{
+            R.layout.homeworkcompscreen_layout -> {
+                findViewById<Button>(R.id.completeCancelButton).setOnClickListener {
                     inflateLayout(R.layout.completedhwscreen_layout)
                 }
-                findViewById<Button>(R.id.completeSaveButton).setOnClickListener{
+                findViewById<Button>(R.id.completeSaveButton).setOnClickListener {
                     inflateLayout(R.layout.completedhwscreen_layout)
                 }
-                findViewById<Button>(R.id.completeUndoButton).setOnClickListener{
+                findViewById<Button>(R.id.completeUndoButton).setOnClickListener {
                 }
-                findViewById<Button>(R.id.completeDeleteButton).setOnClickListener{
+                findViewById<Button>(R.id.completeDeleteButton).setOnClickListener {
 
                 }
             }
@@ -672,10 +728,12 @@ class MainActivity : ComponentActivity() {
                     inflateLayout(R.layout.setting_page)
                 }
 
-                sharedPreferences = getSharedPreferences("NotificationPreferences", Context.MODE_PRIVATE)
+                sharedPreferences =
+                    getSharedPreferences("NotificationPreferences", Context.MODE_PRIVATE)
 
                 // Load the saved states
-                reminderSwitch.isChecked = sharedPreferences.getBoolean("reminderSwitchState", false)
+                reminderSwitch.isChecked =
+                    sharedPreferences.getBoolean("reminderSwitchState", false)
                 messageSwitch.isChecked = sharedPreferences.getBoolean("messageSwitchState", false)
 
                 // Set listeners for the switches
@@ -703,7 +761,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.change_photo_button).setOnClickListener {
-                   //inflateLayout(R.layout.change_photo)
+                    //inflateLayout(R.layout.change_photo)
                 }
 
                 findViewById<ImageView>(R.id.change_name_button).setOnClickListener {
@@ -715,7 +773,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<ImageView>(R.id.add_teacher_button).setOnClickListener {
-                   // inflateLayout(R.layout.add_teacher)
+                    // inflateLayout(R.layout.add_teacher)
                 }
 
             }
@@ -858,9 +916,11 @@ class MainActivity : ComponentActivity() {
             is FirebaseAuthUserCollisionException -> {
                 Toast.makeText(this, "Email already in use", Toast.LENGTH_SHORT).show()
             }
+
             is FirebaseAuthInvalidCredentialsException -> {
                 Toast.makeText(this, "Invalid email or password format", Toast.LENGTH_SHORT).show()
             }
+
             else -> {
                 Log.e("FirebaseAuth", "Error: $exception")
                 Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show()
@@ -869,47 +929,49 @@ class MainActivity : ComponentActivity() {
 
     }
 
-    private fun signInGoogle(){
+    private fun signInGoogle() {
         val signInIntent = googleSignInClient.signInIntent
         launcher.launch(signInIntent)
     }
 
     private fun handleResults(task: Task<GoogleSignInAccount>) {
-        if (task.isSuccessful){
-            val account : GoogleSignInAccount? = task.result
-            if (account != null){
+        if (task.isSuccessful) {
+            val account: GoogleSignInAccount? = task.result
+            if (account != null) {
                 Log.d("SIGN_IN", "Account retrieved: ${account.email}")
                 updateUI(account)
             }
 
-        }else{
+        } else {
             Log.e("SIGN_IN", "Error: ${task.exception}")
             Toast.makeText(this, task.exception.toString(), Toast.LENGTH_SHORT).show()
         }
 
     }
 
-    private fun updateUI(account: GoogleSignInAccount)
-    {
-        val credential = GoogleAuthProvider.getCredential(account.idToken , null)
-        auth.signInWithCredential(credential).addOnCompleteListener{
-            if (it.isSuccessful){
+    private fun updateUI(account: GoogleSignInAccount) {
+        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+        auth.signInWithCredential(credential).addOnCompleteListener {
+            if (it.isSuccessful) {
                 Log.d("SIGN_IN", "Firebase authentication successful")
                 inflateLayout(R.layout.homescreen_layout)
 
-            }else{
+            } else {
                 Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
             }
         }
     }
+
     private fun handleFirebaseLoginError(exception: Exception?) {
         when (exception) {
             is FirebaseAuthUserCollisionException -> {
                 Toast.makeText(this, "Email already in use", Toast.LENGTH_SHORT).show()
             }
+
             is FirebaseAuthInvalidCredentialsException -> {
                 Toast.makeText(this, "Invalid email or password format", Toast.LENGTH_SHORT).show()
             }
+
             else -> {
                 Log.e("FirebaseAuth", "Error: $exception")
                 Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show()
@@ -920,14 +982,14 @@ class MainActivity : ComponentActivity() {
     //Code dealing with firebase ends here
 
     //Code that has to do with the add homework screen starts here
-    private fun showDatePicker(editText: EditText)
-    {
+    private fun showDatePicker(editText: EditText) {
         val currentDate = Calendar.getInstance()
         val year = currentDate.get(Calendar.YEAR)
         val month = currentDate.get(Calendar.MONTH)
         val day = currentDate.get(Calendar.DAY_OF_MONTH)
 
-        val datePickerDialog = DatePickerDialog(this,
+        val datePickerDialog = DatePickerDialog(
+            this,
             { _, selectedYear, selectedMonth, selectedDay ->
                 val selectedDate = Calendar.getInstance()
                 selectedDate.set(selectedYear, selectedMonth, selectedDay)
@@ -939,8 +1001,7 @@ class MainActivity : ComponentActivity() {
         datePickerDialog.show()
     }
 
-    private fun showDateAndTimePicker(editText: EditText)
-    {
+    private fun showDateAndTimePicker(editText: EditText) {
         val currentDateAndTime = Calendar.getInstance()
         val year = currentDateAndTime.get(Calendar.YEAR)
         val month = currentDateAndTime.get(Calendar.MONTH)
@@ -951,7 +1012,8 @@ class MainActivity : ComponentActivity() {
         val datePickerDialog = DatePickerDialog(
             this,
             { _, selectedYear, selectedMonth, selectedDay ->
-                val timePickerDialog = TimePickerDialog(this,
+                val timePickerDialog = TimePickerDialog(
+                    this,
                     { _, selectedHour, selectedMinute ->
                         val selectedDateTime = Calendar.getInstance()
                         selectedDateTime.set(
@@ -975,8 +1037,7 @@ class MainActivity : ComponentActivity() {
     //Code that deals with the add homework screen ends here!
 
     //Code that deals with color coding courses starts here
-    private fun showColorWheel()
-    {
+    private fun showColorWheel() {
         colorEditText = if (!::colorEditText.isInitialized) {
             findViewById(R.id.nameOfCourseText)
         } else {
@@ -989,11 +1050,14 @@ class MainActivity : ComponentActivity() {
             findViewById(R.id.colorPickerView)
         }
 
+
         colorPickerView.visibility = View.VISIBLE
 
-        ColorPickerDialog.Builder(this).setTitle("Pick a color for your course!").setPreferenceName("MyColorPickerDialog")
+        ColorPickerDialog.Builder(this).setTitle("Pick a color for your course!")
+            .setPreferenceName("MyColorPickerDialog")
             .setPositiveButton("Save", ColorEnvelopeListener
-            { envelope, _ -> colorEditText.setTextColor(envelope.color)
+            { envelope, _ ->
+                colorEditText.setTextColor(envelope.color)
                 val courseName = findViewById<EditText>(R.id.nameOfCourseText).text.toString()
                 val courseColor = envelope.color
                 val course = Course(courseName, courseColor)
@@ -1009,17 +1073,70 @@ class MainActivity : ComponentActivity() {
             }.attachAlphaSlideBar(true)
             .attachBrightnessSlideBar(true)
             .show()
+
+//        // Initialize colorEditText and colorPickerView
+//        colorEditText = findViewById(R.id.nameOfCourseText)
+//        colorPickerView = findViewById(R.id.colorPickerView)
+//
+//        // Ensure colorEditText is not null
+//        if (colorEditText == null) {
+//            Log.e("MainActivity", "colorEditText is not initialized")
+//            return
+//        }
+//
+//        // Make the colorPickerView visible
+//        colorPickerView.visibility = View.VISIBLE
+//
+//
+//        // Create and show the ColorPickerDialog
+//        ColorPickerDialog.Builder(this)
+//            .setTitle("Pick a color for your course!")
+//            .setPreferenceName("MyColorPickerDialog")
+//            .setPositiveButton("Save", ColorEnvelopeListener
+//            {envelope, _ ->
+//                colorEditText.setTextColor(envelope.color)
+//                try {
+//                    //val courseId = findViewById<EditText>(R.id.editCourseDescText).text.toString()
+//                    val courseName = findViewById<EditText>(R.id.nameOfCourseText).text.toString()
+//                    val courseColor = envelope.color
+//                    val course = Course( courseName, courseColor)
+//                    courseList.add(course)
+//
+//                    updateCourseRecyclerView()
+//                }catch(e: Exception) {
+//                    Log.e("MainActivity", "Error adding course", e)
+//                }
+//                colorPickerView.visibility = View.GONE
+//            })
+//            .setNegativeButton("Cancel"){_,_ ->
+//                colorPickerView.visibility = View.GONE
+//            }
+//            .attachAlphaSlideBar(true)
+//            .attachBrightnessSlideBar(true)
+//            .show()
     }
     //Code that deals with color coding courses ends here!
 
     //Code that handles SMS messaging starts here!
     private fun requestSmsPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.SEND_SMS), SMS_PERMISSION_CODE)
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.SEND_SMS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.SEND_SMS),
+                SMS_PERMISSION_CODE
+            )
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == SMS_PERMISSION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -1031,7 +1148,11 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun sendSMS(phoneNumber: String, message: String) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.SEND_SMS
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             try {
                 val smsManager: SmsManager = SmsManager.getDefault()
                 smsManager.sendTextMessage(phoneNumber, null, message, null, null)
@@ -1049,15 +1170,18 @@ class MainActivity : ComponentActivity() {
     }
 
     //Code that handles the course creation, storage and management starts here
-    class CourseAdapter(private val courseList: List<Course>, private val mainActivity: MainActivity, private val editClassDescText: EditText) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>()
-    {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseViewHolder
-        {
-            val itemView = LayoutInflater.from(parent.context).inflate(R.layout.courseitems, parent, false)
+    class CourseAdapter(
+        private val courseList: List<Course>,
+        private val mainActivity: MainActivity,
+        private val editClassDescText: EditText
+    ) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseViewHolder {
+            val itemView =
+                LayoutInflater.from(parent.context).inflate(R.layout.courseitems, parent, false)
             return CourseViewHolder(itemView)
         }
-        override fun onBindViewHolder(holder: CourseViewHolder, position: Int)
-        {
+
+        override fun onBindViewHolder(holder: CourseViewHolder, position: Int) {
             val currentCourse = courseList[position]
             holder.bind(currentCourse)
 
@@ -1066,33 +1190,34 @@ class MainActivity : ComponentActivity() {
                 mainActivity.inflateLayout(R.layout.addhomeworkscreen_layout)
             }
         }
-        override fun getItemCount(): Int
-        {
+
+        override fun getItemCount(): Int {
             return courseList.size
         }
-        inner class CourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-        {
-            private val courseNameButtonView: Button = itemView.findViewById(R.id.courseNameButtonView)
+
+        inner class CourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            private val courseNameButtonView: Button =
+                itemView.findViewById(R.id.courseNameButtonView)
+
             init {
                 courseNameButtonView.setOnClickListener {
                     val course = courseList[adapterPosition]
 
-                    if(mainActivity.currentLayout == R.layout.yourcoursesscreen_layout)
-                    {
+                    if (mainActivity.currentLayout == R.layout.yourcoursesscreen_layout) {
                         mainActivity.inflateLayout(R.layout.addhomeworkscreen_layout)
                         {
-                            val editClassDescText = mainActivity.findViewById<EditText>(R.id.editCourseDescText)
+                            val editClassDescText =
+                                mainActivity.findViewById<EditText>(R.id.editCourseDescText)
                             editClassDescText?.apply {
                                 setText(course.courseName)
                                 setTextColor(course.courseColor)
                             }
                         }
-                    }
-                    else
-                    {
+                    } else {
                         mainActivity.inflateLayout(R.layout.edithwscreen_layout)
                         {
-                            val updateEditClassDescText = mainActivity.findViewById<EditText>(R.id.edit_editClassDescText)
+                            val updateEditClassDescText =
+                                mainActivity.findViewById<EditText>(R.id.edit_editClassDescText)
                             updateEditClassDescText?.apply {
                                 setText(course.courseName)
                                 setTextColor(course.courseColor)
@@ -1101,67 +1226,72 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-            fun bind(course: Course)
-            {
+
+            fun bind(course: Course) {
                 courseNameButtonView.text = course.courseName
                 courseNameButtonView.setTextColor(course.courseColor)
             }
         }
     }
 
-    private fun updateCourseRecyclerView()
-    {
+    private fun updateCourseRecyclerView() {
         val recyclerView = findViewById<RecyclerView>(R.id.courseRecyclerView)
-        if (recyclerView != null)
-        {
+        if (recyclerView != null) {
             val adapter = CourseAdapter(courseList, this, editClassDescText)
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(this)
         }
 
         val editRecyclerView = findViewById<RecyclerView>(R.id.editCourseRecyclerView)
-        if (editRecyclerView != null)
-        {
+        if (editRecyclerView != null) {
             val adapter = CourseAdapter(courseList, this, editClassDescText)
             editRecyclerView.adapter = adapter
             editRecyclerView.layoutManager = LinearLayoutManager(this)
         }
     }
 
-    private fun saveCourse(courseName: String, courseColor: Int)
-    {
-        val course = Course(courseName, courseColor)
+    private fun saveCourse(courseId: String, courseName: String, courseColor: Int, ) {
+        val course = Course(courseName, courseColor, courseId)
         courseList.add(course)
     }
     //Code that handles courses ends here!
 
     //Code that handles homework creation, storage and management begins here
-    class HomeworkAdapter(private val homeworkList: MutableList<Homework>, private val mainActivity: MainActivity, private val origin: String ) : RecyclerView.Adapter<HomeworkAdapter.HomeworkViewHolder>()
-    {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeworkViewHolder
-        {
-            val itemView = LayoutInflater.from(parent.context).inflate(R.layout.homeworkitems, parent, false)
+    class HomeworkAdapter(
+        private val homeworkList: MutableList<Homework>,
+        private val mainActivity: MainActivity,
+        private val origin: String
+    ) : RecyclerView.Adapter<HomeworkAdapter.HomeworkViewHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeworkViewHolder {
+            val itemView =
+                LayoutInflater.from(parent.context).inflate(R.layout.homeworkitems, parent, false)
             return HomeworkViewHolder(itemView)
         }
-        override fun onBindViewHolder(holder: HomeworkViewHolder, position: Int)
-        {
+
+        override fun onBindViewHolder(holder: HomeworkViewHolder, position: Int) {
             val currentHomework = homeworkList[position]
             holder.bind(currentHomework)
 
-            holder.itemView.findViewById<Button>(R.id.homeworkButtonView).setOnClickListener{
-                when(origin){
-                    "home", "currentUpcoming" -> mainActivity.editHomework(currentHomework, position)
+            holder.itemView.findViewById<Button>(R.id.homeworkButtonView).setOnClickListener {
+                when (origin) {
+                    "home", "currentUpcoming" -> mainActivity.editHomework(
+                        currentHomework,
+                        position
+                    )
+
                     "completed" -> mainActivity.viewCompletedHomework(currentHomework)
                 }
             }
         }
-        override fun getItemCount(): Int
-        {
+
+        override fun getItemCount(): Int {
             return homeworkList.size
         }
-        inner class HomeworkViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-        {
-            private val homeworkRecyclerView: Button = itemView.findViewById(R.id.homeworkButtonView)
+
+        inner class HomeworkViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            private val homeworkRecyclerView: Button =
+                itemView.findViewById(R.id.homeworkButtonView)
+
             init {
                 homeworkRecyclerView.setOnClickListener {
                     val homework = homeworkList[adapterPosition]
@@ -1169,34 +1299,50 @@ class MainActivity : ComponentActivity() {
                     (itemView.context as MainActivity).editHomework(homework, position) //,color)
                 }
             }
-            fun bind(homework: Homework)
-            {
-                homeworkRecyclerView.text = "${homework.courseName}: ${homework.assignmentDesc} due ${homework.dueDate}"
+
+            fun bind(homework: Homework) {
+                homeworkRecyclerView.text =
+                    "${homework.courseName}: ${homework.assignmentDesc} due ${homework.dueDate}"
                 homeworkRecyclerView.setTextColor(homework.color)
             }
         }
     }
 
-    private fun saveHomeworkInput()
-    {
+    private fun saveHomeworkInput() {
         val sharedPreferences = getSharedPreferences("AddHomeworkPrefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        editor.putString("assignmentDesc", findViewById<EditText>(R.id.editAssignmentDescText).text.toString())
+        editor.putString(
+            "assignmentDesc",
+            findViewById<EditText>(R.id.editAssignmentDescText).text.toString()
+        )
         editor.putString("dueDate", findViewById<EditText>(R.id.editDueDateText).text.toString())
         editor.putString("reminder", findViewById<EditText>(R.id.editReminderText).text.toString())
         editor.apply()
     }
 
-    private fun loadHomeworkInput()
-    {
+    private fun loadHomeworkInput() {
         val sharedPreferences = getSharedPreferences("AddHomeworkPrefs", Context.MODE_PRIVATE)
-        findViewById<EditText>(R.id.editAssignmentDescText).setText(sharedPreferences.getString("assignmentDesc", ""))
-        findViewById<EditText>(R.id.editDueDateText).setText(sharedPreferences.getString("dueDate", ""))
-        findViewById<EditText>(R.id.editReminderText).setText(sharedPreferences.getString("reminder", ""))
+        findViewById<EditText>(R.id.editAssignmentDescText).setText(
+            sharedPreferences.getString(
+                "assignmentDesc",
+                ""
+            )
+        )
+        findViewById<EditText>(R.id.editDueDateText).setText(
+            sharedPreferences.getString(
+                "dueDate",
+                ""
+            )
+        )
+        findViewById<EditText>(R.id.editReminderText).setText(
+            sharedPreferences.getString(
+                "reminder",
+                ""
+            )
+        )
     }
 
-    private fun clearHomeworkInput()
-    {
+    private fun clearHomeworkInput() {
         val sharedPreferences = getSharedPreferences("AddHomeworkPrefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.clear()
@@ -1223,35 +1369,34 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun updateHomeworkRecyclerViews()
-    {
+    private fun updateHomeworkRecyclerViews() {
+        Log.d(
+            TAG,
+            "Updating RecyclerViews with ${homeworkList.size} currentHomework items and ${completedHomeworkList.size} completedHomework items"
+        )
         val homeRecyclerView = findViewById<RecyclerView>(R.id.homeScreenRecycler)
-        if (homeRecyclerView != null)
-        {
+        if (homeRecyclerView != null) {
             val homeAdapter = HomeworkAdapter(homeworkList, this, "home")
             homeRecyclerView.adapter = homeAdapter
             homeRecyclerView.layoutManager = LinearLayoutManager(this)
         }
 
         val currentRecyclerView = findViewById<RecyclerView>(R.id.curHWRecycler)
-        if (currentRecyclerView != null)
-        {
+        if (currentRecyclerView != null) {
             val currentAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
             currentRecyclerView.adapter = currentAdapter
             currentRecyclerView.layoutManager = LinearLayoutManager(this)
         }
 
         val completedRecyclerView = findViewById<RecyclerView>(R.id.compHWRecycler)
-        if (completedRecyclerView != null)
-        {
+        if (completedRecyclerView != null) {
             val completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
             completedRecyclerView.adapter = completedAdapter
             completedRecyclerView.layoutManager = LinearLayoutManager(this)
         }
     }
 
-    fun editHomework(homework: Homework, index: Int)
-    {
+    fun editHomework(homework: Homework, index: Int) {
         editingHomeworkIndex = index
         inflateLayout(R.layout.edithwscreen_layout)
         {
@@ -1273,8 +1418,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun viewCompletedHomework(homework: Homework)
-    {
+    fun viewCompletedHomework(homework: Homework) {
         inflateLayout(R.layout.homeworkcompscreen_layout)
         {
             findViewById<EditText>(R.id.edit_completeClassDescText).apply {
@@ -1306,9 +1450,10 @@ class MainActivity : ComponentActivity() {
 
     //code for uploading and editing data to the database starts here
 
-    private fun uploadProfileData(){
+    private fun uploadProfileData() {
 
         val fireStoreDatabase = FirebaseFirestore.getInstance()
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
         val firstName = findViewById<EditText>(R.id.editFirstNameText).text.toString()
         val lastName = findViewById<EditText>(R.id.editLastNameText).text.toString()
@@ -1323,51 +1468,73 @@ class MainActivity : ComponentActivity() {
         user["email"] = email
         user["parentPhoneNum"] = parentPhoneNum
 
-        val userId = FirebaseAuth.getInstance().currentUser!!.uid
-
         fireStoreDatabase.collection("users").document(userId).set(user)
 
             .addOnSuccessListener {
-                Log.d(TAG, "Added document with ID")
+                Log.d(TAG, "Added document with ID: $userId")
             }
-            .addOnFailureListener {
-                Log.w(TAG, "Error adding document")
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error adding document: $userId", e)
             }
     }
 
-    private fun uploadHomeworkData(homework: Homework){
+    private fun downloadProfileInfo() {
         val fireStoreDatabase = FirebaseFirestore.getInstance()
         val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
-        //
-        val courseDesc = this.findViewById<EditText>(R.id.editCourseDescText).text.toString()
-        val assignmentDesc = findViewById<EditText>(R.id.editAssignmentDescText).text.toString()
-        val dueDate = this.findViewById<EditText>(R.id.editDueDateText).text.toString()
-        val color = findViewById<EditText>(R.id.editCourseDescText).currentTextColor
-        val reminderDate = this.findViewById<EditText>(R.id.editReminderText).toString()
+        fireStoreDatabase.collection("users").document(userId).get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val firstName = document.getString("firstName") ?: ""
+                    val lastName = document.getString("lastName") ?: ""
+                    val email = document.getString("email") ?: ""
+                    val parentPhoneNum = document.getString("parentPhoneNum") ?: ""
 
-        //val homework = MainActivity.Homework(id, courseDesc, assignmentDesc, dueDate, reminderDate,  color)
+                    findViewById<EditText>(R.id.editFirstNameText).setText(firstName)
+                    findViewById<EditText>(R.id.editLastNameText).setText(lastName)
+                    findViewById<EditText>(R.id.editEmailText).setText(email)
+                    findViewById<EditText>(R.id.editParentPhoneNumText).setText(parentPhoneNum)
 
-        val userHomeworkMap : MutableMap<String, Any> = HashMap()
-        //userHomeworkMap["id"] = id
-        userHomeworkMap["courseDesc"] = courseDesc
-        userHomeworkMap["assignmentDesc"] = assignmentDesc
-        userHomeworkMap["dueDate"] = dueDate
-        userHomeworkMap["reminderDate"] = reminderDate
-        userHomeworkMap["color"] = color
+                    Log.d(TAG, "Profile successfully downloaded for user ID: $userId")
+                } else {
+                    Log.d(TAG, "No profile data found for user ID: $userId")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error downloading profile for user ID: $userId", e)
+            }
 
-        val documentId = fireStoreDatabase.collection("users")
+    }
+
+    private fun uploadHomeworkData(homework: Homework) {
+        val fireStoreDatabase = FirebaseFirestore.getInstance()
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+        val userHomeworkMap: MutableMap<String, Any> = HashMap()
+        userHomeworkMap["courseDesc"] = homework.courseDesc
+        userHomeworkMap["assignmentDesc"] = homework.assignmentDesc
+        userHomeworkMap["dueDate"] = homework.dueDate
+        userHomeworkMap["reminderDate"] = homework.reminderDate
+        userHomeworkMap["color"] = homework.color
+        userHomeworkMap["courseId"] = homework.courseId
+        userHomeworkMap["isCompleted"] = homework.isCompleted
+
+        val collectionPath = if (homework.isCompleted) "completedHomework" else "currentHomework"
+
+
+        val documentId = fireStoreDatabase
+            .collection("users")
             .document(userId)
-            .collection("userHomework")
-            .document("currentHomework")
-            .collection("homeworks")
+            .collection("courses")
+            .document(homework.courseId)
+            .collection(collectionPath)
             .document().id
 
         fireStoreDatabase.collection("users")
             .document(userId)
-            .collection("userHomework")
-            .document("currentHomework")
-            .collection("homeworks")
+            .collection("courses")
+            .document(homework.courseId)
+            .collection(collectionPath)
             .document(documentId)
             .set(userHomeworkMap)
             .addOnSuccessListener {
@@ -1378,79 +1545,138 @@ class MainActivity : ComponentActivity() {
                 Log.w(TAG, "Error adding document $it")
             }
 
-            // this section was supposed to upload the course name and color but is currently causing the app to crash
-            //whenever the homework gets saved. i'll try to make it its own method and it probably has something to do with
-            // that its not an edit text but a text view.
-
-        //val courseName = this.findViewById<EditText>(R.id.courseNameText).text.toString()
-        //val courseColor = findViewById<EditText>(R.id.courseColorView).currentTextColor
-
-       // val userCourseMap : MutableMap<String, Any> = HashMap()
-        //userCourseMap["courseName"] = courseName
-        //userCourseMap["courseColor"] = courseColor
-
-        //fireStoreDatabase.collection("users").document(userId).collection("userCourses").add(userCourseMap)
-            //.addOnSuccessListener {
-                //Log.d(TAG, "Added document with ID $it")
-            //}
-           // .addOnFailureListener {
-            //    Log.w(TAG, "Error adding document $it")
-           // }
+        saveCourseData(homework)  // Save course data
 
     }
 
+    private fun saveCourseData(homework: Homework) {
+        val fireStoreDatabase = FirebaseFirestore.getInstance()
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
-    private fun retrieveHomeworkData(userId: String){
+        val courseMap: MutableMap<String, Any> = HashMap()
+        courseMap["courseName"] = homework.courseDesc
+        courseMap["courseColor"] = homework.color
+        courseMap["courseId"] = homework.courseDesc
+        courseMap["courseDesc"] = homework.courseDesc
+
+        fireStoreDatabase.collection("users")
+            .document(userId)
+            .collection("courses")
+            .document(homework.courseId)
+            .set(courseMap, SetOptions.merge())  // Merge to avoid overwriting data
+            .addOnSuccessListener {
+                Log.d(TAG, "Course successfully saved/updated for ID: ${homework.courseId}")
+            }
+            .addOnFailureListener {
+                Log.w(TAG, "Error adding course document $it")
+            }
+    }
+
+    private fun retrieveCoursesAndHomework(userId: String) {
         homeworkList.clear() // Clear the existing list
         completedHomeworkList.clear() // Clear the completed list
 
-        // Fetch data of both homeworks from Firestore
         val firestore = Firebase.firestore
+        firestore.collection("users")
+            .document(userId)
+            .collection("courses")
+            .get()
+            .addOnSuccessListener { documents ->
+                val totalCourses = documents.size()
+                var coursesFetched = 0
+
+                for (document in documents) {
+                    try {
+                        val course = document.toObject<Course>()
+                        Log.d(TAG, "Document ID: ${document.id}")
+                        Log.d(TAG, "Course retrieved: $course")
+                        if (course != null && course.courseId.isNotBlank()) {
+                            Log.d(TAG, "Fetching homework for course ${course.courseId}")
+                            courseList.add(course)
+                            retrieveHomeworkData(userId, course.courseId)
+                            coursesFetched++
+                            if (coursesFetched == totalCourses) {
+                                updateHomeworkRecyclerViews()
+                            }
+                        } else {
+                            Log.w(TAG, "Course or courseId is null/blank for document: ${document.id}")
+                            coursesFetched++
+                            if (coursesFetched == totalCourses) {
+                                updateHomeworkRecyclerViews()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error converting course document", e)
+                        coursesFetched++
+                        if (coursesFetched == totalCourses) {
+                            updateHomeworkRecyclerViews()
+                        }
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents: ", exception)
+            }
+
+
+    }
+
+    private fun retrieveHomeworkData(userId: String, courseId: String) {
+
+        val firestore = Firebase.firestore
+
+
+        // References to the currentHomework
         val currentHomeworkRef = firestore.collection("users")
             .document(userId)
-            .collection("userHomework")
-            .document("currentHomework")
-            .collection("homeworks")
-
-        val completedHomeworkRef = firestore.collection("users")
-            .document(userId)
-            .collection("userHomework")
-            .document("completedHomework")
-            .collection("homeworks")
+            .collection("courses")
+            .document(courseId)
+            .collection("currentHomework")
 
         // Fetch current homework
+        Log.d(
+            TAG,
+            "Fetching currentHomework from path: users/$userId/courses/$courseId/currentHomework"
+        )
         currentHomeworkRef.get()
             .addOnSuccessListener { documents ->
-                for (document in documents){
-                    try{
+                Log.d(TAG, "Successfully fetched currentHomework for course $courseId")
+                for (document in documents) {
+                    try {
                         val homework = document.toObject<Homework>()
                         if (homework != null) {
-
                             homeworkList.add(homework)
                         }
-                    } catch (e: Exception){
-                        Log.e(TAG, "Error converting document", e)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error converting currentHomework document", e)
                     }
                 }
                 // Fetch completed homework after current homework is fetched
-                retrieveCompletedHW(userId)
+                Log.d(
+                    TAG,
+                    "Fetching completedHomework from path: users/$userId/courses/$courseId/completedHomework"
+                )
+                retrieveCompletedHW(userId, courseId)
+
+
             }
             .addOnFailureListener { exception ->
-                Log.e(TAG, "Error getting documents: ", exception)
+                Log.e(TAG, "Error getting currentHomework documents: ", exception)
             }
     }
 
     // Fetch Completed Homework
-    private fun retrieveCompletedHW(userId: String){
+    private fun retrieveCompletedHW(userId: String, courseId: String) {
         val firestore = Firebase.firestore
         val completedHomeworkRef = firestore.collection("users")
             .document(userId)
-            .collection("userHomework")
-            .document("completedHomework")
-            .collection("homeworks")
+            .collection("courses")
+            .document(courseId)
+            .collection("completedHomework")
 
         completedHomeworkRef.get()
             .addOnSuccessListener { documents ->
+                Log.d(TAG, "Successfully fetched completedHomework for course $courseId")
                 for (document in documents) {
                     try {
                         val homework = document.toObject<Homework>()
@@ -1458,27 +1684,28 @@ class MainActivity : ComponentActivity() {
                             completedHomeworkList.add(homework)
                         }
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error converting document", e)
+                        Log.e(TAG, "Error converting completedHomework document", e)
                     }
                 }
                 updateHomeworkRecyclerViews() // Update RecyclerView after fetching all data
             }
             .addOnFailureListener { exception ->
-                Log.e(TAG, "Error getting documents: ", exception)
+                Log.e(TAG, "Error getting completedHomework documents: ", exception)
             }
     }
 
-    private fun deleteHomeworkFromFireStore(homework:Homework){
+    private fun deleteHomeworkFromFireStore(homework: Homework) {
         val firestore = Firebase.firestore
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return // Ensure user is authenticated
+        val userId =
+            FirebaseAuth.getInstance().currentUser?.uid ?: return // Ensure user is authenticated
 
 
-        homework.documentId?.let {documentId ->
-            val completedHomeworkRef =firestore.collection("users")
+        homework.documentId?.let { documentId ->
+            val completedHomeworkRef = firestore.collection("users")
                 .document(userId)
-                .collection("userHomework")
-                .document("completedHomework")
-                .collection("homeworks")
+                .collection("courses")
+                .document(homework.courseId)
+                .collection("completedHomework")
                 .document(documentId) // Use homework ID or unique identifier
                 .delete()
                 .addOnSuccessListener {
@@ -1490,24 +1717,29 @@ class MainActivity : ComponentActivity() {
         }
 
     }
+
     private fun moveHomeworkToCompleted(homework: Homework) {
         val fireStoreDatabase = FirebaseFirestore.getInstance()
         val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
         homework.documentId?.let { documentId ->
-            val currentHomeworkRef = fireStoreDatabase.collection("users")
+            val currentHomeworkRef = fireStoreDatabase
+                .collection("users")
                 .document(userId)
-                .collection("userHomework")
-                .document("currentHomework")
-                .collection("homeworks")
+                .collection("courses")
+                .document(homework.courseId)
+                .collection("currentHomework")
                 .document(documentId)
 
-            val completedHomeworkRef = fireStoreDatabase.collection("users")
+            val completedHomeworkRef = fireStoreDatabase
+                .collection("users")
                 .document(userId)
-                .collection("userHomework")
-                .document("completedHomework")
-                .collection("homeworks")
+                .collection("courses")
+                .document(homework.courseId)
+                .collection("completedHomework")
                 .document(documentId)
+
+            Log.d(TAG, "Moving homework to completed with path: ${currentHomeworkRef.path}")
 
             fireStoreDatabase.runTransaction { transaction ->
                 val snapshot = transaction.get(currentHomeworkRef)
@@ -1520,23 +1752,26 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
     private fun moveHomeworkToCurrent(homework: Homework) {
         val fireStoreDatabase = FirebaseFirestore.getInstance()
         val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
         homework.documentId?.let { documentId ->
-            val completedHomeworkRef = fireStoreDatabase.collection("users")
+            val completedHomeworkRef = fireStoreDatabase
+                .collection("users")
                 .document(userId)
-                .collection("userHomework")
-                .document("completedHomework")
-                .collection("homeworks")
+                .collection("courses")
+                .document(homework.courseId)
+                .collection("completedHomework")
                 .document(documentId)
 
-            val currentHomeworkRef = fireStoreDatabase.collection("users")
+            val currentHomeworkRef = fireStoreDatabase
+                .collection("users")
                 .document(userId)
-                .collection("userHomework")
-                .document("currentHomework")
-                .collection("homeworks")
+                .collection("courses")
+                .document(homework.courseId)
+                .collection("currentHomework")
                 .document(documentId)
 
             fireStoreDatabase.runTransaction { transaction ->
@@ -1551,42 +1786,48 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    //code for uploading, retrieving, and editing data to the database ends here
+    private fun saveCourse(courseName: String, courseColor: Int, courseDesc: String) {
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid ?: return
+        val fireStoreDatabase = FirebaseFirestore.getInstance()
 
-    //Code that handles profile info begins here, BEWARE: will probably be deleted!
-    private fun saveProfileInfo()
-    {
-        val profileInfo = getSharedPreferences("UserData", Context.MODE_PRIVATE)
-        val editor = profileInfo.edit()
+        val courseId = fireStoreDatabase.collection("users")
+            .document(userId)
+            .collection("courses")
+            .document().id
 
-        val firstName = findViewById<EditText>(R.id.editFirstNameText).text.toString()
-        val lastName = findViewById<EditText>(R.id.editLastNameText).text.toString()
-        val email = findViewById<EditText>(R.id.editEmailText).text.toString()
-        val parentPhoneNum = findViewById<EditText>(R.id.editParentPhoneNumText).text.toString()
+        val course = Course(
+            courseName = courseName,
+            courseColor = courseColor,
+            courseDesc = courseDesc,
+            courseId = courseId
+        )
+//        Log.d(TAG, "Course to be saved: $course")
 
-        editor.putString("firstName", firstName)
-        editor.putString("lastName", lastName)
-        editor.putString("email", email)
-        editor.putString("parentPhoneNum", parentPhoneNum)
+        val courseMap: MutableMap<String, Any> = HashMap()
+        courseMap["courseName"] = courseName
+        courseMap["courseColor"] = courseColor
+        courseMap["courseDesc"] = courseDesc
+        courseMap["courseId"] = courseId
 
-        editor.apply()
-    }
-    private fun loadUpdatedProfileInfo()
-    {
-        val profileInfo = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        Log.d(TAG, "Course to be saved: $courseMap")
 
-        val firstName = profileInfo.getString("firstName", "")
-        val lastName = profileInfo.getString("lastName", "")
-        val email = profileInfo.getString("email", "")
-        val parentPhoneNum = profileInfo.getString("parentPhoneNum", "")
-
-        findViewById<EditText>(R.id.editFirstNameText).setText(firstName)
-        findViewById<EditText>(R.id.editLastNameText).setText(lastName)
-        findViewById<EditText>(R.id.editEmailText).setText(email)
-        findViewById<EditText>(R.id.editParentPhoneNumText).setText(parentPhoneNum)
+        fireStoreDatabase.collection("users")
+            .document(userId)
+            .collection("courses")
+            .document(courseId)
+            .set(courseMap)
+            .addOnSuccessListener {
+                Log.d(TAG, "Course successfully saved with ID: $courseId")
+                courseList.add(course)
+            }
+            .addOnFailureListener {
+                Log.w(TAG, "Error adding course document $it")
+            }
     }
 }
-//Code that handles profile info ends here!
+
+    //code for uploading, retrieving, and editing data to the database ends here
+
 
 
 
