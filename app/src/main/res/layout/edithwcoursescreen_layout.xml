@@ -56,4 +56,6 @@
         android:focusable="true"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/courseitems"/>
+
+    <!--REVAMP OF SCREEN FINISHED-->
 </LinearLayout>

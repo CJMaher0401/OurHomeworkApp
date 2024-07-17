@@ -22,9 +22,4 @@
         android:visibility="gone"
         android:background="?attr/colorPrimary" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#D3D3D3" />
-
 </LinearLayout>
