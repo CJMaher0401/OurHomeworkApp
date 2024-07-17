@@ -102,5 +102,6 @@
             android:layout_height="wrap_content"
             android:background="@color/fui_transparent"
             android:text="Delete Homework" />
+        <!--REVAMP OF SCREEN FINISHED-->
     </LinearLayout>
 </LinearLayout>

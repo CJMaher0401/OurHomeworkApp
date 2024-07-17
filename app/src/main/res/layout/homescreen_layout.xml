@@ -96,5 +96,6 @@
             android:layout_height="55dp"
             android:text="Your Profile"
             app:srcCompat="@android:drawable/ic_menu_my_calendar" />
+        <!--REVAMP OF SCREEN FINISHED-->
     </LinearLayout>
 </LinearLayout>
