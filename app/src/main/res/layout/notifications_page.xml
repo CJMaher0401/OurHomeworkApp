@@ -147,6 +147,7 @@
                     android:paddingStart="30dp"
                     android:layout_gravity="center"
                     android:background="@drawable/round_back_for_log_out"
+                    android:textSize="23dp"
                     android:text="Save"
                     android:textColor="#EED8C7"
                     android:textAllCaps="false"
