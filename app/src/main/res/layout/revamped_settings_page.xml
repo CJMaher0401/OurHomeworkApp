@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="settings"
-            android:textSize="20sp"
+            android:textSize="20dp"
             android:textStyle="bold" />
     </RelativeLayout>
 
@@ -80,6 +80,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="Change Name"
+                        android:textSize="20sp"
                         android:textStyle="bold"
                         android:layout_toEndOf="@id/change_username"/>
 
@@ -104,7 +105,7 @@
                         android:layout_height="40dp"
                         android:background="@drawable/round_back_for_notifications"
                         android:padding="12dp"
-                        android:src="@drawable/notification_icon" />
+                         />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -113,6 +114,7 @@
                         android:layout_marginStart="20dp"
                         android:layout_toEndOf="@id/notificationIcon"
                         android:text="Notification"
+                        android:textSize="20dp"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -145,6 +147,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="Change Number"
+                        android:textSize="20dp"
                         android:textStyle="bold"
                         android:layout_toEndOf="@id/password_icon"/>
 

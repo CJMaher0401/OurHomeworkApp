@@ -70,7 +70,7 @@
                             android:layout_height="40dp"
                             android:background="@drawable/round_back_for_night_mode"
                             android:padding="12dp"
-                            android:src="@drawable/night_mode_icon" />
+                             />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -79,6 +79,7 @@
                             android:layout_marginStart="20dp"
                             android:layout_toEndOf="@id/dark_Mode_Icon"
                             android:text="Reminders"
+                            android:textSize="20dp"
                             android:textStyle="bold" />
 
                         <Switch
@@ -103,7 +104,7 @@
                             android:layout_height="40dp"
                             android:background="@drawable/round_back_for_night_mode"
                             android:padding="12dp"
-                            android:src="@drawable/night_mode_icon" />
+                             />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -112,6 +113,7 @@
                             android:layout_marginStart="20dp"
                             android:layout_toEndOf="@id/message_switch_mode"
                             android:text="SMS Messages"
+                            android:textSize="20dp"
                             android:textStyle="bold" />
 
                         <Switch
@@ -147,7 +149,7 @@
                     android:paddingStart="30dp"
                     android:layout_gravity="center"
                     android:background="@drawable/round_back_for_log_out"
-                    android:textSize="23dp"
+                    android:textSize="25dp"
                     android:text="Save"
                     android:textColor="#EED8C7"
                     android:textAllCaps="false"

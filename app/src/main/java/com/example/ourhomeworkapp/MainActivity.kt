@@ -642,6 +642,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+            //code for handling the revamped settings page
             R.layout.revamped_settings_page -> {
                 findViewById<ImageView>(R.id.settings_back_button).setOnClickListener {
                     inflateLayout(R.layout.homescreen_layout)
@@ -669,31 +670,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-
-          //  R.layout.setting_page -> {
-
-               // findViewById<ImageView>(R.id.settings_back_button).setOnClickListener {
-              //      inflateLayout(R.layout.homescreen_layout)
-             //   }
-              //  val usernameDisplay: TextView = findViewById(R.id.name_display)
-             //   displaySavedName(usernameDisplay)
-
-             //   findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.edit_profile_button).setOnClickListener {
-              //      inflateLayout(R.layout.edit_profile)
-              //  }
-
-             //   findViewById<ImageView>(R.id.notification_menu_button).setOnClickListener {
-             //       inflateLayout(R.layout.notifications_page)
-             //   }
-
-
-            //    findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.sign_out_button).setOnClickListener {
-              //      inflateLayout(R.layout.homescreen_layout)
-             //   }
-
-          //  }
-
-            //code for notification page
+            //code for handling notification page
             R.layout.notifications_page -> {
 
                 reminderSwitch = findViewById(R.id.reminder_switch)
@@ -726,31 +703,6 @@ class MainActivity : ComponentActivity() {
 
             }
 
-            //code for edit profile page
-           // R.layout.edit_profile -> {
-
-              //  findViewById<ImageView>(R.id.edit_profile_back_button).setOnClickListener {
-              //      inflateLayout(R.layout.setting_page)
-              //  }
-
-              //  findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.change_photo_button).setOnClickListener {
-              //     //inflateLayout(R.layout.change_photo)
-              //  }
-
-              //  findViewById<ImageView>(R.id.change_name_button).setOnClickListener {
-              //      inflateLayout(R.layout.change_name)
-              //  }
-
-              //  findViewById<ImageView>(R.id.change_number_button).setOnClickListener {
-              //      inflateLayout(R.layout.change_number)
-              //  }
-
-               // findViewById<ImageView>(R.id.add_teacher_button).setOnClickListener {
-                   // inflateLayout(R.layout.add_teacher)
-              //  }
-
-           // }
-
             //code for change name
             R.layout.change_name -> {
 
@@ -776,7 +728,7 @@ class MainActivity : ComponentActivity() {
                 }
 
             }
-            //code for change number
+            //code for handling change number
             R.layout.change_number -> {
 
                 findViewById<ImageView>(R.id.change_number_back_button).setOnClickListener {
@@ -884,6 +836,15 @@ class MainActivity : ComponentActivity() {
         editor.putString("savedNumber", newNumber)
         editor.apply()
     }
+
+    //handles getting the user name and the saved phone number in order to send notifications to it
+    private fun getUserDetails(): Pair<String?, String?> {
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val savedNumber = sharedPreferences.getString("savedNumber", null)
+        val savedName = sharedPreferences.getString("savedName", null)
+        return Pair(savedNumber, savedName)
+    }
+
 
     private fun saveSwitchState(key: String, state: Boolean) {
         val editor = sharedPreferences.edit()

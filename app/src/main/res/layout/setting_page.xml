@@ -61,7 +61,7 @@
                 android:paddingStart="30dp"
                 android:layout_gravity="center"
                 android:background="@drawable/round_back_for_secondary"
-                android:textSize="25"
+                android:textSize="25dp"
                 android:text="Edit Profile"
                 android:textColor="#EED8C7"
                 android:textAllCaps="false"
