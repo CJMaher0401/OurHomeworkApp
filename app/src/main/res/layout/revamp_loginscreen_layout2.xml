@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:gravity="center">
+
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="731dp"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:ignore="UselessParent">
+
+    <TextView
+        android:id="@+id/addHomeworkText"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:fontFamily="@font/comfortaa_bold"
+        android:gravity="center"
+        android:paddingBottom="2dp"
+        android:shadowColor="@color/white"
+        android:shadowDx="-1"
+        android:shadowDy="-1"
+        android:shadowRadius="1"
+        android:text="Welcome!"
+        android:textColor="#000000"
+        android:textSize="34sp" />
+
+    <ImageView
+        android:layout_width="170dp"
+        android:layout_height="170dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/logo_circular" />
+
+    <EditText
+        android:id="@+id/email_input"
+        android:layout_width="370dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/rounded_square"
+        android:fontFamily="@font/average"
+        android:hint=" Email"
+        android:importantForAutofill="no"
+        android:inputType="textEmailAddress"
+        android:padding="18dp"
+        android:textColor="#000000"
+        android:textColorHint="#000000"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/password_input"
+        android:layout_width="370dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rounded_square"
+        android:fontFamily="@font/average"
+        android:hint=" Password"
+        android:inputType="textPassword"
+        android:padding="18dp"
+        android:textColor="#000000"
+        android:textColorHint="#000000"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/login_btn"
+        android:layout_width="370dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/rounded_corner_black"
+        android:fontFamily="@font/comfortaa_bold"
+        android:text="Sign In"
+        android:textColor="#000000"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/register_btn"
+        android:layout_width="370dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_corner_black"
+        android:fontFamily="@font/comfortaa_bold"
+        android:text="@string/register"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/gSignInBtn"
+            android:layout_width="69dp"
+            android:layout_height="69dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/circular_button"
+            android:backgroundTint="@color/black"
+            android:contentDescription="@string/googlelogin"
+            android:src="@drawable/fui_ic_googleg_color_24dp" />
+    </LinearLayout>
+</LinearLayout>
+</LinearLayout>
