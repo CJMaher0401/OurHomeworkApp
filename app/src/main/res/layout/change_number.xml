@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EED8C7"
+    android:background="#FFFFFF"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -84,12 +84,13 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/change_number_save_button"
             android:layout_width="wrap_content"
-            android:layout_height="20dp"
+            android:layout_height="30dp"
             android:layout_marginTop="20dp"
             android:paddingStart="20dp"
             android:layout_gravity="start"
             android:background="@drawable/round_back_for_secondary"
             android:text="Save"
+            android:textSize="25dp"
             android:textColor="#EED8C7"
             android:textAllCaps="false"
             android:paddingEnd="20dp"/>
@@ -97,12 +98,13 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/change_number_cancel_button"
             android:layout_width="wrap_content"
-            android:layout_height="20dp"
+            android:layout_height="30dp"
             android:layout_marginTop="20dp"
             android:paddingStart="20dp"
             android:layout_gravity="start"
             android:background="@drawable/round_back_for_secondary"
             android:text="cancel"
+            android:textSize="25dp"
             android:textColor="#EED8C7"
             android:textAllCaps="false"
             android:paddingEnd="20dp"/>

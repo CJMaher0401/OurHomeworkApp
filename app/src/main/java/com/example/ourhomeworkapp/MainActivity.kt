@@ -142,7 +142,7 @@ class MainActivity : ComponentActivity() {
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
 
-        inflateLayout(R.layout.loginscreen_layout)
+        inflateLayout(R.layout.revamped_settings_page)
 
         // Initialize Firebase Auth instance
         auth = FirebaseAuth.getInstance()
@@ -766,15 +766,23 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            R.layout.setting_page -> {
-
+            //code for handling the revamped settings page
+            R.layout.revamped_settings_page -> {
                 findViewById<ImageView>(R.id.settings_back_button).setOnClickListener {
                     inflateLayout(R.layout.homescreen_layout)
                 }
+                val usernameDisplay: TextView = findViewById(R.id.name_display)
+                displaySavedName(usernameDisplay)
 
-                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.edit_profile_button).setOnClickListener {
-                    inflateLayout(R.layout.edit_profile)
+
+                findViewById<ImageView>(R.id.change_name_button).setOnClickListener {
+                    inflateLayout(R.layout.change_name)
                 }
+
+                findViewById<ImageView>(R.id.change_number_button).setOnClickListener {
+                    inflateLayout(R.layout.change_number)
+                }
+
 
                 findViewById<ImageView>(R.id.notification_menu_button).setOnClickListener {
                     inflateLayout(R.layout.notifications_page)
@@ -784,17 +792,16 @@ class MainActivity : ComponentActivity() {
                 findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.sign_out_button).setOnClickListener {
                     inflateLayout(R.layout.homescreen_layout)
                 }
-
             }
 
-            //code for notification page
+            //code for handling notification page
             R.layout.notifications_page -> {
 
                 reminderSwitch = findViewById(R.id.reminder_switch)
                 messageSwitch = findViewById(R.id.message_switch)
 
-                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.notification_back_button).setOnClickListener {
-                    inflateLayout(R.layout.setting_page)
+                findViewById<ImageView>(R.id.notification_back_button).setOnClickListener {
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
                 sharedPreferences =
@@ -817,7 +824,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.save_notification_button).setOnClickListener {
-                    inflateLayout(R.layout.setting_page)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
             }
@@ -846,11 +853,12 @@ class MainActivity : ComponentActivity() {
                 }
 
             }
+            
             //code for change name
             R.layout.change_name -> {
 
                 findViewById<ImageView>(R.id.change_name_back_button).setOnClickListener {
-                    inflateLayout(R.layout.edit_profile)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
                 changeNameEditText = findViewById(R.id.change_name_Text)
@@ -861,21 +869,21 @@ class MainActivity : ComponentActivity() {
                 // Set click listener for Save button
                 saveButton.setOnClickListener {
                     saveName()
-                    inflateLayout(R.layout.edit_profile)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
                 // Set click listener for Cancel button
                 cancelButton.setOnClickListener {
                     // Handle cancel logic here
-                    inflateLayout(R.layout.edit_profile)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
             }
-            //code for change number
+            //code for handling change number
             R.layout.change_number -> {
 
                 findViewById<ImageView>(R.id.change_number_back_button).setOnClickListener {
-                    inflateLayout(R.layout.edit_profile)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
 
@@ -888,25 +896,32 @@ class MainActivity : ComponentActivity() {
                 // Set click listener for Save button
                 saveButton.setOnClickListener {
                     saveNumbers()
-                    inflateLayout(R.layout.edit_profile)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
                 // Set click listener for Cancel button
                 cancelButton.setOnClickListener {
                     // Handle cancel logic here
-                    inflateLayout(R.layout.edit_profile)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
             }
         }
     }
-    //Inflate layout function code finishes here!
 
-    //Code involved with the settings page begins here
+    //displays saved name to settings page
+    private fun displaySavedName(textView: TextView) {
+        val sharedPref = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val savedName = sharedPref.getString("user_name", "Default Name") // "Default Name" is a fallback if no name is saved
+        textView.text = savedName
+        Log.d("SettingsActivity", "Retrieved name: $savedName")
+
+    }
+
     private fun saveName() {
-        val newName = changeNameEditText.text.toString().trim()
-        val confirmName = confirmNameEditText.text.toString().trim()
+        val newName = changeNameEditText.text.toString()
+        val confirmName = confirmNameEditText.text.toString()
 
-        // Perform validation if necessary
+        // Perform validation
         if (newName.isEmpty()) {
             changeNameEditText.error = "Please enter a new name"
             return
@@ -924,6 +939,7 @@ class MainActivity : ComponentActivity() {
 
         // Save the name
         saveNameToSharedPreferences(newName)
+        sendConfirmationSMS()
 
         // show a success message or navigate away
         Toast.makeText(this, "Name saved!", Toast.LENGTH_SHORT).show()
@@ -932,8 +948,9 @@ class MainActivity : ComponentActivity() {
     private fun saveNameToSharedPreferences(newName: String) {
         val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        editor.putString("savedName", newName)
+        editor.putString("user_name", newName)
         editor.apply()
+        Log.d("ChangeNameActivity", "Name saved: $newName")
     }
 
 
@@ -971,6 +988,15 @@ class MainActivity : ComponentActivity() {
         editor.putString("savedNumber", newNumber)
         editor.apply()
     }
+
+    //handles getting the user name and the saved phone number in order to send notifications to it
+    private fun getUserDetails(): Pair<String?, String?> {
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val savedNumber = sharedPreferences.getString("savedNumber", null)
+        val savedName = sharedPreferences.getString("savedName", null)
+        return Pair(savedNumber, savedName)
+    }
+
 
     private fun saveSwitchState(key: String, state: Boolean) {
         val editor = sharedPreferences.edit()
@@ -1197,6 +1223,26 @@ class MainActivity : ComponentActivity() {
                 Toast.makeText(this, "SMS Permission Denied", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+
+
+    //Function to send SMS using the dynamically saved phone number
+    private fun sendSMSWithSavedNumber(message: String) {
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val savedNumber = sharedPreferences.getString("savedNumber", null)
+
+        if (savedNumber.isNullOrEmpty()) {
+            Toast.makeText(this, "Phone number not found", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        sendSMS(savedNumber, message)
+    }
+
+    private fun sendConfirmationSMS() {
+        val message = "Your phone number has been updated successfully."
+        sendSMSWithSavedNumber(message)
     }
 
     private fun sendSMS(phoneNumber: String, message: String) {
