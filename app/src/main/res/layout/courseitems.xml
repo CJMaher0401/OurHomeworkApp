@@ -15,16 +15,20 @@
         android:gravity="center|center_horizontal|left|center_vertical"
         android:textSize="24sp" />
 
+    <TextView
+        android:id="@+id/courseDescTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:visibility="visible"/>
+
     <View
         android:id="@+id/courseColorView"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:visibility="gone"
         android:background="?attr/colorPrimary" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#D3D3D3" />
 
 </LinearLayout>
