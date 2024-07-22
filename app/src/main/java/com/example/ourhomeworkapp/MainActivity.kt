@@ -289,7 +289,7 @@ class MainActivity : ComponentActivity() {
 
             R.layout.introscreen_name_layout -> {
 
-                findViewById<Button>(R.id.nameNextButton).setOnClickListener {
+                findViewById<Button>(R.id.welcomeNextButton).setOnClickListener {
                     val name = findViewById<EditText>(R.id.nameInput).text.toString()
                     val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
                     val editor = sharedPreferences.edit()
@@ -306,7 +306,7 @@ class MainActivity : ComponentActivity() {
 
             R.layout.introscreen_phonenum_layout -> {
 
-                findViewById<Button>(R.id.phoneNumNextButton).setOnClickListener {
+                findViewById<Button>(R.id.welcomePhoneNum).setOnClickListener {
                     val phoneNumber = findViewById<EditText>(R.id.phoneNumInput).text.toString()
                     val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
                     val editor = sharedPreferences.edit()
@@ -808,6 +808,7 @@ class MainActivity : ComponentActivity() {
         editor.putString("savedName", newName)
         editor.apply()
     }
+
 
 
     private fun saveNumbers() {
