@@ -2,7 +2,10 @@
 <resources>
     <array name="preloaded_fonts" translatable="false">
         <item>@font/alegreya</item>
+        <item>@font/average</item>
         <item>@font/comfortaa_bold</item>
         <item>@font/comfortaa_light</item>
+        <item>@font/commissioner</item>
+        <item>@font/lora</item>
     </array>
 </resources>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/addHWlayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/cancelHWbutton"
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:layout_gravity="end|top"
+            android:background="@color/fui_transparent"
+            android:paddingTop="15dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/red_cancel_button" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/addHWbutton"
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:layout_gravity="end|top"
+            android:background="@color/fui_transparent"
+            android:paddingTop="15dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/red_save_button" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/addHomeworkText"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:fontFamily="@font/comfortaa_bold"
+            android:gravity="center"
+            android:paddingBottom="20dp"
+            android:shadowColor="@color/white"
+            android:shadowDx="-1"
+            android:shadowDy="-1"
+            android:shadowRadius="1"
+            android:text="Edit Homework"
+            android:textColor="#000000"
+            android:textSize="34sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#D3D3D3" />
+
+        <TextView
+            android:id="@+id/addcourseText"
+            android:layout_width="match_parent"
+            android:layout_height="41dp"
+            android:fontFamily="@font/lora"
+            android:includeFontPadding="false"
+            android:paddingLeft="30dp"
+            android:paddingTop="22dp"
+            android:text="Course:"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/editCourseDescText"
+            android:layout_width="380dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/rounded_edit_text"
+            android:fontFamily="@font/average"
+            android:hint="What class is this for?"
+            android:includeFontPadding="false"
+            android:padding="12dp" />
+
+
+
+        <TextView
+            android:id="@+id/addAssignmentText"
+            android:layout_width="match_parent"
+            android:layout_height="41dp"
+            android:fontFamily="@font/lora"
+            android:includeFontPadding="false"
+            android:paddingLeft="30dp"
+            android:paddingTop="22dp"
+            android:text="Assignment:"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/editAssignmentDescText"
+            android:layout_width="380dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/rounded_edit_text"
+            android:hint="What do you have to do?"
+            android:fontFamily="@font/average"
+            android:padding="12dp" />
+
+        <TextView
+            android:id="@+id/addDueDateText"
+            android:layout_width="match_parent"
+            android:layout_height="41dp"
+            android:fontFamily="@font/lora"
+            android:includeFontPadding="false"
+            android:paddingLeft="30dp"
+            android:paddingTop="22dp"
+            android:text="Due Date:"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/editDueDateText"
+            android:layout_width="380dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/rounded_edit_text"
+            android:hint="When is it due?"
+            android:fontFamily="@font/average"
+            android:padding="12dp" />
+
+        <ImageButton
+            android:id="@+id/completeHWButton"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="right"
+            android:background="@color/fui_transparent"
+            android:paddingTop="40dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/red_complete_button" />
+
+    </LinearLayout>
+</LinearLayout>
