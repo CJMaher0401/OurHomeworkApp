@@ -8,8 +8,6 @@
     android:layout_gravity="top"
     android:orientation="vertical">
 
-    <!-- This is the linear layout that contains the buttons, I needed to add a view to
-    separate the buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="75dp"
@@ -67,7 +65,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/homeScreenRecycler"
         android:layout_width="match_parent"
-        android:layout_height="211dp"
+        android:layout_height="335dp"
         android:clickable="true"
         android:focusable="true"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -80,13 +78,13 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="78dp"
+        android:layout_height="match_parent"
         android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/homeScreenButton"
             style="?android:attr/borderlessButtonStyle"
-            android:layout_width="135dp"
+            android:layout_width="136dp"
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
             android:src="@drawable/red_home_button" />
@@ -112,7 +110,7 @@
         <ImageButton
             android:id="@+id/homeScreenSettingsButton"
             style="?android:attr/borderlessButtonStyle"
-            android:layout_width="135dp"
+            android:layout_width="136dp"
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
             app:srcCompat="@drawable/red_settings_button" />
