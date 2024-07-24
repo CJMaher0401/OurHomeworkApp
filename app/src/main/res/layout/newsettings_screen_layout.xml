@@ -65,16 +65,7 @@
             android:textColor="#000000"
             android:textSize="20sp" />
 
-        <Button
-            android:id="@+id/notification_menu_button"
-            android:layout_width="370dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/rounded_corner_black"
-            android:fontFamily="@font/comfortaa_bold"
-            android:text="SMS Settings"
-            android:textSize="20sp" />
+\
 
         <Button
             android:id="@+id/change_number_button"
@@ -93,7 +84,7 @@
             android:layout_width="370dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="275dp"
+            android:layout_marginTop="325dp"
             android:background="@drawable/rounded_corner_black"
             android:fontFamily="@font/comfortaa_bold"
             android:text="Sign Out"
