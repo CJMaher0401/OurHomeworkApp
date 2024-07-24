@@ -19,7 +19,8 @@
             android:background="@color/fui_transparent"
             android:paddingTop="15dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/red_cancel_button" />
+            android:src="@drawable/red_cancel_button"
+            android:contentDescription="@string/cancelregisterbutton" />
 
         <View
             android:layout_width="0dp"

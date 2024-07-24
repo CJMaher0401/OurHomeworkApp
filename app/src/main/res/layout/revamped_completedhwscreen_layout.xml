@@ -81,7 +81,7 @@
         android:background="#D3D3D3" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/curHWRecycler"
+        android:id="@+id/compHWRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clickable="true"
