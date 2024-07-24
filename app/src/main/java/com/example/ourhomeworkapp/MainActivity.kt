@@ -133,16 +133,16 @@ class MainActivity : ComponentActivity() {
         homeworkList = mutableListOf()
         completedHomeworkList = mutableListOf()
 
-        addHomeworkLayout = layoutInflater.inflate(R.layout.addhomeworkscreen_layout, null)
+        addHomeworkLayout = layoutInflater.inflate(R.layout.revamp_addhomeworkscreen_layout, null)
         editClassDescText = addHomeworkLayout.findViewById(R.id.editCourseDescText)
-        editHomeworkLayout = layoutInflater.inflate(R.layout.edithwscreen_layout, null)
-        updateEditClassDescText = editHomeworkLayout.findViewById(R.id.edit_editClassDescText)
+        editHomeworkLayout = layoutInflater.inflate(R.layout.revamp_edithwscreen_layout, null)
+        updateEditClassDescText = editHomeworkLayout.findViewById(R.id.editCourseDescText)
 
         homeAdapter = HomeworkAdapter(homeworkList, this, "home")
         currentUpcomingAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
         completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
 
-        inflateLayout(R.layout.loginscreen_layout)
+        inflateLayout(R.layout.revamp_loginscreen_layout2)
 
         // Initialize Firebase Auth instance
         auth = FirebaseAuth.getInstance()
@@ -207,7 +207,7 @@ class MainActivity : ComponentActivity() {
     //Code that handles anything and everything to do with navigating the app starts here, including what happens when a button is pressed,
     //what layout to open when a button is pressed, what actions to preform when a button is pressed, updating recycler views, and more.
     private fun inflateLayout(layoutResID: Int, afterInflate: (() -> Unit)? = null) {
-        if (currentLayout == R.layout.addhomeworkscreen_layout) {
+        if (currentLayout == R.layout.revamp_addhomeworkscreen_layout) {
             saveHomeworkInput()
         }
         currentLayout = layoutResID
@@ -222,7 +222,7 @@ class MainActivity : ComponentActivity() {
 
         when (layoutResID) {
             // Inflate the login screen layout
-            R.layout.loginscreen_layout -> {
+            R.layout.revamp_loginscreen_layout2 -> {
                 // Find and initialize email and password input fields
                 emailInput = findViewById(R.id.email_input)
                 passwordInput = findViewById(R.id.password_input)
@@ -230,7 +230,7 @@ class MainActivity : ComponentActivity() {
                 // Set an OnClickListener for the register button
                 findViewById<Button>(R.id.register_btn).setOnClickListener {
                     // Inflate the register screen layout
-                    inflateLayout(R.layout.registerscreen_layout)
+                    inflateLayout(R.layout.revamp_registerscreen_layout2)
                 }
 
                 // Set an OnClickListener for the login button
@@ -253,6 +253,7 @@ class MainActivity : ComponentActivity() {
 
                                     // Inflate the home screen layout
                                     checkIntroCompleted()
+
 
 
                                 } else {
@@ -293,7 +294,7 @@ class MainActivity : ComponentActivity() {
             }
 
             // Inflate the register screen layout
-            R.layout.registerscreen_layout -> {
+            R.layout.revamp_registerscreen_layout2 -> {
                 // Find and initialize email and password input fields and register button
                 emailInput = findViewById(R.id.email_input)
                 passwordInput = findViewById(R.id.password_input)
@@ -321,7 +322,7 @@ class MainActivity : ComponentActivity() {
                                     ).show()
 
                                     // Inflate the home screen layout
-                                    inflateLayout(R.layout.homescreen_layout)
+                                    inflateLayout(R.layout.revamp_homescreen_layout)
                                 } else {
                                     // Handle any errors during registration
                                     handleFirebaseError(task.exception)
@@ -337,9 +338,9 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 // Set an OnClickListener for the go to login button
-                findViewById<Button>(R.id.goToLogin).setOnClickListener {
+                findViewById<ImageButton>(R.id.cancelRegisterButton).setOnClickListener {
                     // Inflate the login screen layout
-                    inflateLayout(R.layout.loginscreen_layout)
+                    inflateLayout(R.layout.revamp_loginscreen_layout2)
                     // Reinitialize the Google sign-in button
                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestIdToken(getString(com.firebase.ui.auth.R.string.default_web_client_id))
@@ -386,7 +387,7 @@ class MainActivity : ComponentActivity() {
                     editor.putBoolean("introCompleted", true)
                     editor.apply()
 
-                    inflateLayout(R.layout.homescreen_layout)
+                    inflateLayout(R.layout.revamp_homescreen_layout)
                 }
 
                 findViewById<EditText>(R.id.phoneNumInput).setOnClickListener {
@@ -394,7 +395,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            R.layout.homescreen_layout -> {
+            R.layout.revamp_homescreen_layout -> {
                 requestSmsPermission()
                 findViewById<Button>(R.id.profileButton).setOnClickListener {
                     inflateLayout(R.layout.profilescreen_layout) {
@@ -403,16 +404,17 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<ImageButton>(R.id.addHWbutton).setOnClickListener {
-                    inflateLayout(R.layout.addhomeworkscreen_layout)
+                    inflateLayout(R.layout.revamp_addhomeworkscreen_layout)
                 }
 
-                findViewById<Button>(R.id.homeScreenButton).setOnClickListener {
-                    inflateLayout(R.layout.homescreen_layout)
+                findViewById<ImageButton>(R.id.homeScreenButton).setOnClickListener {
+                    inflateLayout(R.layout.revamp_homescreen_layout)
                 }
 
-                findViewById<Button>(R.id.homeScreenMyHWButton).setOnClickListener {
-                    inflateLayout(R.layout.currentupcominghw_layout)
+                findViewById<ImageButton>(R.id.homeScreenMyHWButton).setOnClickListener {
+                    inflateLayout(R.layout.revamped_currentupcominghw_layout)
                 }
+
 
                 findViewById<Button>(R.id.homeScreenMyProfileButton).setOnClickListener {
                     inflateLayout(R.layout.revamped_settings_page) {
@@ -440,15 +442,15 @@ class MainActivity : ComponentActivity() {
                 }
                 findViewById<Button>(R.id.saveChangesButton).setOnClickListener {
                     uploadProfileData()
-                    inflateLayout(R.layout.homescreen_layout)
+                    inflateLayout(R.layout.revamp_homescreen_layout)
 
                 }
                 findViewById<Button>(R.id.profileHomeButton).setOnClickListener {
-                    inflateLayout(R.layout.homescreen_layout)
+                    inflateLayout(R.layout.revamp_homescreen_layout)
                 }
 
                 findViewById<Button>(R.id.profileMyHWButton).setOnClickListener {
-                    inflateLayout(R.layout.currentupcominghw_layout)
+                    inflateLayout(R.layout.revamped_currentupcominghw_layout)
                 }
 
                 findViewById<Button>(R.id.profileMyProfileButton).setOnClickListener {
@@ -457,46 +459,54 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 findViewById<Button>(R.id.signOutButton).setOnClickListener {
-                    googleSignInClient.signOut().addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            // Sign out of firebase
-                            FirebaseAuth.getInstance().signOut()
-                            // Update ui to show the login screen
-                            inflateLayout(R.layout.loginscreen_layout)
-                            // Reinitialize the Google sign-in button
-                            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                .requestIdToken(getString(com.firebase.ui.auth.R.string.default_web_client_id))
-                                .requestEmail()
-                                .build()
-                            googleSignInClient = GoogleSignIn.getClient(this, gso)
-                            findViewById<ImageButton>(R.id.gSignInBtn)?.setOnClickListener {
-                                signInGoogle()
+                    val googleUser = GoogleSignIn.getLastSignedInAccount(this)
+                    if (googleUser != null) {
+                        googleSignInClient.signOut().addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                // Sign out of firebase
+                                FirebaseAuth.getInstance().signOut()
+                                // Update ui to show the login screen
+                                inflateLayout(R.layout.revamp_loginscreen_layout2)
+                                // Reinitialize the Google sign-in button
+                                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                    .requestIdToken(getString(com.firebase.ui.auth.R.string.default_web_client_id))
+                                    .requestEmail()
+                                    .build()
+                                googleSignInClient = GoogleSignIn.getClient(this, gso)
+                                findViewById<ImageButton>(R.id.gSignInBtn)?.setOnClickListener {
+                                    signInGoogle()
+                                }
+
+                            } else {
+                                Log.e("GoogleSignOut", "Sign-out failed", task.exception) // Log for debugging
+                                Toast.makeText(this, "Failed to sign out. Please try again.", Toast.LENGTH_SHORT).show() // Inform the user
                             }
-
-                        } else {
-                            Log.e(
-                                "GoogleSignOut",
-                                "Sign-out failed",
-                                task.exception
-                            ) // Log for debugging
-                            Toast.makeText(
-                                this,
-                                "Failed to sign out. Please try again.",
-                                Toast.LENGTH_SHORT
-                            ).show() // Inform the user
                         }
-
+                    } else {
+                        // If the user is not signed in via Google, just sign out from Firebase
+                        FirebaseAuth.getInstance().signOut()
+                        // Update ui to show the login screen
+                        inflateLayout(R.layout.revamp_loginscreen_layout2)
+                        // Reinitialize the Google sign-in button
+                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(getString(com.firebase.ui.auth.R.string.default_web_client_id))
+                            .requestEmail()
+                            .build()
+                        googleSignInClient = GoogleSignIn.getClient(this, gso)
+                        findViewById<ImageButton>(R.id.gSignInBtn)?.setOnClickListener {
+                            signInGoogle()
+                        }
                     }
                 }
             }
 
-            R.layout.addhomeworkscreen_layout -> {
+            R.layout.revamp_addhomeworkscreen_layout -> {
                 loadHomeworkInput()
-                findViewById<Button>(R.id.addHWcancelButton).setOnClickListener {
-                    inflateLayout(R.layout.homescreen_layout)
+                findViewById<ImageButton>(R.id.cancelHWbutton).setOnClickListener {
+                    inflateLayout(R.layout.revamp_homescreen_layout)
                 }
 
-                findViewById<Button>(R.id.addHWsaveButton).setOnClickListener {
+                findViewById<ImageButton>(R.id.addHWbutton).setOnClickListener {
                     val userId = FirebaseAuth.getInstance().currentUser?.uid
                         ?: return@setOnClickListener // Ensure user is authenticated
                     val courseDesc =
@@ -505,8 +515,7 @@ class MainActivity : ComponentActivity() {
                         findViewById<EditText>(R.id.editAssignmentDescText).text.toString()
                     val dueDate = this.findViewById<EditText>(R.id.editDueDateText).text.toString()
                     val color = findViewById<EditText>(R.id.editCourseDescText).currentTextColor
-                    val reminderDate =
-                        this.findViewById<EditText>(R.id.editReminderText).text.toString()
+
 
 
                     //val homework = Homework(userId, courseDesc, assignmentDesc, dueDate, reminderDate, color)
@@ -517,7 +526,6 @@ class MainActivity : ComponentActivity() {
                         courseDesc = courseDesc,
                         assignmentDesc = assignmentDesc,
                         dueDate = dueDate,
-                        reminderDate = reminderDate,
                         color = color,
                         courseId = courseDesc
                     )
@@ -529,11 +537,11 @@ class MainActivity : ComponentActivity() {
 
                     sendHomeworkAddedSMS(courseDesc, assignmentDesc, dueDate)
 
-                    inflateLayout(R.layout.currentupcominghw_layout)
+                    inflateLayout(R.layout.revamped_currentupcominghw_layout)
                 }
 
                 findViewById<EditText>(R.id.editCourseDescText).setOnClickListener {
-                    inflateLayout(R.layout.yourcoursesscreen_layout)
+                    inflateLayout(R.layout.revamp_yourcoursesscreen_layout)
                 }
 
                 val editDueDateText = findViewById<EditText>(R.id.editDueDateText)
@@ -541,22 +549,18 @@ class MainActivity : ComponentActivity() {
                     showDatePicker(editDueDateText)
                 }
 
-                val editReminderText = findViewById<EditText>(R.id.editReminderText)
-                editReminderText.setOnClickListener {
-                    showDateAndTimePicker(editReminderText)
-                }
 
                 editClassDescText = addHomeworkLayout.findViewById(R.id.editCourseDescText)
 
             }
 
-            R.layout.yourcoursesscreen_layout -> {
-                findViewById<Button>(R.id.returnToAddHWButton).setOnClickListener {
-                    inflateLayout(R.layout.addhomeworkscreen_layout)
+            R.layout.revamp_yourcoursesscreen_layout -> {
+                findViewById<ImageButton>(R.id.returnToAddHWButton).setOnClickListener {
+                    inflateLayout(R.layout.revamp_addhomeworkscreen_layout)
                 }
 
-                findViewById<Button>(R.id.addNewClassButton).setOnClickListener {
-                    inflateLayout(R.layout.coursecreationscreen_layout)
+                findViewById<ImageButton>(R.id.addNewClassButton).setOnClickListener {
+                    inflateLayout(R.layout.revamp_coursecreationscreen_layout)
                 }
 
                 val recyclerView = findViewById<RecyclerView>(R.id.courseRecyclerView)
@@ -565,9 +569,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            R.layout.coursecreationscreen_layout -> {
+            R.layout.revamp_coursecreationscreen_layout -> {
                 findViewById<Button>(R.id.coursecancelButton).setOnClickListener {
-                    inflateLayout(R.layout.yourcoursesscreen_layout)
+                    inflateLayout(R.layout.revamp_yourcoursesscreen_layout)
                 }
 
                 findViewById<Button>(R.id.coursesaveButton).setOnClickListener {
@@ -581,8 +585,7 @@ class MainActivity : ComponentActivity() {
                         updateCourseRecyclerView()
                         updateCourseRecyclerView()
                     }
-
-                    inflateLayout(R.layout.yourcoursesscreen_layout)
+                    inflateLayout(R.layout.revamp_yourcoursesscreen_layout)
                 }
 
                 findViewById<Button>(R.id.pickYourColorButton).setOnClickListener {
@@ -590,21 +593,21 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            R.layout.currentupcominghw_layout -> {
-                findViewById<Button>(R.id.curHWcancelButton).setOnClickListener {
-                    inflateLayout(R.layout.homescreen_layout)
+            R.layout.revamped_currentupcominghw_layout -> {
+                findViewById<ImageButton>(R.id.cancelHWbutton).setOnClickListener {
+                    inflateLayout(R.layout.revamp_homescreen_layout)
                 }
 
-                findViewById<ImageButton>(R.id.curHWaddHWbutton).setOnClickListener {
-                    inflateLayout(R.layout.addhomeworkscreen_layout)
+                findViewById<ImageButton>(R.id.addHWbutton).setOnClickListener {
+                    inflateLayout(R.layout.revamp_addhomeworkscreen_layout)
                 }
 
                 findViewById<Button>(R.id.curHWButton).setOnClickListener {
-                    inflateLayout(R.layout.currentupcominghw_layout)
+                    inflateLayout(R.layout.revamped_currentupcominghw_layout)
                 }
 
                 findViewById<Button>(R.id.compHWButton).setOnClickListener {
-                    inflateLayout(R.layout.completedhwscreen_layout)
+                    inflateLayout(R.layout.revamped_completedhwscreen_layout)
                 }
 
                 val recyclerViewCurUpcomingHW: RecyclerView = findViewById(R.id.curHWRecycler)
@@ -612,21 +615,21 @@ class MainActivity : ComponentActivity() {
                 updateHomeworkRecyclerViews()
             }
 
-            R.layout.completedhwscreen_layout -> {
-                findViewById<Button>(R.id.compHWcancelButton).setOnClickListener {
-                    inflateLayout(R.layout.homescreen_layout)
+            R.layout.revamped_completedhwscreen_layout -> {
+                findViewById<ImageButton>(R.id.cancelHWbutton).setOnClickListener {
+                    inflateLayout(R.layout.revamp_homescreen_layout)
                 }
 
-                findViewById<ImageButton>(R.id.compHWaddHWbutton).setOnClickListener {
-                    inflateLayout(R.layout.addhomeworkscreen_layout)
+                findViewById<ImageButton>(R.id.addHWbutton).setOnClickListener {
+                    inflateLayout(R.layout.revamp_addhomeworkscreen_layout)
                 }
 
-                findViewById<Button>(R.id.compCurHWButton).setOnClickListener {
-                    inflateLayout(R.layout.currentupcominghw_layout)
+                findViewById<Button>(R.id.curHWButton).setOnClickListener {
+                    inflateLayout(R.layout.revamped_currentupcominghw_layout)
                 }
 
-                findViewById<Button>(R.id.compCompHWButton).setOnClickListener {
-                    inflateLayout(R.layout.completedhwscreen_layout)
+                findViewById<Button>(R.id.compHWButton).setOnClickListener {
+                    inflateLayout(R.layout.revamped_completedhwscreen_layout)
                 }
 
                 findViewById<RecyclerView>(R.id.compHWRecycler).setOnClickListener {
@@ -637,23 +640,23 @@ class MainActivity : ComponentActivity() {
                 updateHomeworkRecyclerViews()
             }
 
-            R.layout.edithwscreen_layout -> {
-                findViewById<Button>(R.id.editcancelButton).setOnClickListener {
-                    inflateLayout(R.layout.currentupcominghw_layout)
+            R.layout.revamp_edithwscreen_layout -> {
+                findViewById<ImageButton>(R.id.cancelHWbutton).setOnClickListener {
+                    inflateLayout(R.layout.revamped_currentupcominghw_layout)
                 }
 
-                findViewById<Button>(R.id.editsaveButton).setOnClickListener {
+                findViewById<ImageButton>(R.id.addHWbutton).setOnClickListener {
                     val id = FirebaseAuth.getInstance().currentUser?.uid.toString()
                     val editCourseDesc =
-                        this.findViewById<EditText>(R.id.edit_editClassDescText).text.toString()
+                        this.findViewById<EditText>(R.id.editCourseDescText).text.toString()
                     val editAssignmentDesc =
-                        findViewById<EditText>(R.id.edit_editAssignmentDescText).text.toString()
+                        findViewById<EditText>(R.id.editAssignmentDescText).text.toString()
                     val editDueDate =
-                        this.findViewById<EditText>(R.id.edit_editDueDateText).text.toString()
+                        this.findViewById<EditText>(R.id.editDueDateText).text.toString()
                     val editReminderDate =
                         this.findViewById<EditText>(R.id.edit_editReminderText).text.toString()
                     val editColor =
-                        findViewById<EditText>(R.id.edit_editClassDescText).currentTextColor
+                        findViewById<EditText>(R.id.editCourseDescText).currentTextColor
 
                     if (editingHomeworkIndex != -1) {
                         val homework = homeworkList[editingHomeworkIndex]
@@ -678,49 +681,46 @@ class MainActivity : ComponentActivity() {
 
                     updateHomeworkRecyclerViews()
 
-                    inflateLayout(R.layout.currentupcominghw_layout)
+                    inflateLayout(R.layout.revamped_currentupcominghw_layout)
                 }
 
-                findViewById<EditText>(R.id.edit_editClassDescText).setOnClickListener {
-                    inflateLayout(R.layout.edithwcoursescreen_layout)
+                findViewById<EditText>(R.id.editCourseDescText).setOnClickListener {
+                    inflateLayout(R.layout.revamp_edithwcoursescreen_layout)
                 }
 
-                findViewById<EditText>(R.id.edit_editAssignmentDescText).setOnClickListener {
+                findViewById<EditText>(R.id.editAssignmentDescText).setOnClickListener {
 
                 }
+
 
                 findViewById<Button>(R.id.completeHWButton).setOnClickListener {
                     val editCourseDesc =
                         this.findViewById<EditText>(R.id.edit_editClassDescText).text.toString()
                     val editAssignmentDesc =
                         findViewById<EditText>(R.id.edit_editAssignmentDescText).text.toString()
-
+                        
                     val homework = homeworkList[editingHomeworkIndex]
                     homework.isCompleted = true
                     completedHomeworkList.add(homework)
                     homeworkList.remove(homework)
                     updateHomeworkRecyclerViews()
 
-                    inflateLayout(R.layout.completedhwscreen_layout)
+                    inflateLayout(R.layout.revamped_completedhwscreen_layout)
 
                     sendHomeworkCompletedSMS(editCourseDesc, editAssignmentDesc)
                 }
 
-                val editDueDateText = findViewById<EditText>(R.id.edit_editDueDateText)
+                val editDueDateText = findViewById<EditText>(R.id.editDueDateText)
                 editDueDateText.setOnClickListener {
                     showDatePicker(editDueDateText)
                 }
 
-                val editReminderText = findViewById<EditText>(R.id.edit_editReminderText)
-                editReminderText.setOnClickListener {
-                    showDateAndTimePicker(editReminderText)
-                }
 
             }
 
-            R.layout.edithwcoursescreen_layout -> {
+            R.layout.revamp_edithwcoursescreen_layout -> {
                 findViewById<Button>(R.id.edit_returnToAddHWButton).setOnClickListener {
-                    inflateLayout(R.layout.edithwscreen_layout)
+                    inflateLayout(R.layout.revamp_edithwscreen_layout)
                 }
 
                 val editRecyclerView = findViewById<RecyclerView>(R.id.editCourseRecyclerView)
@@ -729,19 +729,22 @@ class MainActivity : ComponentActivity() {
                 }
 
                 updateEditClassDescText =
-                    editHomeworkLayout.findViewById(R.id.edit_editClassDescText)
+                    editHomeworkLayout.findViewById(R.id.editCourseDescText)
             }
 
-            R.layout.homeworkcompscreen_layout -> {
-                findViewById<Button>(R.id.completeCancelButton).setOnClickListener {
-                    inflateLayout(R.layout.completedhwscreen_layout)
+            R.layout.revamp_homeworkcompscreen_layout -> {
+                findViewById<ImageButton>(R.id.cancelHWbutton).setOnClickListener {
+                    inflateLayout(R.layout.revamped_completedhwscreen_layout)
                 }
-                findViewById<Button>(R.id.completeSaveButton).setOnClickListener {
-                    inflateLayout(R.layout.completedhwscreen_layout)
+                findViewById<ImageButton>(R.id.addHWbutton).setOnClickListener {
+                    inflateLayout(R.layout.revamped_completedhwscreen_layout)
                 }
-                findViewById<Button>(R.id.completeUndoButton).setOnClickListener {
-                }
-                findViewById<Button>(R.id.completeDeleteButton).setOnClickListener {
+//                findViewById<Button>(R.id.curHWButton).setOnClickListener {
+//                    inflateLayout(R.layout.revamped_currentupcominghw_layout)
+//                }
+//                findViewById<Button>(R.id.completeUndoButton).setOnClickListener {
+//                }
+                findViewById<ImageButton>(R.id.completeDeleteButton).setOnClickListener {
 
                 }
             }
@@ -749,7 +752,7 @@ class MainActivity : ComponentActivity() {
             //code for handling the revamped settings page
             R.layout.revamped_settings_page -> {
                 findViewById<ImageView>(R.id.settings_back_button).setOnClickListener {
-                    inflateLayout(R.layout.homescreen_layout)
+                    inflateLayout(R.layout.revamp_homescreen_layout)
                 }
                 val usernameDisplay: TextView = findViewById(R.id.name_display)
                 displaySavedName(usernameDisplay)
@@ -770,7 +773,7 @@ class MainActivity : ComponentActivity() {
 
 
                 findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.sign_out_button).setOnClickListener {
-                    inflateLayout(R.layout.homescreen_layout)
+                    inflateLayout(R.layout.revamp_homescreen_layout)
                 }
             }
 
@@ -813,7 +816,7 @@ class MainActivity : ComponentActivity() {
             R.layout.edit_profile -> {
 
                 findViewById<ImageView>(R.id.edit_profile_back_button).setOnClickListener {
-                    inflateLayout(R.layout.setting_page)
+                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
                 findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.change_photo_button).setOnClickListener {
@@ -950,7 +953,6 @@ class MainActivity : ComponentActivity() {
             if (it.isSuccessful) {
                 Log.d("SIGN_IN", "Firebase authentication successful")
                 checkIntroCompleted()
-
             } else {
                 // If the sign-in fails, show a toast message with the error
                 Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
@@ -1198,8 +1200,8 @@ class MainActivity : ComponentActivity() {
                 courseNameButtonView.setOnClickListener {
                     val course = courseList[adapterPosition]
 
-                    if (mainActivity.currentLayout == R.layout.yourcoursesscreen_layout) {
-                        mainActivity.inflateLayout(R.layout.addhomeworkscreen_layout) {
+                    if (mainActivity.currentLayout == R.layout.revamp_yourcoursesscreen_layout) {
+                        mainActivity.inflateLayout(R.layout.revamp_addhomeworkscreen_layout) {
                             val editClassDescText = mainActivity.findViewById<EditText>(R.id.editCourseDescText)
                             editClassDescText?.apply {
                                 setText(course.courseName)
@@ -1207,8 +1209,8 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     } else {
-                        mainActivity.inflateLayout(R.layout.edithwscreen_layout) {
-                            val updateEditClassDescText = mainActivity.findViewById<EditText>(R.id.edit_editClassDescText)
+                        mainActivity.inflateLayout(R.layout.revamp_edithwscreen_layout) {
+                            val updateEditClassDescText = mainActivity.findViewById<EditText>(R.id.editCourseDescText)
                             updateEditClassDescText?.apply {
                                 setText(course.courseName)
                                 setTextColor(course.courseColor)
@@ -1305,7 +1307,6 @@ class MainActivity : ComponentActivity() {
             findViewById<EditText>(R.id.editAssignmentDescText).text.toString()
         )
         editor.putString("dueDate", findViewById<EditText>(R.id.editDueDateText).text.toString())
-        editor.putString("reminder", findViewById<EditText>(R.id.editReminderText).text.toString())
         editor.apply()
     }
 
@@ -1323,12 +1324,7 @@ class MainActivity : ComponentActivity() {
                 ""
             )
         )
-        findViewById<EditText>(R.id.editReminderText).setText(
-            sharedPreferences.getString(
-                "reminder",
-                ""
-            )
-        )
+        
     }
 
     private fun clearHomeworkInput() {
@@ -1340,7 +1336,7 @@ class MainActivity : ComponentActivity() {
         editClassDescText.setText("")
         findViewById<EditText>(R.id.editAssignmentDescText).setText("")
         findViewById<EditText>(R.id.editDueDateText).setText("")
-        findViewById<EditText>(R.id.editReminderText).setText("")
+
     }
 
     private fun setupRecyclerViews() {
@@ -1387,16 +1383,16 @@ class MainActivity : ComponentActivity() {
 
     fun editHomework(homework: Homework, index: Int) {
         editingHomeworkIndex = index
-        inflateLayout(R.layout.edithwscreen_layout)
+        inflateLayout(R.layout.revamp_edithwscreen_layout)
         {
-            findViewById<EditText>(R.id.edit_editClassDescText).apply {
+            findViewById<EditText>(R.id.editCourseDescText).apply {
                 setText(homework.courseName)
                 setTextColor(homework.color)
             }
-            findViewById<EditText>(R.id.edit_editAssignmentDescText).setText(homework.assignmentDesc)
-            findViewById<EditText>(R.id.edit_editDueDateText).setText(homework.dueDate)
+            findViewById<EditText>(R.id.editAssignmentDescText).setText(homework.assignmentDesc)
+            findViewById<EditText>(R.id.editDueDateText).setText(homework.dueDate)
         }
-        findViewById<Button>(R.id.completeHWButton).setOnClickListener {
+        findViewById<ImageButton>(R.id.completeHWButton).setOnClickListener {
             homework.isCompleted = true
             completedHomeworkList.add(homework)
             moveHomeworkToCompleted(homework, homework.courseName) // Move homework from current to completed in Firestore
@@ -1405,36 +1401,37 @@ class MainActivity : ComponentActivity() {
 
             sendHomeworkCompletedSMS(homework.courseName, homework.assignmentDesc)
 
-            inflateLayout(R.layout.completedhwscreen_layout)
+            inflateLayout(R.layout.revamped_completedhwscreen_layout)
+
         }
     }
 
     fun viewCompletedHomework(homework: Homework) {
-        inflateLayout(R.layout.homeworkcompscreen_layout)
+        inflateLayout(R.layout.revamp_homeworkcompscreen_layout)
         {
-            findViewById<EditText>(R.id.edit_completeClassDescText).apply {
+            findViewById<EditText>(R.id.editCourseDescText).apply {
                 setText(homework.courseName)
                 setTextColor(homework.color)
             }
-            findViewById<EditText>(R.id.edit_completeAssignmentDescText).setText(homework.assignmentDesc)
-            findViewById<EditText>(R.id.edit_completeDueDateText).setText(homework.dueDate)
+            findViewById<EditText>(R.id.editAssignmentDescText).setText(homework.assignmentDesc)
+            findViewById<EditText>(R.id.editDueDateText).setText(homework.dueDate)
         }
-        findViewById<Button>(R.id.completeUndoButton).setOnClickListener {
+        findViewById<ImageButton>(R.id.addHWbutton).setOnClickListener {
             homework.isCompleted = false
             completedHomeworkList.remove(homework)
             homeworkList.add(homework)
             moveHomeworkToCurrent(homework, homework.courseName) // Move homework back to current in Firestore
             updateHomeworkRecyclerViews()
 
-            inflateLayout(R.layout.currentupcominghw_layout)
+            inflateLayout(R.layout.revamped_currentupcominghw_layout)
         }
-        findViewById<Button>(R.id.completeDeleteButton).setOnClickListener {
+        findViewById<ImageButton>(R.id.completeDeleteButton).setOnClickListener {
             homework.isCompleted = true
             deleteHomeworkFromFireStore(homework, homework.courseName)
             completedHomeworkList.remove(homework) // Delete homework from firestore
             updateHomeworkRecyclerViews()
 
-            inflateLayout(R.layout.completedhwscreen_layout)
+            inflateLayout(R.layout.revamped_completedhwscreen_layout)
         }
     }
     //Code that handles homework ends here!
