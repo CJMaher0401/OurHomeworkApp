@@ -198,7 +198,7 @@ class MainActivity : ComponentActivity() {
         val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
         val introCompleted = sharedPreferences.getBoolean("introCompleted", false)
         if (introCompleted) {
-            inflateLayout(R.layout.homescreen_layout)
+            inflateLayout(R.layout.revamp_homescreen_layout)
         } else {
             inflateLayout(R.layout.introscreen_welcome_layout)
         }
@@ -397,8 +397,8 @@ class MainActivity : ComponentActivity() {
 
             R.layout.revamp_homescreen_layout -> {
                 requestSmsPermission()
-                findViewById<Button>(R.id.profileButton).setOnClickListener {
-                    inflateLayout(R.layout.profilescreen_layout) {
+                findViewById<ImageButton>(R.id.homeScreenSettingsButton).setOnClickListener {
+                    inflateLayout(R.layout.newsettings_screen_layout) {
                         //downloadProfileInfo()
                     }
                 }
@@ -415,12 +415,6 @@ class MainActivity : ComponentActivity() {
                     inflateLayout(R.layout.revamped_currentupcominghw_layout)
                 }
 
-
-                findViewById<Button>(R.id.homeScreenMyProfileButton).setOnClickListener {
-                    inflateLayout(R.layout.revamped_settings_page) {
-                        //downloadProfileInfo()
-                    }
-                }
                 setupRecyclerViews()
                 val recyclerViewHomeScreen: RecyclerView = findViewById(R.id.homeScreenRecycler)
                 recyclerViewHomeScreen.layoutManager = LinearLayoutManager(this)
@@ -698,7 +692,7 @@ class MainActivity : ComponentActivity() {
                         this.findViewById<EditText>(R.id.edit_editClassDescText).text.toString()
                     val editAssignmentDesc =
                         findViewById<EditText>(R.id.edit_editAssignmentDescText).text.toString()
-                        
+
                     val homework = homeworkList[editingHomeworkIndex]
                     homework.isCompleted = true
                     completedHomeworkList.add(homework)

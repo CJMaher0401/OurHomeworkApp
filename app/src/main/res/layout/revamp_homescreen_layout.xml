@@ -16,21 +16,10 @@
         android:layout_gravity="center"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/profileButton"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="203dp"
-            android:layout_height="match_parent"
-            android:fontFamily="@font/comfortaa_bold"
-            android:gravity="center_horizontal|left|center_vertical"
-            android:text="Hey Connor"
-            android:textSize="16sp" />
-
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1" />
-
 
         <ImageButton
             android:id="@+id/addHWbutton"
@@ -100,7 +89,7 @@
             android:id="@+id/homeScreenButton"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="135dp"
-            android:layout_height="75dp"
+            android:layout_height="78dp"
             android:scaleType="fitCenter"
             android:src="@drawable/red_home_button" />
 
@@ -113,10 +102,9 @@
             android:id="@+id/homeScreenMyHWButton"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="135dp"
-            android:layout_height="75dp"
+            android:layout_height="78dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/red_list_button"
-             />
+            android:src="@drawable/red_list_button" />
 
         <View
             android:layout_width="1dp"
@@ -124,10 +112,10 @@
             android:background="#D3D3D3" />
 
         <ImageButton
-            android:id="@+id/homeScreenMyProfileButton"
+            android:id="@+id/homeScreenSettingsButton"
             style="?android:attr/borderlessButtonStyle"
-            android:layout_width="135dp"
-            android:layout_height="75dp"
+            android:layout_width="136dp"
+            android:layout_height="78dp"
             android:scaleType="fitCenter"
             app:srcCompat="@drawable/red_settings_button" />
     </LinearLayout>
