@@ -399,7 +399,6 @@ class MainActivity : ComponentActivity() {
                 requestSmsPermission()
                 findViewById<ImageButton>(R.id.homeScreenSettingsButton).setOnClickListener {
                     inflateLayout(R.layout.newsettings_screen_layout) {
-                        //downloadProfileInfo()
                     }
                 }
 

@@ -80,16 +80,14 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="bottom|center"
-        android:gravity="bottom|center"
+        android:layout_height="78dp"
         android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/homeScreenButton"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="135dp"
-            android:layout_height="78dp"
+            android:layout_height="match_parent"
             android:scaleType="fitCenter"
             android:src="@drawable/red_home_button" />
 
@@ -101,8 +99,8 @@
         <ImageButton
             android:id="@+id/homeScreenMyHWButton"
             style="?android:attr/borderlessButtonStyle"
-            android:layout_width="135dp"
-            android:layout_height="78dp"
+            android:layout_width="136dp"
+            android:layout_height="match_parent"
             android:scaleType="fitCenter"
             android:src="@drawable/red_list_button" />
 
@@ -114,8 +112,8 @@
         <ImageButton
             android:id="@+id/homeScreenSettingsButton"
             style="?android:attr/borderlessButtonStyle"
-            android:layout_width="136dp"
-            android:layout_height="78dp"
+            android:layout_width="135dp"
+            android:layout_height="match_parent"
             android:scaleType="fitCenter"
             app:srcCompat="@drawable/red_settings_button" />
     </LinearLayout>
