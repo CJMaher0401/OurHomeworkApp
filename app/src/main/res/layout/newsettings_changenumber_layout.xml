@@ -12,7 +12,7 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/cancelHWbutton"
+            android:id="@+id/change_number_back_button"
             android:layout_width="80dp"
             android:layout_height="60dp"
             android:layout_gravity="end|top"
@@ -25,16 +25,6 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1" />
-
-        <ImageButton
-            android:id="@+id/addHWbutton"
-            android:layout_width="80dp"
-            android:layout_height="60dp"
-            android:layout_gravity="end|top"
-            android:background="@color/fui_transparent"
-            android:paddingTop="15dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/red_save_button" />
     </LinearLayout>
 
     <LinearLayout
@@ -44,9 +34,9 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/addHomeworkText"
+            android:id="@+id/changePhoneNumText"
             android:layout_width="match_parent"
-            android:layout_height="65dp"
+            android:layout_height="70dp"
             android:fontFamily="@font/comfortaa_bold"
             android:gravity="center"
             android:paddingBottom="20dp"
@@ -54,7 +44,7 @@
             android:shadowDx="-1"
             android:shadowDy="-1"
             android:shadowRadius="1"
-            android:text="@string/add_homework"
+            android:text="Change Phone #"
             android:textColor="#000000"
             android:textSize="34sp" />
 
@@ -64,71 +54,60 @@
             android:background="#D3D3D3" />
 
         <TextView
-            android:id="@+id/addcourseText"
+            android:id="@+id/changeNameText"
             android:layout_width="match_parent"
             android:layout_height="41dp"
             android:fontFamily="@font/lora"
             android:includeFontPadding="false"
             android:paddingLeft="30dp"
             android:paddingTop="22dp"
-            android:text="Course:"
+            android:text="Change Phone Number:"
             android:textColor="#000000"
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/editCourseDescText"
+            android:id="@+id/change_number_text"
             android:layout_width="380dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="@drawable/rounded_edit_text"
             android:fontFamily="@font/average"
-            android:hint="What class is this for?"
+            android:hint="What is your new phone number?"
             android:includeFontPadding="false"
             android:padding="12dp" />
 
         <TextView
-            android:id="@+id/addAssignmentText"
+            android:id="@+id/confirmPhoneNumChangeText"
             android:layout_width="match_parent"
             android:layout_height="41dp"
             android:fontFamily="@font/lora"
             android:includeFontPadding="false"
             android:paddingLeft="30dp"
             android:paddingTop="22dp"
-            android:text="Assignment:"
+            android:text="Confirm Phone Number:"
             android:textColor="#000000"
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/editAssignmentDescText"
+            android:id="@+id/confirm_number_text"
             android:layout_width="380dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="@drawable/rounded_edit_text"
-            android:hint="What do you have to do?"
+            android:hint="Confirm your new phone number"
             android:fontFamily="@font/average"
             android:padding="12dp" />
 
-        <TextView
-            android:id="@+id/addDueDateText"
-            android:layout_width="match_parent"
-            android:layout_height="41dp"
-            android:fontFamily="@font/lora"
-            android:includeFontPadding="false"
-            android:paddingLeft="30dp"
-            android:paddingTop="22dp"
-            android:text="Due Date:"
+        <Button
+            android:id="@+id/change_number_save_button"
+            android:layout_width="370dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/rounded_corner_black"
+            android:fontFamily="@font/comfortaa_bold"
+            android:text="Save Changes"
             android:textColor="#000000"
-            android:textSize="16sp" />
-
-        <EditText
-            android:id="@+id/editDueDateText"
-            android:layout_width="380dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/rounded_edit_text"
-            android:hint="When is it due?"
-            android:fontFamily="@font/average"
-            android:padding="12dp" />
-
+            android:textSize="20sp" />
     </LinearLayout>
 </LinearLayout>

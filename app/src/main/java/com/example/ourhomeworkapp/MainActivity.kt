@@ -192,15 +192,16 @@ class MainActivity : ComponentActivity() {
                 Log.w(TAG, "User not authenticated, cannot retrieve homework data.")
             }
         }
+    }
 
+    private fun checkIntroCompleted() {
         val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
         val introCompleted = sharedPreferences.getBoolean("introCompleted", false)
-
-//        if (introCompleted) {
-//            inflateLayout(R.layout.homescreen_layout)
-//        } else {
-//            inflateLayout(R.layout.introscreen_welcome_layout)
-//        }
+        if (introCompleted) {
+            inflateLayout(R.layout.homescreen_layout)
+        } else {
+            inflateLayout(R.layout.introscreen_welcome_layout)
+        }
     }
 
     //Code that handles anything and everything to do with navigating the app starts here, including what happens when a button is pressed,
@@ -251,7 +252,8 @@ class MainActivity : ComponentActivity() {
                                         .show()
 
                                     // Inflate the home screen layout
-                                    inflateLayout(R.layout.revamp_homescreen_layout)
+                                    checkIntroCompleted()
+
 
 
                                 } else {
@@ -280,7 +282,7 @@ class MainActivity : ComponentActivity() {
                         auth.signInWithCredential(credential).addOnCompleteListener {
                             if (it.isSuccessful) {
                                 // Inflate the home screen layout on successful sign-in
-                                inflateLayout(R.layout.revamp_homescreen_layout)
+                                checkIntroCompleted()
                             } else {
                                 // Show an error message if sign-in fails
                                 Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT)
@@ -360,7 +362,7 @@ class MainActivity : ComponentActivity() {
 
             R.layout.introscreen_name_layout -> {
 
-                findViewById<Button>(R.id.welcomeNextButton).setOnClickListener {
+                findViewById<Button>(R.id.welcomeNameNextButton).setOnClickListener {
                     val name = findViewById<EditText>(R.id.nameInput).text.toString()
                     val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
                     val editor = sharedPreferences.edit()
@@ -377,7 +379,7 @@ class MainActivity : ComponentActivity() {
 
             R.layout.introscreen_phonenum_layout -> {
 
-                findViewById<Button>(R.id.welcomePhoneNum).setOnClickListener {
+                findViewById<Button>(R.id.welcomeNumNextButton).setOnClickListener {
                     val phoneNumber = findViewById<EditText>(R.id.phoneNumInput).text.toString()
                     val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
                     val editor = sharedPreferences.edit()
@@ -397,7 +399,7 @@ class MainActivity : ComponentActivity() {
                 requestSmsPermission()
                 findViewById<Button>(R.id.profileButton).setOnClickListener {
                     inflateLayout(R.layout.profilescreen_layout) {
-                        downloadProfileInfo()
+                        //downloadProfileInfo()
                     }
                 }
 
@@ -413,9 +415,10 @@ class MainActivity : ComponentActivity() {
                     inflateLayout(R.layout.revamped_currentupcominghw_layout)
                 }
 
-                findViewById<ImageButton>(R.id.homeScreenMyProfileButton).setOnClickListener {
-                    inflateLayout(R.layout.profilescreen_layout) {
-                        downloadProfileInfo()
+
+                findViewById<Button>(R.id.homeScreenMyProfileButton).setOnClickListener {
+                    inflateLayout(R.layout.revamped_settings_page) {
+                        //downloadProfileInfo()
                     }
                 }
                 setupRecyclerViews()
@@ -452,7 +455,7 @@ class MainActivity : ComponentActivity() {
 
                 findViewById<Button>(R.id.profileMyProfileButton).setOnClickListener {
                     inflateLayout(R.layout.profilescreen_layout) {
-                        downloadProfileInfo()
+                        //downloadProfileInfo()
                     }
                 }
                 findViewById<Button>(R.id.signOutButton).setOnClickListener {
@@ -532,18 +535,9 @@ class MainActivity : ComponentActivity() {
                     updateHomeworkRecyclerViews()
                     clearHomeworkInput()
 
+                    sendHomeworkAddedSMS(courseDesc, assignmentDesc, dueDate)
+
                     inflateLayout(R.layout.revamped_currentupcominghw_layout)
-
-                    val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
-                    val userName = sharedPreferences.getString("userName", "User")
-                    val userPhoneNumber =
-                        sharedPreferences.getString("userPhoneNumber", "5551234567")
-
-                    val message =
-                        "Hey $userName added an $courseDesc assignment titled $assignmentDesc and it is due on $dueDate."
-                    if (userPhoneNumber != null) {
-                        sendSMS(userPhoneNumber, message)
-                    }
                 }
 
                 findViewById<EditText>(R.id.editCourseDescText).setOnClickListener {
@@ -581,20 +575,12 @@ class MainActivity : ComponentActivity() {
                 }
 
                 findViewById<Button>(R.id.coursesaveButton).setOnClickListener {
-//                    val courseNameEditText = findViewById<EditText>(R.id.nameOfCourseText)
-//                    val courseDescEditText = findViewById<EditText>(R.id.editCourseDescText)
-//
-//                    val courseName = courseNameEditText?.text?.toString().orEmpty()
-//                    val courseColor = courseNameEditText?.currentTextColor ?: 0
-//                    val courseDesc = courseDescEditText?.text?.toString().orEmpty()
-
                     val courseName = this.findViewById<EditText>(R.id.nameOfCourseText).text.toString()
                     val courseColor = findViewById<EditText>(R.id.nameOfCourseText).currentTextColor
                     val courseDesc = this.findViewById<EditText>(R.id.nameOfCourseText).text.toString()
 
-
-                    if (!courseList.any { it.courseName == courseName }) {
-
+                    if (!courseList.any { it.courseName == courseName })
+                    {
                         saveCourse(courseName, courseColor, courseDesc)
                         updateCourseRecyclerView()
                         updateCourseRecyclerView()
@@ -668,7 +654,7 @@ class MainActivity : ComponentActivity() {
                     val editDueDate =
                         this.findViewById<EditText>(R.id.editDueDateText).text.toString()
                     val editReminderDate =
-                        this.findViewById<EditText>(R.id.editReminderText).text.toString()
+                        this.findViewById<EditText>(R.id.edit_editReminderText).text.toString()
                     val editColor =
                         findViewById<EditText>(R.id.editCourseDescText).currentTextColor
 
@@ -706,26 +692,22 @@ class MainActivity : ComponentActivity() {
 
                 }
 
-                findViewById<ImageButton>(R.id.completeHWButton).setOnClickListener {
+
+                findViewById<Button>(R.id.completeHWButton).setOnClickListener {
+                    val editCourseDesc =
+                        this.findViewById<EditText>(R.id.edit_editClassDescText).text.toString()
+                    val editAssignmentDesc =
+                        findViewById<EditText>(R.id.edit_editAssignmentDescText).text.toString()
+                        
                     val homework = homeworkList[editingHomeworkIndex]
                     homework.isCompleted = true
                     completedHomeworkList.add(homework)
-                    Log.d(TAG, "Homework to move: $homework") // log to see if homework has its documentId set
-                    moveHomeworkToCompleted(homework, homework.courseId)// Moves homework to completed in firestore
                     homeworkList.remove(homework)
                     updateHomeworkRecyclerViews()
+
                     inflateLayout(R.layout.revamped_completedhwscreen_layout)
 
-                    val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
-                    val userName = sharedPreferences.getString("userName", "User")
-                    val userPhoneNumber =
-                        sharedPreferences.getString("userPhoneNumber", "5551234567")
-
-                    val message =
-                        "Hey $userName just completed the ${homework.assignmentDesc} for his ${homework.courseName} Class."
-                    if (userPhoneNumber != null) {
-                        sendSMS(userPhoneNumber, message)
-                    }
+                    sendHomeworkCompletedSMS(editCourseDesc, editAssignmentDesc)
                 }
 
                 val editDueDateText = findViewById<EditText>(R.id.editDueDateText)
@@ -909,104 +891,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    //displays saved name to settings page
-    private fun displaySavedName(textView: TextView) {
-        val sharedPref = getSharedPreferences("MyPrefs", MODE_PRIVATE)
-        val savedName = sharedPref.getString("user_name", "Default Name") // "Default Name" is a fallback if no name is saved
-        textView.text = savedName
-        Log.d("SettingsActivity", "Retrieved name: $savedName")
-
-    }
-
-    private fun saveName() {
-        val newName = changeNameEditText.text.toString()
-        val confirmName = confirmNameEditText.text.toString()
-
-        // Perform validation
-        if (newName.isEmpty()) {
-            changeNameEditText.error = "Please enter a new name"
-            return
-        }
-
-        if (confirmName.isEmpty()) {
-            confirmNameEditText.error = "Please confirm the name"
-            return
-        }
-
-        if (newName != confirmName) {
-            confirmNameEditText.error = "Names do not match"
-            return
-        }
-
-        // Save the name
-        saveNameToSharedPreferences(newName)
-        sendConfirmationSMS()
-
-        // show a success message or navigate away
-        Toast.makeText(this, "Name saved!", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun saveNameToSharedPreferences(newName: String) {
-        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString("user_name", newName)
-        editor.apply()
-        Log.d("ChangeNameActivity", "Name saved: $newName")
-    }
-
-
-
-    private fun saveNumbers() {
-        val newNumber = changeNumberEditText.text.toString().trim()
-        val confirmNumber = confirmNumberEditText.text.toString().trim()
-
-        // Perform validation if necessary
-        if (newNumber.isEmpty()) {
-            changeNumberEditText.error = "Please enter a new number"
-            return
-        }
-
-        if (confirmNumber.isEmpty()) {
-            confirmNumberEditText.error = "Please confirm the number"
-            return
-        }
-
-        if (newNumber != confirmNumber) {
-            confirmNumberEditText.error = "Numbers do not match"
-            return
-        }
-
-        // Save the numbers
-        saveNumberToSharedPreferences(newNumber)
-
-        // show a success message or navigate away
-        Toast.makeText(this, "Numbers saved!", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun saveNumberToSharedPreferences(newNumber: String) {
-        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString("savedNumber", newNumber)
-        editor.apply()
-    }
-
-    //handles getting the user name and the saved phone number in order to send notifications to it
-    private fun getUserDetails(): Pair<String?, String?> {
-        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
-        val savedNumber = sharedPreferences.getString("savedNumber", null)
-        val savedName = sharedPreferences.getString("savedName", null)
-        return Pair(savedNumber, savedName)
-    }
-
-
-    private fun saveSwitchState(key: String, state: Boolean) {
-        val editor = sharedPreferences.edit()
-        editor.putBoolean(key, state)
-        editor.apply()
-    }
-
-    //Code involved with settings page ends here
-
     //Code that handles everything and anything to do with firebase starts here
 
     // Function to handle Firebase authentication errors
@@ -1068,8 +952,7 @@ class MainActivity : ComponentActivity() {
             // If the sign-in is successful, log the success and inflate the home screen layout
             if (it.isSuccessful) {
                 Log.d("SIGN_IN", "Firebase authentication successful")
-                inflateLayout(R.layout.revamp_homescreen_layout)
-
+                checkIntroCompleted()
             } else {
                 // If the sign-in fails, show a toast message with the error
                 Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
@@ -1226,8 +1109,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
-
     //Function to send SMS using the dynamically saved phone number
     private fun sendSMSWithSavedNumber(message: String) {
         val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
@@ -1268,6 +1149,23 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun sendHomeworkAddedSMS(courseName: String, assignmentDesc: String, dueDate: String) {
+
+        val userName = getUserName()
+        val userPhoneNumber = getUserPhoneNumber()
+
+        val message = "Hey $userName added an $courseName assignment titled $assignmentDesc and it is due on $dueDate."
+        sendSMS(userPhoneNumber, message)
+    }
+
+    private fun sendHomeworkCompletedSMS(courseName: String, assignmentDesc: String) {
+        val userName = getUserName()
+        val userPhoneNumber = getUserPhoneNumber()
+
+        val message = "Hey $userName just completed the $assignmentDesc for their $courseName class."
+        sendSMS(userPhoneNumber, message)
+    }
+
     //Code that handles the course creation, storage and management starts here
     class CourseAdapter(
         private val courseList: List<Course>,
@@ -1296,7 +1194,7 @@ class MainActivity : ComponentActivity() {
 
         inner class CourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             private val courseNameButtonView: Button = itemView.findViewById(R.id.courseNameButtonView)
-            private val courseDescTextView: TextView = itemView.findViewById(R.id.courseDescTextView)
+            //private val courseDescTextView: TextView = itemView.findViewById(R.id.courseDescTextView)
 
             init {
                 courseNameButtonView.setOnClickListener {
@@ -1326,7 +1224,7 @@ class MainActivity : ComponentActivity() {
                 Log.d(TAG, "Binding course: $course") // Log course being bound
                 courseNameButtonView.text = course.courseName
                 courseNameButtonView.setTextColor(course.courseColor)
-                courseDescTextView.text = course.courseDesc
+                //courseDescTextView.text = course.courseDesc
             }
         }
     }
@@ -1466,7 +1364,6 @@ class MainActivity : ComponentActivity() {
             val homeAdapter = HomeworkAdapter(homeworkList, this, "home")
             homeRecyclerView.adapter = homeAdapter
             homeRecyclerView.layoutManager = LinearLayoutManager(this)
-            homeAdapter.notifyDataSetChanged()
         }
 
         val currentRecyclerView = findViewById<RecyclerView>(R.id.curHWRecycler)
@@ -1474,7 +1371,6 @@ class MainActivity : ComponentActivity() {
             val currentAdapter = HomeworkAdapter(homeworkList, this, "currentUpcoming")
             currentRecyclerView.adapter = currentAdapter
             currentRecyclerView.layoutManager = LinearLayoutManager(this)
-            currentAdapter.notifyDataSetChanged()
         }
 
         val completedRecyclerView = findViewById<RecyclerView>(R.id.compHWRecycler)
@@ -1482,7 +1378,6 @@ class MainActivity : ComponentActivity() {
             val completedAdapter = HomeworkAdapter(completedHomeworkList, this, "completed")
             completedRecyclerView.adapter = completedAdapter
             completedRecyclerView.layoutManager = LinearLayoutManager(this)
-            completedAdapter.notifyDataSetChanged()
         }
     }
 
@@ -1504,7 +1399,10 @@ class MainActivity : ComponentActivity() {
             homeworkList.remove(homework)
             updateHomeworkRecyclerViews()
 
+            sendHomeworkCompletedSMS(homework.courseName, homework.assignmentDesc)
+
             inflateLayout(R.layout.revamped_completedhwscreen_layout)
+
         }
     }
 
@@ -1574,42 +1472,42 @@ class MainActivity : ComponentActivity() {
     }
 
     // Function to download and display user profile information from Firestore
-    private fun downloadProfileInfo() {
-        // Get an instance of Firestore
-        val fireStoreDatabase = FirebaseFirestore.getInstance()
-        // Get the current user's ID from FirebaseAuth
-        val userId = FirebaseAuth.getInstance().currentUser!!.uid
-
-        // Fetch the user's profile document from Firestore
-        fireStoreDatabase.collection("users").document(userId).get()
-            .addOnSuccessListener { document ->
-                if (document != null) {
-                    // Retrieve profile information from the document
-                    val firstName = document.getString("firstName") ?: "" // Get first name or empty string if null
-                    val lastName = document.getString("lastName") ?: "" // Get last name or empty string if null
-                    val email = document.getString("email") ?: ""// Get email or empty string if null
-                    val parentPhoneNum = document.getString("parentPhoneNum") ?: "" // Get parent's phone number or empty string if null
-
-
-                    // Set the retrieved profile information in the corresponding EditText fields
-                    findViewById<EditText>(R.id.editFirstNameText).setText(firstName)
-                    findViewById<EditText>(R.id.editLastNameText).setText(lastName)
-                    findViewById<EditText>(R.id.editEmailText).setText(email)
-                    findViewById<EditText>(R.id.editParentPhoneNumText).setText(parentPhoneNum)
-
-                    // Log success message with the user ID
-                    Log.d(TAG, "Profile successfully downloaded for user ID: $userId")
-                } else {
-                    // Log message if no profile data is found
-                    Log.d(TAG, "No profile data found for user ID: $userId")
-                }
-            }
-            .addOnFailureListener { e ->
-                // Log failure message with the error
-                Log.w(TAG, "Error downloading profile for user ID: $userId", e)
-            }
-
-    }
+//    private fun downloadProfileInfo() {
+//        // Get an instance of Firestore
+//        val fireStoreDatabase = FirebaseFirestore.getInstance()
+//        // Get the current user's ID from FirebaseAuth
+//        val userId = FirebaseAuth.getInstance().currentUser!!.uid
+//
+//        // Fetch the user's profile document from Firestore
+//        fireStoreDatabase.collection("users").document(userId).get()
+//            .addOnSuccessListener { document ->
+//                if (document != null) {
+//                    // Retrieve profile information from the document
+//                    val firstName = document.getString("firstName") ?: "" // Get first name or empty string if null
+//                    val lastName = document.getString("lastName") ?: "" // Get last name or empty string if null
+//                    val email = document.getString("email") ?: ""// Get email or empty string if null
+//                    val parentPhoneNum = document.getString("parentPhoneNum") ?: "" // Get parent's phone number or empty string if null
+//
+//
+//                    // Set the retrieved profile information in the corresponding EditText fields
+//                    findViewById<EditText>(R.id.editFirstNameText).setText(firstName)
+//                    findViewById<EditText>(R.id.editLastNameText).setText(lastName)
+//                    findViewById<EditText>(R.id.editEmailText).setText(email)
+//                    findViewById<EditText>(R.id.editParentPhoneNumText).setText(parentPhoneNum)
+//
+//                    // Log success message with the user ID
+//                    Log.d(TAG, "Profile successfully downloaded for user ID: $userId")
+//                } else {
+//                    // Log message if no profile data is found
+//                    Log.d(TAG, "No profile data found for user ID: $userId")
+//                }
+//            }
+//            .addOnFailureListener { e ->
+//                // Log failure message with the error
+//                Log.w(TAG, "Error downloading profile for user ID: $userId", e)
+//            }
+//
+//    }
 
     // Function to upload homework data to Firestore
     private fun uploadHomeworkData(homework: Homework) {
@@ -2048,6 +1946,112 @@ class MainActivity : ComponentActivity() {
                 // Log failure with the error message
                 Log.w(TAG, "Error adding course document $it")
             }
+    }
+
+    private fun displaySavedName(textView: TextView) {
+        val sharedPref = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val savedName = sharedPref.getString("user_name", "Default Name") // "Default Name" is a fallback if no name is saved
+        textView.text = savedName
+        Log.d("SettingsActivity", "Retrieved name: $savedName")
+
+    }
+
+    private fun saveName() {
+        val newName = changeNameEditText.text.toString()
+        val confirmName = confirmNameEditText.text.toString()
+
+        // Perform validation
+        if (newName.isEmpty()) {
+            changeNameEditText.error = "Please enter a new name"
+            return
+        }
+
+        if (confirmName.isEmpty()) {
+            confirmNameEditText.error = "Please confirm the name"
+            return
+        }
+
+        if (newName != confirmName) {
+            confirmNameEditText.error = "Names do not match"
+            return
+        }
+
+        // Save the name
+        saveNameToSharedPreferences(newName)
+        sendConfirmationSMS()
+
+        // show a success message or navigate away
+        Toast.makeText(this, "Name saved!", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveNameToSharedPreferences(newName: String) {
+        val sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("userName", newName)
+        editor.apply()
+        Log.d("ChangeNameActivity", "Name saved: $newName")
+    }
+
+    private fun getUserName(): String
+    {
+        val sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE)
+        return sharedPreferences.getString("userName", "User") ?: "User"
+    }
+
+
+
+    private fun saveNumbers() {
+        val newNumber = changeNumberEditText.text.toString().trim()
+        val confirmNumber = confirmNumberEditText.text.toString().trim()
+
+        // Perform validation if necessary
+        if (newNumber.isEmpty()) {
+            changeNumberEditText.error = "Please enter a new number"
+            return
+        }
+
+        if (confirmNumber.isEmpty()) {
+            confirmNumberEditText.error = "Please confirm the number"
+            return
+        }
+
+        if (newNumber != confirmNumber) {
+            confirmNumberEditText.error = "Numbers do not match"
+            return
+        }
+
+        // Save the numbers
+        saveNumberToSharedPreferences(newNumber)
+
+        // show a success message or navigate away
+        Toast.makeText(this, "Numbers saved!", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveNumberToSharedPreferences(newNumber: String) {
+        val sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("userPhoneNumber", newNumber)
+        editor.apply()
+    }
+
+    private fun getUserPhoneNumber(): String {
+        val sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE)
+        return sharedPreferences.getString("userPhoneNumber", "5551234567") ?: "5551234567"
+    }
+
+    //handles getting the user name and the saved phone number in order to send notifications to it
+    private fun getUserDetails(): Pair<String?, String?> {
+        val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val savedNumber = sharedPreferences.getString("savedNumber", null)
+        val savedName = sharedPreferences.getString("savedName", null)
+        return Pair(savedNumber, savedName)
+    }
+
+
+    private fun saveSwitchState(key: String, state: Boolean) {
+        val editor = sharedPreferences.edit()
+        editor.putBoolean(key, state)
+        editor.apply()
     }
 }
 
