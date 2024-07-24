@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/addHWlayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/settings_back_button"
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:layout_gravity="end|top"
+            android:background="@color/fui_transparent"
+            android:paddingTop="15dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/red_cancel_button" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/addHomeworkText"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:fontFamily="@font/comfortaa_bold"
+            android:gravity="center"
+            android:paddingBottom="20dp"
+            android:shadowColor="@color/white"
+            android:shadowDx="-1"
+            android:shadowDy="-1"
+            android:shadowRadius="1"
+            android:text="Settings"
+            android:textColor="#000000"
+            android:textSize="34sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#D3D3D3" />
+
+        <Button
+            android:id="@+id/change_name_button"
+            android:layout_width="370dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/rounded_corner_black"
+            android:fontFamily="@font/comfortaa_bold"
+            android:text="Change Name"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/notification_menu_button"
+            android:layout_width="370dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/rounded_corner_black"
+            android:fontFamily="@font/comfortaa_bold"
+            android:text="SMS Settings"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/change_number_button"
+            android:layout_width="370dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/rounded_corner_black"
+            android:fontFamily="@font/comfortaa_bold"
+            android:text="Change Phone #"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/sign_out_button"
+            android:layout_width="370dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="275dp"
+            android:background="@drawable/rounded_corner_black"
+            android:fontFamily="@font/comfortaa_bold"
+            android:text="Sign Out"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+</LinearLayout>
