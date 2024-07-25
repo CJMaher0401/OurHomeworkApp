@@ -16,7 +16,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
@@ -756,8 +755,8 @@ class MainActivity : ComponentActivity() {
             //code for handling change number
             R.layout.newsettings_changenumber_layout -> {
 
-                findViewById<ImageView>(R.id.change_number_back_button).setOnClickListener {
-                    inflateLayout(R.layout.revamped_settings_page)
+                findViewById<ImageButton>(R.id.change_number_back_button).setOnClickListener {
+                    inflateLayout(R.layout.newsettings_screen_layout)
                 }
 
                 findViewById<EditText>(R.id.change_number_text).setOnClickListener {
