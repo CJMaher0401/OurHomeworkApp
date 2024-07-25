@@ -73,7 +73,6 @@ class MainActivity : ComponentActivity() {
         var courseName: String = "",
         var assignmentDesc: String = "",
         var dueDate: String = "",
-        var reminderDate: String = "",
         var color: Int = 0,
         val courseDesc: String = "",
         var courseId: String = "",
@@ -580,8 +579,6 @@ class MainActivity : ComponentActivity() {
                         findViewById<EditText>(R.id.editAssignmentDescText).text.toString()
                     val editDueDate =
                         this.findViewById<EditText>(R.id.editDueDateText).text.toString()
-                    val editReminderDate =
-                        this.findViewById<EditText>(R.id.edit_editReminderText).text.toString()
                     val editColor =
                         findViewById<EditText>(R.id.editCourseDescText).currentTextColor
 
@@ -591,7 +588,6 @@ class MainActivity : ComponentActivity() {
                         homework.courseName = editCourseDesc
                         homework.assignmentDesc = editAssignmentDesc
                         homework.dueDate = editDueDate
-                        homework.reminderDate = editReminderDate
                         homework.color = editColor
 
                     } else {
@@ -600,7 +596,6 @@ class MainActivity : ComponentActivity() {
                             editCourseDesc,
                             editAssignmentDesc,
                             editDueDate,
-                            editReminderDate,
                             editColor
                         )
                         homeworkList.add(homework)
@@ -646,7 +641,7 @@ class MainActivity : ComponentActivity() {
             }
 
             R.layout.revamp_edithwcoursescreen_layout -> {
-                findViewById<Button>(R.id.edit_returnToAddHWButton).setOnClickListener {
+                findViewById<ImageButton>(R.id.edit_returnToAddHWButton).setOnClickListener {
                     inflateLayout(R.layout.revamp_edithwscreen_layout)
                 }
 
@@ -1405,7 +1400,6 @@ class MainActivity : ComponentActivity() {
         userHomeworkMap["courseDesc"] = homework.courseDesc // Set course description from homework
         userHomeworkMap["assignmentDesc"] = homework.assignmentDesc // Set assignment description from homework
         userHomeworkMap["dueDate"] = homework.dueDate // Set due date from homework
-        userHomeworkMap["reminderDate"] = homework.reminderDate // Set reminder date from homework
         userHomeworkMap["color"] = homework.color // Set color from homework
         userHomeworkMap["courseId"] = homework.courseId // Set course ID from homework
         userHomeworkMap["isCompleted"] = homework.isCompleted // Set completion status from homework

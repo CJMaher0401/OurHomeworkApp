@@ -14,7 +14,7 @@
 
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/edit_returnToAddHWButton"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:background="@color/fui_transparent"
