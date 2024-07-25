@@ -27,7 +27,7 @@
             android:layout_weight="1" />
 
         <ImageButton
-            android:id="@+id/addHWbutton"
+            android:id="@+id/editHWbutton"
             android:layout_width="80dp"
             android:layout_height="60dp"
             android:layout_gravity="end|top"

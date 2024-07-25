@@ -192,6 +192,14 @@ class MainActivity : ComponentActivity() {
                 Log.w(TAG, "User not authenticated, cannot retrieve homework data.")
             }
         }
+
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("introCompleted", false)  // Reset introCompleted for testing
+        editor.apply()
+
+        val introCompleted = sharedPreferences.getBoolean("introCompleted", false)
+
     }
 
     private fun checkIntroCompleted() {
@@ -402,7 +410,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                findViewById<ImageButton>(R.id.addHWbutton).setOnClickListener {
+                findViewById<ImageButton>(R.id.editHWbutton).setOnClickListener {
                     inflateLayout(R.layout.revamp_addhomeworkscreen_layout)
                 }
 
@@ -420,86 +428,13 @@ class MainActivity : ComponentActivity() {
                 updateHomeworkRecyclerViews()
             }
 
-            R.layout.profilescreen_layout -> {
-                findViewById<EditText>(R.id.editFirstNameText).setOnClickListener {
-
-                }
-                findViewById<EditText>(R.id.editLastNameText).setOnClickListener {
-
-                }
-                findViewById<EditText>(R.id.editEmailText).setOnClickListener {
-
-                }
-                findViewById<EditText>(R.id.editParentPhoneNumText).setOnClickListener {
-
-                }
-                findViewById<Button>(R.id.saveChangesButton).setOnClickListener {
-                    uploadProfileData()
-                    inflateLayout(R.layout.revamp_homescreen_layout)
-
-                }
-                findViewById<Button>(R.id.profileHomeButton).setOnClickListener {
-                    inflateLayout(R.layout.revamp_homescreen_layout)
-                }
-
-                findViewById<Button>(R.id.profileMyHWButton).setOnClickListener {
-                    inflateLayout(R.layout.revamped_currentupcominghw_layout)
-                }
-
-                findViewById<Button>(R.id.profileMyProfileButton).setOnClickListener {
-                    inflateLayout(R.layout.profilescreen_layout) {
-                        //downloadProfileInfo()
-                    }
-                }
-                findViewById<Button>(R.id.signOutButton).setOnClickListener {
-                    val googleUser = GoogleSignIn.getLastSignedInAccount(this)
-                    if (googleUser != null) {
-                        googleSignInClient.signOut().addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                // Sign out of firebase
-                                FirebaseAuth.getInstance().signOut()
-                                // Update ui to show the login screen
-                                inflateLayout(R.layout.revamp_loginscreen_layout2)
-                                // Reinitialize the Google sign-in button
-                                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                    .requestIdToken(getString(com.firebase.ui.auth.R.string.default_web_client_id))
-                                    .requestEmail()
-                                    .build()
-                                googleSignInClient = GoogleSignIn.getClient(this, gso)
-                                findViewById<ImageButton>(R.id.gSignInBtn)?.setOnClickListener {
-                                    signInGoogle()
-                                }
-
-                            } else {
-                                Log.e("GoogleSignOut", "Sign-out failed", task.exception) // Log for debugging
-                                Toast.makeText(this, "Failed to sign out. Please try again.", Toast.LENGTH_SHORT).show() // Inform the user
-                            }
-                        }
-                    } else {
-                        // If the user is not signed in via Google, just sign out from Firebase
-                        FirebaseAuth.getInstance().signOut()
-                        // Update ui to show the login screen
-                        inflateLayout(R.layout.revamp_loginscreen_layout2)
-                        // Reinitialize the Google sign-in button
-                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken(getString(com.firebase.ui.auth.R.string.default_web_client_id))
-                            .requestEmail()
-                            .build()
-                        googleSignInClient = GoogleSignIn.getClient(this, gso)
-                        findViewById<ImageButton>(R.id.gSignInBtn)?.setOnClickListener {
-                            signInGoogle()
-                        }
-                    }
-                }
-            }
-
             R.layout.revamp_addhomeworkscreen_layout -> {
                 loadHomeworkInput()
                 findViewById<ImageButton>(R.id.cancelHWbutton).setOnClickListener {
                     inflateLayout(R.layout.revamp_homescreen_layout)
                 }
 
-                findViewById<ImageButton>(R.id.addHWbutton).setOnClickListener {
+                findViewById<ImageButton>(R.id.editHWbutton).setOnClickListener {
                     val userId = FirebaseAuth.getInstance().currentUser?.uid
                         ?: return@setOnClickListener // Ensure user is authenticated
                     val courseDesc =
@@ -563,11 +498,11 @@ class MainActivity : ComponentActivity() {
             }
 
             R.layout.revamp_coursecreationscreen_layout -> {
-                findViewById<Button>(R.id.coursecancelButton).setOnClickListener {
+                findViewById<ImageButton>(R.id.coursecancelButton).setOnClickListener {
                     inflateLayout(R.layout.revamp_yourcoursesscreen_layout)
                 }
 
-                findViewById<Button>(R.id.coursesaveButton).setOnClickListener {
+                findViewById<ImageButton>(R.id.coursesaveButton).setOnClickListener {
                     val courseName = this.findViewById<EditText>(R.id.nameOfCourseText).text.toString()
                     val courseColor = findViewById<EditText>(R.id.nameOfCourseText).currentTextColor
                     val courseDesc = this.findViewById<EditText>(R.id.nameOfCourseText).text.toString()
@@ -591,7 +526,7 @@ class MainActivity : ComponentActivity() {
                     inflateLayout(R.layout.revamp_homescreen_layout)
                 }
 
-                findViewById<ImageButton>(R.id.addHWbutton).setOnClickListener {
+                findViewById<ImageButton>(R.id.editHWbutton).setOnClickListener {
                     inflateLayout(R.layout.revamp_addhomeworkscreen_layout)
                 }
 
@@ -613,7 +548,7 @@ class MainActivity : ComponentActivity() {
                     inflateLayout(R.layout.revamp_homescreen_layout)
                 }
 
-                findViewById<ImageButton>(R.id.addHWbutton).setOnClickListener {
+                findViewById<ImageButton>(R.id.editHWbutton).setOnClickListener {
                     inflateLayout(R.layout.revamp_addhomeworkscreen_layout)
                 }
 
@@ -638,7 +573,7 @@ class MainActivity : ComponentActivity() {
                     inflateLayout(R.layout.revamped_currentupcominghw_layout)
                 }
 
-                findViewById<ImageButton>(R.id.addHWbutton).setOnClickListener {
+                findViewById<ImageButton>(R.id.editHWbutton).setOnClickListener {
                     val id = FirebaseAuth.getInstance().currentUser?.uid.toString()
                     val editCourseDesc =
                         this.findViewById<EditText>(R.id.editCourseDescText).text.toString()
@@ -686,7 +621,7 @@ class MainActivity : ComponentActivity() {
                 }
 
 
-                findViewById<Button>(R.id.completeHWButton).setOnClickListener {
+                findViewById<ImageButton>(R.id.completeHWButton).setOnClickListener {
                     val editCourseDesc =
                         this.findViewById<EditText>(R.id.edit_editClassDescText).text.toString()
                     val editAssignmentDesc =
@@ -729,7 +664,7 @@ class MainActivity : ComponentActivity() {
                 findViewById<ImageButton>(R.id.cancelHWbutton).setOnClickListener {
                     inflateLayout(R.layout.revamped_completedhwscreen_layout)
                 }
-                findViewById<ImageButton>(R.id.addHWbutton).setOnClickListener {
+                findViewById<ImageButton>(R.id.editHWbutton).setOnClickListener {
                     inflateLayout(R.layout.revamped_completedhwscreen_layout)
                 }
 //                findViewById<Button>(R.id.curHWButton).setOnClickListener {
@@ -743,142 +678,99 @@ class MainActivity : ComponentActivity() {
             }
 
             //code for handling the revamped settings page
-            R.layout.revamped_settings_page -> {
-                findViewById<ImageView>(R.id.settings_back_button).setOnClickListener {
+            R.layout.newsettings_screen_layout -> {
+                findViewById<ImageButton>(R.id.settings_back_button).setOnClickListener {
                     inflateLayout(R.layout.revamp_homescreen_layout)
                 }
-                val usernameDisplay: TextView = findViewById(R.id.name_display)
-                displaySavedName(usernameDisplay)
 
-
-                findViewById<ImageView>(R.id.change_name_button).setOnClickListener {
-                    inflateLayout(R.layout.change_name)
+                findViewById<Button>(R.id.change_name_button).setOnClickListener {
+                    inflateLayout(R.layout.newsettings_changename_layout)
                 }
 
-                findViewById<ImageView>(R.id.change_number_button).setOnClickListener {
-                    inflateLayout(R.layout.change_number)
+                findViewById<Button>(R.id.change_number_button).setOnClickListener {
+                    inflateLayout(R.layout.newsettings_changenumber_layout)
                 }
 
+                findViewById<Button>(R.id.sign_out_button).setOnClickListener {
+                    val googleUser = GoogleSignIn.getLastSignedInAccount(this)
+                    if (googleUser != null) {
+                        googleSignInClient.signOut().addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                // Sign out of firebase
+                                FirebaseAuth.getInstance().signOut()
+                                // Update ui to show the login screen
+                                inflateLayout(R.layout.revamp_loginscreen_layout2)
+                                // Reinitialize the Google sign-in button
+                                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                    .requestIdToken(getString(com.firebase.ui.auth.R.string.default_web_client_id))
+                                    .requestEmail()
+                                    .build()
+                                googleSignInClient = GoogleSignIn.getClient(this, gso)
+                                findViewById<ImageButton>(R.id.gSignInBtn)?.setOnClickListener {
+                                    signInGoogle()
+                                }
 
-                findViewById<ImageView>(R.id.notification_menu_button).setOnClickListener {
-                    inflateLayout(R.layout.notifications_page)
-                }
-
-
-                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.sign_out_button).setOnClickListener {
-                    inflateLayout(R.layout.revamp_homescreen_layout)
+                            } else {
+                                Log.e("GoogleSignOut", "Sign-out failed", task.exception) // Log for debugging
+                                Toast.makeText(this, "Failed to sign out. Please try again.", Toast.LENGTH_SHORT).show() // Inform the user
+                            }
+                        }
+                    } else {
+                        // If the user is not signed in via Google, just sign out from Firebase
+                        FirebaseAuth.getInstance().signOut()
+                        // Update ui to show the login screen
+                        inflateLayout(R.layout.revamp_loginscreen_layout2)
+                        // Reinitialize the Google sign-in button
+                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(getString(com.firebase.ui.auth.R.string.default_web_client_id))
+                            .requestEmail()
+                            .build()
+                        googleSignInClient = GoogleSignIn.getClient(this, gso)
+                        findViewById<ImageButton>(R.id.gSignInBtn)?.setOnClickListener {
+                            signInGoogle()
+                        }
+                    }
                 }
             }
 
-            //code for handling notification page
-            R.layout.notifications_page -> {
-
-                reminderSwitch = findViewById(R.id.reminder_switch)
-                messageSwitch = findViewById(R.id.message_switch)
-
-                findViewById<ImageView>(R.id.notification_back_button).setOnClickListener {
-                    inflateLayout(R.layout.revamped_settings_page)
-                }
-
-                sharedPreferences =
-                    getSharedPreferences("NotificationPreferences", Context.MODE_PRIVATE)
-
-                // Load the saved states
-                reminderSwitch.isChecked =
-                    sharedPreferences.getBoolean("reminderSwitchState", false)
-                messageSwitch.isChecked = sharedPreferences.getBoolean("messageSwitchState", false)
-
-                // Set listeners for the switches
-                reminderSwitch.setOnCheckedChangeListener { _, isChecked ->
-                    saveSwitchState("reminderSwitchState", isChecked)
-
-                }
-
-                messageSwitch.setOnCheckedChangeListener { _, isChecked ->
-                    saveSwitchState("messageSwitchState", isChecked)
-
-                }
-
-                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.save_notification_button).setOnClickListener {
-                    inflateLayout(R.layout.revamped_settings_page)
-                }
-
-            }
-
-            //code for edit profile page
-            R.layout.edit_profile -> {
-
-                findViewById<ImageView>(R.id.edit_profile_back_button).setOnClickListener {
-                    inflateLayout(R.layout.revamped_settings_page)
-                }
-
-                findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.change_photo_button).setOnClickListener {
-                    //inflateLayout(R.layout.change_photo)
-                }
-
-                findViewById<ImageView>(R.id.change_name_button).setOnClickListener {
-                    inflateLayout(R.layout.change_name)
-                }
-
-                findViewById<ImageView>(R.id.change_number_button).setOnClickListener {
-                    inflateLayout(R.layout.change_number)
-                }
-
-                findViewById<ImageView>(R.id.add_teacher_button).setOnClickListener {
-                    // inflateLayout(R.layout.add_teacher)
-                }
-
-            }
-            
             //code for change name
-            R.layout.change_name -> {
+            R.layout.newsettings_changename_layout -> {
 
-                findViewById<ImageView>(R.id.change_name_back_button).setOnClickListener {
-                    inflateLayout(R.layout.revamped_settings_page)
+                findViewById<ImageButton>(R.id.change_name_back_button).setOnClickListener {
+                    inflateLayout(R.layout.newsettings_screen_layout)
                 }
 
-                changeNameEditText = findViewById(R.id.change_name_Text)
-                confirmNameEditText = findViewById(R.id.confirm_name_text)
-                saveButton = findViewById(R.id.change_name_save_button)
-                cancelButton = findViewById(R.id.change_name_cancel_button)
+                findViewById<EditText>(R.id.change_name_Text).setOnClickListener {
 
-                // Set click listener for Save button
-                saveButton.setOnClickListener {
+                }
+
+                findViewById<EditText>(R.id.confirm_name_text).setOnClickListener {
+
+                }
+
+                findViewById<Button>(R.id.change_name_save_button).setOnClickListener {
                     saveName()
-                    inflateLayout(R.layout.revamped_settings_page)
+                    inflateLayout(R.layout.newsettings_screen_layout)
                 }
-
-                // Set click listener for Cancel button
-                cancelButton.setOnClickListener {
-                    // Handle cancel logic here
-                    inflateLayout(R.layout.revamped_settings_page)
-                }
-
             }
             //code for handling change number
-            R.layout.change_number -> {
+            R.layout.newsettings_changenumber_layout -> {
 
                 findViewById<ImageView>(R.id.change_number_back_button).setOnClickListener {
                     inflateLayout(R.layout.revamped_settings_page)
                 }
 
+                findViewById<EditText>(R.id.change_number_text).setOnClickListener {
 
-                // Initialize views
-                changeNumberEditText = findViewById(R.id.change_number_text)
-                confirmNumberEditText = findViewById(R.id.confirm_number_text)
-                saveButton = findViewById(R.id.change_number_save_button)
-                cancelButton = findViewById(R.id.change_number_cancel_button)
-
-                // Set click listener for Save button
-                saveButton.setOnClickListener {
-                    saveNumbers()
-                    inflateLayout(R.layout.revamped_settings_page)
                 }
 
-                // Set click listener for Cancel button
-                cancelButton.setOnClickListener {
-                    // Handle cancel logic here
-                    inflateLayout(R.layout.revamped_settings_page)
+                findViewById<EditText>(R.id.confirm_number_text).setOnClickListener {
+
+                }
+
+                findViewById<Button>(R.id.change_number_save_button).setOnClickListener {
+                    saveNumbers()
+                    inflateLayout(R.layout.newsettings_screen_layout)
                 }
             }
         }
@@ -1409,7 +1301,7 @@ class MainActivity : ComponentActivity() {
             findViewById<EditText>(R.id.editAssignmentDescText).setText(homework.assignmentDesc)
             findViewById<EditText>(R.id.editDueDateText).setText(homework.dueDate)
         }
-        findViewById<ImageButton>(R.id.addHWbutton).setOnClickListener {
+        findViewById<ImageButton>(R.id.editHWbutton).setOnClickListener {
             homework.isCompleted = false
             completedHomeworkList.remove(homework)
             homeworkList.add(homework)
@@ -1950,8 +1842,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun saveName() {
-        val newName = changeNameEditText.text.toString()
-        val confirmName = confirmNameEditText.text.toString()
+        val newName = findViewById<EditText>(R.id.change_name_Text).text.toString()
+        val confirmName = findViewById<EditText>(R.id.confirm_name_text).text.toString()
 
         // Perform validation
         if (newName.isEmpty()) {
@@ -1994,8 +1886,8 @@ class MainActivity : ComponentActivity() {
 
 
     private fun saveNumbers() {
-        val newNumber = changeNumberEditText.text.toString().trim()
-        val confirmNumber = confirmNumberEditText.text.toString().trim()
+        val newNumber = findViewById<EditText>(R.id.change_number_text).text.toString().trim()
+        val confirmNumber = findViewById<EditText>(R.id.confirm_number_text).text.toString().trim()
 
         // Perform validation if necessary
         if (newNumber.isEmpty()) {

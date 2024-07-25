@@ -12,7 +12,7 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/cancelHWbutton"
+            android:id="@+id/coursecancelButton"
             android:layout_width="80dp"
             android:layout_height="60dp"
             android:layout_gravity="end|top"
@@ -27,7 +27,7 @@
             android:layout_weight="1" />
 
         <ImageButton
-            android:id="@+id/addHWbutton"
+            android:id="@+id/coursesaveButton"
             android:layout_width="80dp"
             android:layout_height="60dp"
             android:layout_gravity="end|top"
@@ -77,14 +77,38 @@
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/editCourseDescText"
-            android:layout_width="320dp"
+            android:id="@+id/nameOfCourseText"
+            android:layout_width="380dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/rounded_edit_text"
             android:fontFamily="@font/average"
             android:hint="What is your class called?"
             android:includeFontPadding="false"
             android:padding="12dp" />
+
+        <com.skydoves.colorpickerview.ColorPickerView
+            android:id="@+id/colorPickerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pickYourColorButton"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:padding="8dp"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/pickYourColorButton"
+            android:layout_width="370dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="25dp"
+            android:background="@drawable/rounded_corners"
+            android:fontFamily="@font/comfortaa_bold"
+            android:text="Change Course Color"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
     </LinearLayout>
 </LinearLayout>
