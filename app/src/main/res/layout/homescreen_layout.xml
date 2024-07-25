@@ -32,7 +32,7 @@
 
 
         <ImageButton
-            android:id="@+id/addHWbutton"
+            android:id="@+id/editHWbutton"
             android:layout_width="96dp"
             android:layout_height="50dp"
             android:layout_gravity="right|top"

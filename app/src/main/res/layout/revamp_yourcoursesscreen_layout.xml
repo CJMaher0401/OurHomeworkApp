@@ -14,14 +14,13 @@
 
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@id/returnToAddHWButton"
             android:layout_width="80dp"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:background="@color/fui_transparent"
             android:scaleType="fitCenter"
             android:paddingTop="15dp"
-            android:layout_gravity="end|top"
-            app:srcCompat="@drawable/red_cancel_button" />
+            android:src="@drawable/red_cancel_button" />
 
         <View
             android:layout_width="248dp"
@@ -30,14 +29,13 @@
 
 
         <ImageButton
-            android:id="@+id/imageButton2"
+            android:id="@+id/addNewClassButton"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:background="@color/fui_transparent"
             android:scaleType="fitCenter"
             android:paddingTop="15dp"
-            android:layout_gravity="end|top"
-            app:srcCompat="@drawable/red_add_button" />
+            android:src="@drawable/red_add_button" />
 
         <View
             android:layout_width="0dp"

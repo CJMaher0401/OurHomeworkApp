@@ -20,7 +20,7 @@
             android:layout_weight="1" />
 
         <ImageButton
-            android:id="@+id/addHWbutton"
+            android:id="@+id/editHWbutton"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="end|top"
@@ -113,6 +113,6 @@
             android:layout_width="136dp"
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/red_settings_button" />
+            android:src="@drawable/red_settings_button" />
     </LinearLayout>
 </LinearLayout>
